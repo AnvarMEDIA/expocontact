@@ -11,11 +11,8 @@ const LABEL_CLASS = 'block text-xs text-white/40 font-semibold uppercase trackin
 
 export default function Contact() {
   const t = useTranslations('contact');
-
-  const [form, setForm] = useState({
-    name: '', company: '', phone: '', expo: '', message: '',
-  });
-  const [status, setStatus] = useState('idle'); // idle | loading | success | error
+  const [form, setForm] = useState({ name: '', company: '', phone: '', expo: '', message: '' });
+  const [status, setStatus] = useState('idle');
 
   const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
 
@@ -38,39 +35,38 @@ export default function Contact() {
   };
 
   return (
-    <section id="contacts" className="py-24 md:py-32 bg-navy">
+    <section id="contacts" className="py-16 sm:py-24 md:py-32 bg-navy">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Heading */}
         <motion.div
-          className="text-center mb-16"
+          className="text-center mb-10 sm:mb-16"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="font-heading font-black text-3xl md:text-5xl mb-4 heading-accent-center">
+          <h2 className="font-heading font-black text-2xl sm:text-3xl md:text-5xl mb-3 sm:mb-4 heading-accent-center">
             {t('title')}
           </h2>
-          <p className="text-white/50 text-lg">{t('subtitle')}</p>
+          <p className="text-white/50 text-sm sm:text-lg">{t('subtitle')}</p>
         </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
 
-          {/* ── Left: Form ─────────────────────────────────────────────── */}
+          {/* ── Form ────────────────────────────────────────────────────── */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
           >
-            <div className="bg-charcoal rounded-2xl p-6 md:p-8 border border-white/5">
+            <div className="bg-charcoal rounded-2xl p-5 sm:p-6 md:p-8 border border-white/5">
               <AnimatePresence mode="wait">
                 {status === 'success' ? (
-                  /* Success state */
                   <motion.div
                     key="success"
-                    className="flex flex-col items-center justify-center py-16 gap-6"
+                    className="flex flex-col items-center justify-center py-12 sm:py-16 gap-6"
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0 }}
@@ -79,30 +75,20 @@ export default function Contact() {
                     <div className="w-20 h-20 rounded-full bg-gold/15 flex items-center justify-center border-2 border-gold/40">
                       <motion.svg
                         className="w-10 h-10 text-gold"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" viewBox="0 0 24 24"
                         initial={{ pathLength: 0 }}
                         animate={{ pathLength: 1 }}
                         transition={{ duration: 0.6, delay: 0.3 }}
                       >
-                        <motion.path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2.5}
-                          d="M5 13l4 4L19 7"
-                        />
+                        <motion.path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                       </motion.svg>
                     </div>
                     <div className="text-center">
-                      <p className="font-heading font-black text-2xl text-white mb-2">
-                        {t('successTitle')}
-                      </p>
-                      <p className="text-white/50">{t('successText')}</p>
+                      <p className="font-heading font-black text-xl sm:text-2xl text-white mb-2">{t('successTitle')}</p>
+                      <p className="text-white/50 text-sm sm:text-base">{t('successText')}</p>
                     </div>
                   </motion.div>
                 ) : (
-                  /* Form */
                   <motion.form
                     key="form"
                     onSubmit={handleSubmit}
@@ -114,48 +100,22 @@ export default function Contact() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <label className={LABEL_CLASS}>{t('formName')}</label>
-                        <input
-                          type="text"
-                          required
-                          value={form.name}
-                          onChange={set('name')}
-                          placeholder="Иван Иванов"
-                          className={INPUT_CLASS}
-                        />
+                        <input type="text" required value={form.name} onChange={set('name')} placeholder="Иван Иванов" className={INPUT_CLASS} />
                       </div>
                       <div>
                         <label className={LABEL_CLASS}>{t('formCompany')}</label>
-                        <input
-                          type="text"
-                          value={form.company}
-                          onChange={set('company')}
-                          placeholder="ООО «Компания»"
-                          className={INPUT_CLASS}
-                        />
+                        <input type="text" value={form.company} onChange={set('company')} placeholder="ООО «Компания»" className={INPUT_CLASS} />
                       </div>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <label className={LABEL_CLASS}>{t('formPhone')}</label>
-                        <input
-                          type="tel"
-                          required
-                          value={form.phone}
-                          onChange={set('phone')}
-                          placeholder="+998 90 000-00-00"
-                          className={INPUT_CLASS}
-                        />
+                        <input type="tel" required value={form.phone} onChange={set('phone')} placeholder="+998 90 000-00-00" className={INPUT_CLASS} />
                       </div>
                       <div>
                         <label className={LABEL_CLASS}>{t('formExpo')}</label>
-                        <input
-                          type="text"
-                          value={form.expo}
-                          onChange={set('expo')}
-                          placeholder="UzBuild 2024"
-                          className={INPUT_CLASS}
-                        />
+                        <input type="text" value={form.expo} onChange={set('expo')} placeholder="UzBuild 2024" className={INPUT_CLASS} />
                       </div>
                     </div>
 
@@ -171,15 +131,13 @@ export default function Contact() {
                     </div>
 
                     {status === 'error' && (
-                      <p className="text-red-400 text-sm">
-                        Ошибка отправки. Пожалуйста, попробуйте ещё раз.
-                      </p>
+                      <p className="text-red-400 text-sm">Ошибка отправки. Пожалуйста, попробуйте ещё раз.</p>
                     )}
 
                     <button
                       type="submit"
                       disabled={status === 'loading'}
-                      className="w-full py-4 bg-gold text-navy font-bold text-sm rounded-xl hover:bg-gold-light transition-colors duration-200 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                      className="w-full py-4 bg-gold text-navy font-bold text-sm rounded-xl hover:bg-gold-light active:scale-[0.98] transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                     >
                       {status === 'loading' ? (
                         <>
@@ -189,9 +147,7 @@ export default function Contact() {
                           </svg>
                           Отправка...
                         </>
-                      ) : (
-                        t('formSubmit')
-                      )}
+                      ) : t('formSubmit')}
                     </button>
                   </motion.form>
                 )}
@@ -199,17 +155,15 @@ export default function Contact() {
             </div>
           </motion.div>
 
-          {/* ── Right: Contact info + map ──────────────────────────────── */}
+          {/* ── Contact info ─────────────────────────────────────────────── */}
           <motion.div
-            className="space-y-8"
+            className="space-y-5 sm:space-y-8"
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7, delay: 0.1 }}
           >
-            {/* Info cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* Phone */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <ContactInfoCard
                 icon={
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -218,11 +172,10 @@ export default function Contact() {
                 }
                 label="Телефоны"
               >
-                <a href="tel:+998712000000" className="block hover:text-gold transition-colors">{t('phone1')}</a>
-                <a href="tel:+998901234567" className="block hover:text-gold transition-colors">{t('phone2')}</a>
+                <a href="tel:+998712000000" className="block hover:text-gold transition-colors py-0.5">{t('phone1')}</a>
+                <a href="tel:+998901234567" className="block hover:text-gold transition-colors py-0.5">{t('phone2')}</a>
               </ContactInfoCard>
 
-              {/* Address */}
               <ContactInfoCard
                 icon={
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -235,7 +188,6 @@ export default function Contact() {
                 <span>{t('address')}</span>
               </ContactInfoCard>
 
-              {/* Hours */}
               <ContactInfoCard
                 icon={
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -247,7 +199,6 @@ export default function Contact() {
                 <span>{t('hours')}</span>
               </ContactInfoCard>
 
-              {/* WhatsApp */}
               <ContactInfoCard
                 icon={
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -268,8 +219,8 @@ export default function Contact() {
             </div>
 
             {/* Map placeholder */}
-            <div className="rounded-2xl overflow-hidden border border-white/10 bg-charcoal aspect-[16/9] flex items-center justify-center">
-              <div className="text-center">
+            <div className="rounded-2xl overflow-hidden border border-white/10 bg-charcoal aspect-[16/8] sm:aspect-[16/9] flex items-center justify-center">
+              <div className="text-center px-4">
                 <svg className="w-10 h-10 text-white/20 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
                 </svg>
@@ -278,14 +229,13 @@ export default function Contact() {
                   href="https://maps.google.com/?q=Tashkent+Amir+Temur+107B"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gold text-xs hover:underline mt-2 inline-block"
+                  className="text-gold text-xs hover:underline mt-2 inline-block py-1"
                 >
                   Открыть в Google Maps →
                 </a>
               </div>
             </div>
           </motion.div>
-
         </div>
       </div>
     </section>
@@ -294,8 +244,8 @@ export default function Contact() {
 
 function ContactInfoCard({ icon, label, children }) {
   return (
-    <div className="bg-charcoal rounded-xl p-5 border border-white/5">
-      <div className="flex items-center gap-2 mb-3">
+    <div className="bg-charcoal rounded-xl p-4 sm:p-5 border border-white/5">
+      <div className="flex items-center gap-2 mb-2.5 sm:mb-3">
         <span className="text-gold/60">{icon}</span>
         <span className="text-white/30 text-xs font-semibold uppercase tracking-wider">{label}</span>
       </div>

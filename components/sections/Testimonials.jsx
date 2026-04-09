@@ -1,10 +1,9 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// Star rating component
 function Stars({ rating }) {
   return (
     <div className="flex gap-0.5" aria-label={`${rating} из 5 звёзд`}>
@@ -22,105 +21,93 @@ function Stars({ rating }) {
   );
 }
 
-// Avatar initials fallback
 function Avatar({ name, avatar }) {
-  const initials = name
-    .split(' ')
-    .map((n) => n[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase();
+  const initials = name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase();
 
   if (avatar) {
     return (
       // eslint-disable-next-line @next/next/no-img-element
-      <img
-        src={avatar}
-        alt={name}
-        className="w-12 h-12 rounded-full object-cover border-2 border-gold/30"
-      />
+      <img src={avatar} alt={name} className="w-11 h-11 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-gold/30" />
     );
   }
 
   return (
-    <div className="w-12 h-12 rounded-full bg-gold/15 border-2 border-gold/30 flex items-center justify-center">
+    <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-gold/15 border-2 border-gold/30 flex items-center justify-center flex-shrink-0">
       <span className="font-heading font-black text-sm text-gold">{initials}</span>
     </div>
   );
 }
 
-// Single card
 function TestimonialCard({ item }) {
   return (
-    <div className="h-full flex flex-col bg-[#111827] border border-white/8 rounded-2xl p-6 md:p-8">
-      {/* Quote mark */}
-      <svg
-        className="w-8 h-8 text-gold/30 mb-4 flex-shrink-0"
-        fill="currentColor"
-        viewBox="0 0 24 24"
-      >
+    <div className="h-full flex flex-col bg-[#111827] border border-white/8 rounded-2xl p-5 sm:p-6 md:p-8">
+      <svg className="w-7 h-7 sm:w-8 sm:h-8 text-gold/30 mb-3 sm:mb-4 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
         <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
       </svg>
 
       <Stars rating={item.rating} />
 
-      <blockquote className="flex-1 text-white/70 text-sm leading-relaxed mt-4 mb-6 italic">
+      <blockquote className="flex-1 text-white/70 text-sm leading-relaxed mt-3 sm:mt-4 mb-4 sm:mb-6 italic">
         &ldquo;{item.quote}&rdquo;
       </blockquote>
 
-      <div className="flex items-center gap-3 pt-4 border-t border-white/8">
+      <div className="flex items-center gap-3 pt-3 sm:pt-4 border-t border-white/8">
         <Avatar name={item.name} avatar={item.avatar} />
-        <div>
-          <p className="font-semibold text-sm text-white">{item.name}</p>
-          <p className="text-white/40 text-xs">{item.position} · {item.company}</p>
+        <div className="min-w-0">
+          <p className="font-semibold text-sm text-white truncate">{item.name}</p>
+          <p className="text-white/40 text-xs truncate">{item.position} · {item.company}</p>
         </div>
       </div>
     </div>
   );
 }
 
-const SLIDE_INTERVAL = 5000; // ms
+const SLIDE_INTERVAL = 5000;
 
 export default function Testimonials({ testimonials }) {
   const t     = useTranslations('testimonials');
   const total = testimonials.length;
   const [active, setActive] = useState(0);
 
-  const next = useCallback(
-    () => setActive((a) => (a + 1) % total),
-    [total],
-  );
-
+  const next = useCallback(() => setActive((a) => (a + 1) % total), [total]);
   const prev = () => setActive((a) => (a - 1 + total) % total);
 
-  // Auto-rotate
   useEffect(() => {
     const id = setInterval(next, SLIDE_INTERVAL);
     return () => clearInterval(id);
   }, [next]);
 
-  // Show 3 cards centred on active (wrapping)
+  // Touch swipe support for mobile
+  const touchStartX = useRef(null);
+  const handleTouchStart = (e) => { touchStartX.current = e.touches[0].clientX; };
+  const handleTouchEnd = (e) => {
+    if (touchStartX.current === null) return;
+    const diff = touchStartX.current - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 40) diff > 0 ? next() : prev();
+    touchStartX.current = null;
+  };
+
   const visible = [-1, 0, 1].map((offset) => {
     const idx = (active + offset + total) % total;
     return { item: testimonials[idx], offset };
   });
 
   return (
-    <section className="py-24 md:py-32 bg-navy">
+    <section className="py-16 sm:py-24 md:py-32 bg-navy">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Heading */}
         <motion.div
-          className="text-center mb-14"
+          className="text-center mb-10 sm:mb-14"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="font-heading font-black text-3xl md:text-5xl mb-4 heading-accent-center">
+          <h2 className="font-heading font-black text-2xl sm:text-3xl md:text-5xl mb-3 sm:mb-4 heading-accent-center">
             {t('title')}
           </h2>
-          <p className="text-white/50 text-lg">{t('subtitle')}</p>
+          <p className="text-white/50 text-sm sm:text-lg">{t('subtitle')}</p>
         </motion.div>
 
         {/* Desktop: 3 cards */}
@@ -130,11 +117,7 @@ export default function Testimonials({ testimonials }) {
               <motion.div
                 key={`${item.name}-${offset}`}
                 initial={{ opacity: 0, y: 20 }}
-                animate={{
-                  opacity: offset === 0 ? 1 : 0.55,
-                  y: 0,
-                  scale: offset === 0 ? 1 : 0.97,
-                }}
+                animate={{ opacity: offset === 0 ? 1 : 0.55, y: 0, scale: offset === 0 ? 1 : 0.97 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.5 }}
               >
@@ -144,26 +127,32 @@ export default function Testimonials({ testimonials }) {
           </AnimatePresence>
         </div>
 
-        {/* Mobile: single card */}
-        <div className="lg:hidden mb-8">
+        {/* Mobile/tablet: single card with swipe */}
+        <div
+          className="lg:hidden mb-6 sm:mb-8"
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+        >
           <AnimatePresence mode="wait">
             <motion.div
               key={active}
-              initial={{ opacity: 0, x: 30 }}
+              initial={{ opacity: 0, x: 40 }}
               animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -30 }}
-              transition={{ duration: 0.4 }}
+              exit={{ opacity: 0, x: -40 }}
+              transition={{ duration: 0.35 }}
             >
               <TestimonialCard item={testimonials[active]} />
             </motion.div>
           </AnimatePresence>
+          {/* Swipe hint */}
+          <p className="text-center text-white/20 text-xs mt-3 tracking-wider">← проведите для переключения →</p>
         </div>
 
         {/* Controls */}
-        <div className="flex items-center justify-center gap-4">
+        <div className="flex items-center justify-center gap-4 sm:gap-5">
           <button
             onClick={prev}
-            className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-white/50 hover:border-gold hover:text-gold transition-colors"
+            className="w-11 h-11 sm:w-10 sm:h-10 rounded-full border border-white/10 flex items-center justify-center text-white/50 hover:border-gold hover:text-gold transition-colors"
             aria-label="Previous"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -171,14 +160,13 @@ export default function Testimonials({ testimonials }) {
             </svg>
           </button>
 
-          {/* Dot indicators */}
           <div className="flex gap-2">
             {testimonials.map((_, i) => (
               <button
                 key={i}
                 onClick={() => setActive(i)}
                 className={`transition-all duration-300 rounded-full ${
-                  i === active ? 'w-6 h-2 bg-gold' : 'w-2 h-2 bg-white/20'
+                  i === active ? 'w-6 h-2.5 bg-gold' : 'w-2.5 h-2.5 bg-white/20 hover:bg-white/40'
                 }`}
                 aria-label={`Отзыв ${i + 1}`}
               />
@@ -187,7 +175,7 @@ export default function Testimonials({ testimonials }) {
 
           <button
             onClick={next}
-            className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-white/50 hover:border-gold hover:text-gold transition-colors"
+            className="w-11 h-11 sm:w-10 sm:h-10 rounded-full border border-white/10 flex items-center justify-center text-white/50 hover:border-gold hover:text-gold transition-colors"
             aria-label="Next"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

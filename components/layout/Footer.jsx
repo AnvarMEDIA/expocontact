@@ -1,7 +1,6 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import Link from 'next/link';
 import Image from 'next/image';
 
 const LOGO_URL =
@@ -60,25 +59,25 @@ export default function Footer({ locale }) {
 
   return (
     <footer className="bg-charcoal border-t border-white/5">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 sm:pt-16 pb-6 sm:pb-8">
 
-        {/* ── Top row ──────────────────────────────────────────────────── */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mb-12">
+        {/* Top row */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 sm:gap-10 mb-8 sm:mb-12">
 
           {/* Brand */}
-          <div className="space-y-4">
+          <div className="flex flex-col items-center sm:items-start text-center sm:text-left gap-4">
             <Image
               src={LOGO_URL}
               alt="ExpoContact"
               width={160}
               height={40}
-              className="h-8 w-auto"
+              className="h-7 sm:h-8 w-auto"
               unoptimized
             />
             <p className="text-white/50 text-sm leading-relaxed max-w-xs">
               {tf('tagline')}
             </p>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2.5">
               {socialLinks.map(({ name, href, icon }) => (
                 <a
                   key={name}
@@ -86,7 +85,7 @@ export default function Footer({ locale }) {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={name}
-                  className="w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 text-white/50 hover:bg-gold/20 hover:text-gold transition-colors duration-200"
+                  className="w-10 h-10 flex items-center justify-center rounded-lg bg-white/5 text-white/50 hover:bg-gold/20 hover:text-gold transition-colors duration-200"
                 >
                   {icon}
                 </a>
@@ -94,18 +93,13 @@ export default function Footer({ locale }) {
             </div>
           </div>
 
-          {/* Navigation */}
-          <div>
-            <h4 className="text-sm font-bold text-white/30 uppercase tracking-widest mb-4">
-              Навигация
-            </h4>
+          {/* Navigation — hidden on mobile, shown sm+ */}
+          <div className="hidden sm:block">
+            <h4 className="text-xs font-bold text-white/30 uppercase tracking-widest mb-4">Навигация</h4>
             <ul className="space-y-2">
               {navLinks.map(({ href, labelKey }) => (
                 <li key={href}>
-                  <a
-                    href={href}
-                    className="text-white/50 hover:text-gold text-sm transition-colors"
-                  >
+                  <a href={href} className="text-white/50 hover:text-gold text-sm transition-colors">
                     {t(labelKey)}
                   </a>
                 </li>
@@ -115,17 +109,15 @@ export default function Footer({ locale }) {
 
           {/* Contact info */}
           <div>
-            <h4 className="text-sm font-bold text-white/30 uppercase tracking-widest mb-4">
-              Контакты
-            </h4>
-            <ul className="space-y-2 text-sm text-white/50">
+            <h4 className="text-xs font-bold text-white/30 uppercase tracking-widest mb-4 text-center sm:text-left">Контакты</h4>
+            <ul className="space-y-2 text-sm text-white/50 text-center sm:text-left">
               <li>
-                <a href="tel:+998712000000" className="hover:text-gold transition-colors">
+                <a href="tel:+998712000000" className="hover:text-gold transition-colors block py-0.5">
                   +998 71 200-00-00
                 </a>
               </li>
               <li>
-                <a href="tel:+998901234567" className="hover:text-gold transition-colors">
+                <a href="tel:+998901234567" className="hover:text-gold transition-colors block py-0.5">
                   +998 90 123-45-67
                 </a>
               </li>
@@ -135,10 +127,23 @@ export default function Footer({ locale }) {
           </div>
         </div>
 
-        {/* ── Bottom bar ───────────────────────────────────────────────── */}
-        <div className="border-t border-white/5 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-white/30">
-          <span>{tf('copyright')}</span>
-          <span>{tf('madeWith')}</span>
+        {/* Mobile nav — horizontal pill row */}
+        <div className="sm:hidden flex gap-3 overflow-x-auto pb-1 mb-5 border-t border-white/5 pt-5" style={{ scrollbarWidth: 'none' }}>
+          {navLinks.map(({ href, labelKey }) => (
+            <a
+              key={href}
+              href={href}
+              className="flex-shrink-0 text-white/40 hover:text-gold text-xs font-semibold transition-colors py-1"
+            >
+              {t(labelKey)}
+            </a>
+          ))}
+        </div>
+
+        {/* Bottom bar */}
+        <div className="border-t border-white/5 pt-5 sm:pt-6 flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-3 text-xs text-white/30">
+          <span className="text-center sm:text-left">{tf('copyright')}</span>
+          <span className="text-center sm:text-right">{tf('madeWith')}</span>
         </div>
       </div>
     </footer>

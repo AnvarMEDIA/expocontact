@@ -34,19 +34,17 @@ export default function Stats() {
   const items = t.raw('items');
 
   return (
-    <section id="about" className="relative py-24 md:py-32 overflow-hidden">
-      {/* Декоративная горизонтальная линия */}
+    <section id="about" className="relative py-16 md:py-24 lg:py-32 overflow-hidden">
+      {/* Decorative lines */}
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold/30 to-transparent" />
       <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-gold/20 to-transparent" />
-
-      {/* Фон секции */}
       <div className="absolute inset-0 bg-charcoal/60" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-        {/* Метка секции */}
+        {/* Section label */}
         <motion.p
-          className="text-center text-white/25 text-[10px] tracking-[0.4em] uppercase mb-14"
+          className="text-center text-white/25 text-[10px] tracking-[0.4em] uppercase mb-8 md:mb-14"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
@@ -55,7 +53,7 @@ export default function Stats() {
           {t('title')}
         </motion.p>
 
-        {/* Сетка статистики */}
+        {/* Stats grid */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-white/5 rounded-2xl overflow-hidden border border-white/5">
           {items.map((item, i) => (
             <motion.div
@@ -64,26 +62,28 @@ export default function Stats() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-40px' }}
               transition={{ delay: i * 0.1, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-              className="relative group bg-navy/80 hover:bg-charcoal transition-colors duration-500 p-8 md:p-10 flex flex-col items-center gap-3"
+              className="relative group bg-navy/80 hover:bg-charcoal transition-colors duration-500 p-4 sm:p-6 md:p-8 lg:p-10 flex flex-col items-center gap-2 md:gap-3"
             >
-              {/* Золотое число */}
-              <p className="font-heading font-black text-gradient-gold leading-none"
-                 style={{ fontSize: 'clamp(2.8rem, 6vw, 5rem)' }}>
+              {/* Gold number */}
+              <p
+                className="font-heading font-black text-gradient-gold leading-none"
+                style={{ fontSize: 'clamp(1.8rem, 6vw, 5rem)' }}
+              >
                 <AnimatedCounter value={item.value} suffix={item.suffix} />
               </p>
 
-              {/* Подпись */}
-              <p className="text-white/45 text-sm text-center font-medium leading-snug max-w-[120px]">
+              {/* Label */}
+              <p className="text-white/45 text-xs sm:text-sm text-center font-medium leading-snug max-w-[110px] sm:max-w-[140px]">
                 {item.label}
               </p>
 
-              {/* Золотая полоска снизу при hover */}
-              <div className="absolute bottom-0 left-8 right-8 h-0.5 bg-gradient-to-r from-transparent via-gold to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-500 rounded-full" />
+              {/* Hover gold line */}
+              <div className="absolute bottom-0 left-4 right-4 sm:left-8 sm:right-8 h-0.5 bg-gradient-to-r from-transparent via-gold to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-500 rounded-full" />
 
-              {/* Номер позиции */}
+              {/* Decorative position number — hidden on small mobile */}
               <span
-                className="absolute top-4 right-4 font-heading font-black text-white/5 select-none"
-                style={{ fontSize: 48 }}
+                className="absolute top-2 right-2 sm:top-4 sm:right-4 font-heading font-black text-white/5 select-none hidden sm:block"
+                style={{ fontSize: 40 }}
                 aria-hidden
               >
                 {String(i + 1).padStart(2, '0')}

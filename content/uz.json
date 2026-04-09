@@ -26,6 +26,8 @@
   "services": {
     "title":    "Bizning xizmatlar",
     "subtitle": "To'liq sikl — g'oyadan demontajgacha",
+    "label":    "Nima qilamiz",
+    "ctaLink":  "Loyihangizni muhokama qilish",
     "items": [
       {
         "id":    "design",
@@ -86,6 +88,7 @@
   "process": {
     "title":    "Qanday ishlashamiz",
     "subtitle": "Birinchi qo'ng'iroqdan oxirgi vintegacha — shaffof jarayon",
+    "label":    "Jarayonimiz",
     "steps": [
       {
         "number": "01",
