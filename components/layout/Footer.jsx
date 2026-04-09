@@ -2,6 +2,10 @@
 
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
+import Image from 'next/image';
+
+const LOGO_URL =
+  'https://static.tildacdn.one/tild3233-3438-4034-a138-316162306464/ExpoContact_-_Logo_W.png';
 
 const socialLinks = [
   {
@@ -63,9 +67,14 @@ export default function Footer({ locale }) {
 
           {/* Brand */}
           <div className="space-y-4">
-            <div className="font-heading text-2xl font-black">
-              EXPO<span className="text-gold">CONTACT</span>
-            </div>
+            <Image
+              src={LOGO_URL}
+              alt="ExpoContact"
+              width={160}
+              height={40}
+              className="h-8 w-auto"
+              unoptimized
+            />
             <p className="text-white/50 text-sm leading-relaxed max-w-xs">
               {tf('tagline')}
             </p>

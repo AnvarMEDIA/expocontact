@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Header       from '@/components/layout/Header';
 import Footer       from '@/components/layout/Footer';
 import Hero         from '@/components/sections/Hero';
@@ -12,34 +13,66 @@ import Testimonials from '@/components/sections/Testimonials';
 import FAQ          from '@/components/sections/FAQ';
 import Contact      from '@/components/sections/Contact';
 import FloatingCTA  from '@/components/ui/FloatingCTA';
+import Preloader    from '@/components/ui/Preloader';
+import AbstractBg   from '@/components/ui/AbstractBg';
 
-/**
- * Клиентская оболочка главной страницы.
- * Данные (projects, testimonials, clients) приходят пропсами от серверного page.js.
- */
 export default function HomePageClient({ locale, projects, testimonials, clients }) {
+  // Прелоадер: показываем один раз за сессию
+  const [showPreloader, setShowPreloader] = useState(false);
+  const [ready,         setReady]         = useState(false);
+
+  useEffect(() => {
+    const shown = sessionStorage.getItem('preloader_shown');
+    if (!shown) {
+      setShowPreloader(true);
+    } else {
+      setReady(true);
+    }
+  }, []);
+
+  const handlePreloaderDone = () => {
+    sessionStorage.setItem('preloader_shown', '1');
+    setShowPreloader(false);
+    setReady(true);
+  };
+
   const scrollToContact = () => {
     document.getElementById('contacts')?.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
-    <main className="min-h-screen bg-navy">
-      <Header locale={locale} onRequestQuote={scrollToContact} />
+    <>
+      {/* ── Прелоадер ────────────────────────────────────────────────────── */}
+      {showPreloader && <Preloader onComplete={handlePreloaderDone} />}
 
-      <Hero        onRequestQuote={scrollToContact} />
-      <Stats />
-      <Services />
-      <Portfolio   projects={projects} />
-      <Process />
-      <Clients     clients={clients} />
-      <Testimonials testimonials={testimonials} />
-      <FAQ />
-      <Contact />
+      {/* ── Абстрактный фон (фиксированный слой) ────────────────────────── */}
+      <AbstractBg />
 
-      <Footer locale={locale} />
+      {/* ── Основной контент ─────────────────────────────────────────────── */}
+      <main
+        className="relative z-10 min-h-screen bg-navy/0"
+        style={{
+          // Плавное появление после прелоадера
+          opacity:    ready ? 1 : 0,
+          transition: 'opacity 0.5s ease',
+        }}
+      >
+        <Header locale={locale} onRequestQuote={scrollToContact} />
 
-      {/* Плавающая кнопка — только мобильные */}
-      <FloatingCTA onClick={scrollToContact} />
-    </main>
+        <Hero         onRequestQuote={scrollToContact} />
+        <Stats />
+        <Services />
+        <Portfolio    projects={projects} />
+        <Process />
+        <Clients      clients={clients} />
+        <Testimonials testimonials={testimonials} />
+        <FAQ />
+        <Contact />
+
+        <Footer locale={locale} />
+
+        <FloatingCTA onClick={scrollToContact} />
+      </main>
+    </>
   );
 }
