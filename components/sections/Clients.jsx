@@ -64,16 +64,13 @@ export default function Clients({ clients }) {
       </div>
 
       {/* ── Infinite marquee track ─────────────────────────────────────── */}
-      <div
-        className="relative group"
-        // Pause animation on hover via CSS variable trick
-      >
+      <div className="clients-marquee-wrapper relative">
         {/* Fade masks on edges */}
         <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-24 z-10 bg-gradient-to-r from-charcoal to-transparent" />
         <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-24 z-10 bg-gradient-to-l from-charcoal to-transparent" />
 
         <div
-          className="flex gap-12 items-center w-max animate-marquee group-hover:pause-marquee"
+          className="flex gap-12 items-center w-max animate-marquee"
           style={{ '--marquee-duration': '35s' }}
         >
           {doubled.map((client, i) => (
@@ -101,9 +98,9 @@ export default function Clients({ clients }) {
         </div>
       </div>
 
-      {/* Pause-on-hover override via global style */}
-      <style jsx global>{`
-        .group:hover .animate-marquee {
+      {/* Pause-on-hover — injected as a regular style tag (no styled-jsx needed) */}
+      <style>{`
+        .clients-marquee-wrapper:hover .animate-marquee {
           animation-play-state: paused;
         }
       `}</style>

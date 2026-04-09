@@ -63,7 +63,7 @@ export default function Stats() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
           {items.map((item, i) => (
             <motion.div
-              key={i}
+              key={item.label}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-40px' }}

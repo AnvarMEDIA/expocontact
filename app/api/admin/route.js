@@ -6,7 +6,7 @@
  * Protected by ADMIN_PASSWORD env variable (default: "admin123" for dev).
  */
 import { NextResponse } from 'next/server';
-import fs from 'fs';
+import { promises as fs } from 'fs';
 import path from 'path';
 
 const DATA_DIR = path.join(process.cwd(), 'content', 'data');
@@ -16,17 +16,17 @@ function filePath(collection) {
   return path.join(DATA_DIR, `${collection}.json`);
 }
 
-function readCollection(collection) {
+async function readCollection(collection) {
   try {
-    const raw = fs.readFileSync(filePath(collection), 'utf8');
+    const raw = await fs.readFile(filePath(collection), 'utf8');
     return JSON.parse(raw);
   } catch {
     return [];
   }
 }
 
-function writeCollection(collection, data) {
-  fs.writeFileSync(filePath(collection), JSON.stringify(data, null, 2), 'utf8');
+async function writeCollection(collection, data) {
+  await fs.writeFile(filePath(collection), JSON.stringify(data, null, 2), 'utf8');
 }
 
 function checkAuth(request) {
@@ -49,7 +49,7 @@ export async function GET(request) {
     return NextResponse.json({ error: 'Unknown collection' }, { status: 400 });
   }
 
-  return NextResponse.json(readCollection(collection));
+  return NextResponse.json(await readCollection(collection));
 }
 
 // ── POST ─────────────────────────────────────────────────────────────────────
@@ -65,26 +65,26 @@ export async function POST(request) {
     return NextResponse.json({ error: 'Unknown collection' }, { status: 400 });
   }
 
-  const body   = await request.json();
+  const body             = await request.json();
   const { action, item, id } = body;
-  let   data   = readCollection(collection);
+  let   data             = await readCollection(collection);
 
   if (action === 'create') {
     const newItem = { ...item, id: Date.now().toString() };
     data.push(newItem);
-    writeCollection(collection, data);
+    await writeCollection(collection, data);
     return NextResponse.json(newItem);
   }
 
   if (action === 'update') {
     data = data.map((d) => (d.id === id ? { ...d, ...item, id } : d));
-    writeCollection(collection, data);
+    await writeCollection(collection, data);
     return NextResponse.json({ ok: true });
   }
 
   if (action === 'delete') {
     data = data.filter((d) => d.id !== id);
-    writeCollection(collection, data);
+    await writeCollection(collection, data);
     return NextResponse.json({ ok: true });
   }
 

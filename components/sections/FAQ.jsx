@@ -92,7 +92,7 @@ export default function FAQ() {
         <div className="space-y-3">
           {items.map((item, i) => (
             <AccordionItem
-              key={i}
+              key={item.q.slice(0, 30)}
               item={item}
               index={i}
               isOpen={openIndex === i}

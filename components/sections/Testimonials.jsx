@@ -128,7 +128,7 @@ export default function Testimonials({ testimonials }) {
           <AnimatePresence mode="popLayout">
             {visible.map(({ item, offset }) => (
               <motion.div
-                key={`${item.name}-${active}-${offset}`}
+                key={`${item.name}-${offset}`}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{
                   opacity: offset === 0 ? 1 : 0.55,
