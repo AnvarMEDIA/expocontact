@@ -1,0 +1,229 @@
+{
+  "nav": {
+    "about":     "About",
+    "services":  "Services",
+    "portfolio": "Portfolio",
+    "process":   "Process",
+    "contacts":  "Contacts",
+    "cta":       "Get a Quote"
+  },
+  "hero": {
+    "headline":    "Your stand — your first impression",
+    "subheadline": "We design and build exhibition stands in Uzbekistan and Central Asia",
+    "cta1":        "View Our Work",
+    "cta2":        "Get a Quote",
+    "badge":       "20 years · 5000+ projects · Central Asia"
+  },
+  "stats": {
+    "title": "ExpoContact in Numbers",
+    "items": [
+      { "value": 20,   "suffix": "+", "label": "years of experience" },
+      { "value": 5000, "suffix": "+", "label": "stands built" },
+      { "value": 50,   "suffix": "+", "label": "exhibitions per year" },
+      { "value": 3,    "suffix": "",  "label": "countries of presence" }
+    ]
+  },
+  "services": {
+    "title":    "Our Services",
+    "subtitle": "Full cycle — from concept to dismantling",
+    "items": [
+      {
+        "id":    "design",
+        "icon":  "PencilRuler",
+        "title": "Design & 3D Visualization",
+        "short": "Unique stand concepts with detailed 3D renders tailored to your brand",
+        "full":  "Our designers develop a stand concept considering your brand, participation goals, and budget. You receive full 3D visualizations and blueprints before production begins — no surprises at the exhibition."
+      },
+      {
+        "id":    "production",
+        "icon":  "Factory",
+        "title": "Stand Production",
+        "short": "We manufacture stands of any complexity at our own facility",
+        "full":  "Our 2000 m² production facility allows us to build stands from small modular structures to large two-story pavilions. We use European materials and modern equipment."
+      },
+      {
+        "id":    "mounting",
+        "icon":  "Wrench",
+        "title": "Installation & Dismantling",
+        "short": "Professional installation teams at every venue",
+        "full":  "Our installation teams work within the strict time constraints of exhibitions. We take full responsibility for assembly and dismantling — you simply approve the finished result."
+      },
+      {
+        "id":    "branding",
+        "icon":  "Palette",
+        "title": "Branding & Navigation",
+        "short": "Printing, banners, navigation elements and brand environments",
+        "full":  "We develop and produce all branding elements: large-format printing, roll-ups, lightboxes, navigation stands, branded furniture and accessories — all in a unified style."
+      },
+      {
+        "id":    "logistics",
+        "icon":  "Truck",
+        "title": "Logistics & Storage",
+        "short": "Delivery of structures throughout Central Asia and abroad",
+        "full":  "We organize delivery of the stand to the exhibition venue anywhere in Uzbekistan and abroad. We provide storage services for structures between exhibitions."
+      },
+      {
+        "id":    "support",
+        "icon":  "HeadphonesIcon",
+        "title": "On-Site Support",
+        "short": "Technical staff and project manager throughout the exhibition",
+        "full":  "A technical specialist is present at the stand throughout the entire exhibition. The project manager coordinates all matters so you can focus on negotiations."
+      }
+    ]
+  },
+  "portfolio": {
+    "title":       "Portfolio",
+    "subtitle":    "Over 5000 completed projects across Central Asia",
+    "filterAll":   "All",
+    "filterLarge": "Large",
+    "filterModular": "Modular",
+    "filterConference": "Conferences",
+    "filterInternational": "International",
+    "areaLabel":   "m²",
+    "viewProject": "View Project",
+    "close":       "Close"
+  },
+  "process": {
+    "title":    "How We Work",
+    "subtitle": "From the first call to the last bolt — a transparent process",
+    "steps": [
+      {
+        "number": "01",
+        "title":  "Brief",
+        "desc":   "We discuss participation goals, stand area, budget and design preferences. We get to know your brand and competitors."
+      },
+      {
+        "number": "02",
+        "title":  "3D Concept",
+        "desc":   "Designers create 2–3 concept options with detailed 3D visualizations and floor plans."
+      },
+      {
+        "number": "03",
+        "title":  "Approval",
+        "desc":   "We make revisions, approve the final design and budget. We sign the contract and begin production."
+      },
+      {
+        "number": "04",
+        "title":  "Production",
+        "desc":   "We manufacture all structural elements at our own facility. Photo reports at each stage."
+      },
+      {
+        "number": "05",
+        "title":  "Delivery",
+        "desc":   "We package and deliver the stand to the exhibition venue on exactly agreed terms."
+      },
+      {
+        "number": "06",
+        "title":  "Installation",
+        "desc":   "Professional crew assembles the stand. Final check of all elements before the exhibition opens."
+      },
+      {
+        "number": "07",
+        "title":  "Dismantling",
+        "desc":   "After the exhibition ends, we disassemble and remove structures. We offer storage until the next event."
+      }
+    ]
+  },
+  "clients": {
+    "title":    "Trusted by Market Leaders",
+    "subtitle": "Over 500 companies across Central Asia"
+  },
+  "testimonials": {
+    "title":    "What Clients Say",
+    "subtitle": "Real reviews from partners and clients",
+    "items": [
+      {
+        "name":    "Alisher Karimov",
+        "position": "Marketing Director",
+        "company": "UzTechExpo",
+        "rating":  5,
+        "quote":   "ExpoContact exceeded all expectations. The stand was ready strictly on time, the quality of execution was impeccable. Our stand was the most eye-catching at the exhibition. We're already ordering the next one!"
+      },
+      {
+        "name":    "Madina Yusupova",
+        "position": "Head of Sales",
+        "company": "Central Asia Trade",
+        "rating":  5,
+        "quote":   "We've worked with ExpoContact for 5 years. In that time, they've built more than 20 stands for us at different venues. A reliable partner with a professional team."
+      },
+      {
+        "name":    "Dmitry Petrenko",
+        "position": "General Director",
+        "company": "BuildMaster Tashkent",
+        "rating":  5,
+        "quote":   "We approached them for the first time for an exhibition in Moscow. The team organized everything turnkey — design, production, delivery and installation. No stress, just results."
+      },
+      {
+        "name":    "Nilufar Rashidova",
+        "position": "Brand Manager",
+        "company": "Silk Road Pharma",
+        "rating":  5,
+        "quote":   "Thanks to ExpoContact, our pharmaceutical stand looked truly premium. The team took into account all our wishes and delivered the work ahead of schedule."
+      },
+      {
+        "name":    "Akbar Ismailov",
+        "position": "Commercial Director",
+        "company": "AgroUz Export",
+        "rating":  4,
+        "quote":   "Fast, professional, within budget. Especially liked the high-quality 3D visualization — we saw the result before production even started."
+      }
+    ]
+  },
+  "faq": {
+    "title":    "Frequently Asked Questions",
+    "subtitle": "Answers to the most popular questions about our work",
+    "items": [
+      {
+        "q": "How much does an exhibition stand cost?",
+        "a": "The cost depends on area, construction complexity and materials used. A modular stand of 6 m² starts from $800. A custom stand of 18–36 m² — from $3,000. Two-story and exclusive structures are priced individually. We always offer several options to fit your budget."
+      },
+      {
+        "q": "How long does production take?",
+        "a": "Standard production time is 14–21 business days from design approval. For complex structures — up to 30 days. If necessary, we can organize accelerated production. We recommend contacting us 4–6 weeks before the exhibition."
+      },
+      {
+        "q": "Do you work outside Uzbekistan?",
+        "a": "Yes, we actively work in Kazakhstan, Kyrgyzstan, Tajikistan, and also travel to international exhibitions in Russia, UAE and Germany. We organize full logistics and have experience with customs clearance."
+      },
+      {
+        "q": "Can you help with design from scratch?",
+        "a": "Absolutely! Our designers will develop a concept from scratch based on your brief and brand guidelines. We'll offer 2–3 concept options and guide you through the entire approval process to final sign-off."
+      },
+      {
+        "q": "What materials do you use?",
+        "a": "We work with aluminum profile systems (Octanorm, Maxima), MDF, chipboard, acrylic, metal and glass. For finishing we use high-quality films, lacquers and paints. All materials are certified and meet exhibition venue requirements."
+      },
+      {
+        "q": "What does full-cycle support include?",
+        "a": "Full cycle includes: design and 3D visualization, manufacturing of all structural elements, branding and printing, delivery to the venue, installation and decoration, technical support during the exhibition, dismantling and removal of structures, storage at our warehouse."
+      },
+      {
+        "q": "How do we start working together?",
+        "a": "Fill out the form on our website or call us. A manager will contact you within an hour, clarify the details of your project and prepare a preliminary commercial offer. First consultation and concept development are free."
+      }
+    ]
+  },
+  "contact": {
+    "title":        "Contact Us",
+    "subtitle":     "Tell us about your project — we'll prepare a proposal within 24 hours",
+    "formName":     "Your Name",
+    "formCompany":  "Company",
+    "formPhone":    "Phone",
+    "formExpo":     "Exhibition Name",
+    "formMessage":  "Message (optional)",
+    "formSubmit":   "Send Request",
+    "successTitle": "Request Received!",
+    "successText":  "We will contact you within an hour",
+    "phone1":       "+998 71 200-00-00",
+    "phone2":       "+998 90 123-45-67",
+    "address":      "Tashkent, 107B Amir Temur Street",
+    "hours":        "Mon–Fri: 9:00–18:00",
+    "whatsapp":     "Message on WhatsApp",
+    "mapPlaceholder": "Map"
+  },
+  "footer": {
+    "tagline":    "Premium exhibition stands in Central Asia",
+    "copyright":  "© 2024 ExpoContact. All rights reserved.",
+    "madeWith":   "Made with ❤️ in Tashkent"
+  }
+}

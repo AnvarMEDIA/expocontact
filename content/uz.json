@@ -1,0 +1,229 @@
+{
+  "nav": {
+    "about":     "Biz haqimizda",
+    "services":  "Xizmatlar",
+    "portfolio": "Portfolio",
+    "process":   "Jarayon",
+    "contacts":  "Aloqa",
+    "cta":       "Ariza qoldirish"
+  },
+  "hero": {
+    "headline":    "Sizning stendingiz — birinchi taassurotingiz",
+    "subheadline": "O'zbekiston va Markaziy Osiyoda ko'rgazma stendlarini loyihalash va quramiz",
+    "cta1":        "Ishlarimizni ko'rish",
+    "cta2":        "Ariza qoldirish",
+    "badge":       "20 yil · 5000+ loyiha · Markaziy Osiyo"
+  },
+  "stats": {
+    "title": "ExpoContact raqamlarda",
+    "items": [
+      { "value": 20,   "suffix": "+", "label": "yillik tajriba" },
+      { "value": 5000, "suffix": "+", "label": "qurilgan stend" },
+      { "value": 50,   "suffix": "+", "label": "yiliga ko'rgazma" },
+      { "value": 3,    "suffix": "",  "label": "davlatda faoliyat" }
+    ]
+  },
+  "services": {
+    "title":    "Bizning xizmatlar",
+    "subtitle": "To'liq sikl — g'oyadan demontajgacha",
+    "items": [
+      {
+        "id":    "design",
+        "icon":  "PencilRuler",
+        "title": "Loyihalash va 3D vizualizatsiya",
+        "short": "Brendingizga moslashtirilgan noyob stend kontseptsiyalari",
+        "full":  "Dizaynerlarimiz brendingiz, ishtirok etish maqsadlari va byudjetingizni hisobga olgan holda stend kontseptsiyasini ishlab chiqadi. Ishlab chiqarish boshlanishidan oldin to'liq 3D vizualizatsiyalar va chizmalar olasiz."
+      },
+      {
+        "id":    "production",
+        "icon":  "Factory",
+        "title": "Stend ishlab chiqarish",
+        "short": "O'z ishlab chiqarishimizda har qanday murakkablikdagi stendlar",
+        "full":  "2000 m² ishlab chiqarish maydonimiz kichik modulli konstruksiyalardan tortib yirik ikki qavatli pavilyonlargacha stendlar qurishga imkon beradi. Evropa materiallari va zamonaviy uskunalardan foydalanamiz."
+      },
+      {
+        "id":    "mounting",
+        "icon":  "Wrench",
+        "title": "Montaj va demontaj",
+        "short": "Har bir maydonda professional montaj brigadasi",
+        "full":  "Montaj brigadalarimiz ko'rgazmalarning qat'iy vaqt chegaralarida ishlaydi. Montaj va demontaj uchun to'liq javobgarlikni o'z zimmamizga olamiz — siz tayyor ishni qabul qilasiz."
+      },
+      {
+        "id":    "branding",
+        "icon":  "Palette",
+        "title": "Brending va navigatsiya",
+        "short": "Chop etish, bannerlar, navigatsiya elementlari va brend muhiti",
+        "full":  "Brending elementlarini ishlab chiqamiz va ishlab chiqaramiz: keng formatli chop etish, roll-aplar, laytbokslar, navigatsiya stoykalar, brend mebellar va aksessuarlar — hammasi yagona uslubda."
+      },
+      {
+        "id":    "logistics",
+        "icon":  "Truck",
+        "title": "Logistika va saqlash",
+        "short": "Butun Markaziy Osiyo va xorijga konstruksiyalar yetkazib berish",
+        "full":  "Stendni O'zbekistondagi va xorijdagi istalgan ko'rgazma maydoni yetkazib berishni tashkil etamiz. Ko'rgazmalar orasida konstruksiyalarni saqlash uchun ombor xizmatlarini taqdim etamiz."
+      },
+      {
+        "id":    "support",
+        "icon":  "HeadphonesIcon",
+        "title": "Ko'rgazmada qo'llab-quvvatlash",
+        "short": "Ko'rgazma davomida texnik xodim va loyiha menejeri",
+        "full":  "Butun ko'rgazma davomida stendda texnik mutaxassis mavjud bo'ladi. Loyiha menejeri barcha masalalarni muvofiqlashtirar, siz muzokaralarga e'tibor qaratishingiz mumkin."
+      }
+    ]
+  },
+  "portfolio": {
+    "title":       "Portfolio",
+    "subtitle":    "Markaziy Osiyoda 5000 dan ortiq bajarilgan loyihalar",
+    "filterAll":   "Hammasi",
+    "filterLarge": "Yirik",
+    "filterModular": "Modulli",
+    "filterConference": "Konferensiyalar",
+    "filterInternational": "Xalqaro",
+    "areaLabel":   "m²",
+    "viewProject": "Loyihani ko'rish",
+    "close":       "Yopish"
+  },
+  "process": {
+    "title":    "Qanday ishlashamiz",
+    "subtitle": "Birinchi qo'ng'iroqdan oxirgi vintegacha — shaffof jarayon",
+    "steps": [
+      {
+        "number": "01",
+        "title":  "Brifing",
+        "desc":   "Ishtirok etish maqsadlari, stend maydoni, byudjet va dizayn istaklari muhokama qilinadi. Brendingiz va raqobatchilaringiz bilan tanishamiz."
+      },
+      {
+        "number": "02",
+        "title":  "3D kontseptsiya",
+        "desc":   "Dizaynerlar batafsil 3D vizualizatsiyalar va rejalash bilan 2–3 ta kontseptsiya varianti yaratadi."
+      },
+      {
+        "number": "03",
+        "title":  "Kelishuv",
+        "desc":   "Tuzatishlar kiritamiz, yakuniy dizayn va smeta tasdiqlaydi. Shartnoma imzolaydi va ishlab chiqarish boshlanadi."
+      },
+      {
+        "number": "04",
+        "title":  "Ishlab chiqarish",
+        "desc":   "Barcha konstruktiv elementlarni o'z ishlab chiqarishimizda tayyorlaymiz. Har bosqichda foto hisobot."
+      },
+      {
+        "number": "05",
+        "title":  "Yetkazib berish",
+        "desc":   "Stendni kelishilgan muddatlarda ko'rgazma maydoniga qadoqlaymiz va yetkazib beramiz."
+      },
+      {
+        "number": "06",
+        "title":  "Montaj",
+        "desc":   "Professional brigada stendni yig'adi. Ko'rgazma ochilishidan oldin barcha elementlarni yakuniy tekshirish."
+      },
+      {
+        "number": "07",
+        "title":  "Demontaj",
+        "desc":   "Ko'rgazma tugagach, konstruksiyalarni parchalab olib ketamiz. Keyingi tadbirgacha saqlashni taklif qilamiz."
+      }
+    ]
+  },
+  "clients": {
+    "title":    "Bozor liderlarimizga ishonishadi",
+    "subtitle": "Butun Markaziy Osiyoda 500 dan ortiq kompaniya"
+  },
+  "testimonials": {
+    "title":    "Mijozlar nima deydi",
+    "subtitle": "Hamkorlar va buyurtmachilarning haqiqiy sharhlari",
+    "items": [
+      {
+        "name":    "Alisher Karimov",
+        "position": "Marketing direktori",
+        "company": "UzTechExpo",
+        "rating":  5,
+        "quote":   "ExpoContact barcha kutilganlardan oshib ketdi. Stend belgilangan muddatda tayyor bo'ldi, bajarish sifati benuqson edi. Bizning stendimiz ko'rgazmadagi eng e'tiborli bo'ldi. Keyingisini allaqachon buyurtma berayapmiz!"
+      },
+      {
+        "name":    "Madina Yusupova",
+        "position": "Savdo bo'limi rahbari",
+        "company": "Central Asia Trade",
+        "rating":  5,
+        "quote":   "ExpoContact bilan 5 yildan beri ishlaymiz. Shu vaqt ichida ular bizga turli maydonchalarda 20 dan ortiq stend qurishdi. Professional jamoasi bilan ishonchli hamkor."
+      },
+      {
+        "name":    "Dmitriy Petrenko",
+        "position": "Bosh direktor",
+        "company": "BuildMaster Tashkent",
+        "rating":  5,
+        "quote":   "Moskvadagi ko'rgazma uchun birinchi marta murojaat qilgan edik. Jamoa hamma narsani kalit ostida tashkil qildi — dizayn, ishlab chiqarish, yetkazib berish va montaj. Asabsiz, faqat natija."
+      },
+      {
+        "name":    "Nilufar Rashidova",
+        "position": "Brend menejeri",
+        "company": "Silk Road Pharma",
+        "rating":  5,
+        "quote":   "ExpoContact tufayli farmatsevtik stendimiz chinakam premium ko'rindi. Jamoa barcha istaklarimizni hisobga oldi va ishni belgilangan muddatdan oldin topshirdi."
+      },
+      {
+        "name":    "Akbar Ismailov",
+        "position": "Tijorat direktori",
+        "company": "AgroUz Export",
+        "rating":  4,
+        "quote":   "Tez, professional, byudjet doirasida. Yuqori sifatli 3D vizualizatsiya ayniqsa yoqdi — ishlab chiqarish boshlanishidan oldin natijani ko'rdik."
+      }
+    ]
+  },
+  "faq": {
+    "title":    "Ko'p so'raladigan savollar",
+    "subtitle": "Ishimiz haqidagi eng mashhur savollarga javoblar",
+    "items": [
+      {
+        "q": "Ko'rgazma stendi qancha turadi?",
+        "a": "Narx maydonga, konstruksiya murakkabligiga va ishlatiladigan materiallarga bog'liq. 6 m² modulli stend 800 dollardan boshlanadi. 18–36 m² individual stend — 3000 dollardan. Ikki qavatli va eksklyuziv konstruksiyalar individual hisoblanadi. Biz har doim byudjetingizga mos bir necha variant taklif etamiz."
+      },
+      {
+        "q": "Ishlab chiqarish qancha vaqt oladi?",
+        "a": "Standart ishlab chiqarish muddati dizayn tasdiqlanganidan 14–21 ish kuni. Murakkab konstruksiyalar uchun — 30 kungacha. Kerak bo'lsa, tezlashtirilgan ishlab chiqarishni tashkil eta olamiz. Ko'rgazmadan 4–6 hafta oldin murojaat etishni tavsiya qilamiz."
+      },
+      {
+        "q": "O'zbekistondan tashqarida ishlaysizmi?",
+        "a": "Ha, Qozog'iston, Qirg'iziston, Tojikistonda faol ishlaymiz, shuningdek Rossiya, BAA va Germaniyada xalqaro ko'rgazmalarga chiqamiz. To'liq logistikani tashkil qilamiz va bojxona rasmiylashtiruv tajribasiga egamiz."
+      },
+      {
+        "q": "Noldan dizayn yaratishda yordam bera olasizmi?",
+        "a": "Albatta! Dizaynerlarimiz brifing va brend ko'rsatmalaringiz asosida noldan kontseptsiya ishlab chiqadi. 2–3 ta kontseptsiya varianti taklif qilamiz va yakuniy tasdiqlashgacha butun kelishuv jarayonida yo'naltiring."
+      },
+      {
+        "q": "Qanday materiallar ishlatasiz?",
+        "a": "Alyuminiy profil tizimlari (Octanorm, Maxima), MDF, LDSP, akril, metall va shisha bilan ishlaymiz. Qoplash uchun yuqori sifatli plyonkalar, laklar va bo'yoqlardan foydalanamiz. Barcha materiallar sertifikatlangan va ko'rgazma maydoni talablariga javob beradi."
+      },
+      {
+        "q": "To'liq qo'llab-quvvatlash sikliga nima kiradi?",
+        "a": "To'liq sikl quyidagilarni o'z ichiga oladi: dizayn va 3D vizualizatsiya, barcha konstruktiv elementlarni ishlab chiqarish, brending va chop etish, maydonga yetkazib berish, montaj va bezatish, ko'rgazma davomida texnik qo'llab-quvvatlash, konstruksiyalarni demontaj va olib ketish, omborimizda saqlash."
+      },
+      {
+        "q": "Hamkorlikni qanday boshlash mumkin?",
+        "a": "Saytimizda shaklni to'ldiring yoki bizga qo'ng'iroq qiling. Menejer bir soat ichida siz bilan bog'lanadi, loyihangizning tafsilotlarini aniqlashtiradi va dastlabki tijorat taklifini tayyorlaydi. Birinchi maslahat va kontseptsiya ishlab chiqish — bepul."
+      }
+    ]
+  },
+  "contact": {
+    "title":        "Biz bilan bog'laning",
+    "subtitle":     "Loyihangiz haqida aytib bering — 24 soat ichida taklif tayyorlaymiz",
+    "formName":     "Ismingiz",
+    "formCompany":  "Kompaniya",
+    "formPhone":    "Telefon",
+    "formExpo":     "Ko'rgazma nomi",
+    "formMessage":  "Xabar (ixtiyoriy)",
+    "formSubmit":   "Ariza yuborish",
+    "successTitle": "Ariza qabul qilindi!",
+    "successText":  "Bir soat ichida siz bilan bog'lanamiz",
+    "phone1":       "+998 71 200-00-00",
+    "phone2":       "+998 90 123-45-67",
+    "address":      "Toshkent sh., Amir Temur ko'chasi, 107B",
+    "hours":        "Du–Ju: 9:00–18:00",
+    "whatsapp":     "WhatsApp da yozish",
+    "mapPlaceholder": "Xarita"
+  },
+  "footer": {
+    "tagline":    "Markaziy Osiyoda premium ko'rgazma stendlari",
+    "copyright":  "© 2024 ExpoContact. Barcha huquqlar himoyalangan.",
+    "madeWith":   "Toshkentda ❤️ bilan yaratilgan"
+  }
+}

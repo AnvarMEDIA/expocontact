@@ -1,0 +1,14 @@
+[
+  { "id": "1", "name": "Silk Road Motors",      "logo": "/images/clients/client-1.svg", "website": "" },
+  { "id": "2", "name": "UzTextile Cluster",     "logo": "/images/clients/client-2.svg", "website": "" },
+  { "id": "3", "name": "Alif Bank",             "logo": "/images/clients/client-3.svg", "website": "" },
+  { "id": "4", "name": "AlmazPharm",            "logo": "/images/clients/client-4.svg", "website": "" },
+  { "id": "5", "name": "MaxWay",                "logo": "/images/clients/client-5.svg", "website": "" },
+  { "id": "6", "name": "UzFarm",                "logo": "/images/clients/client-6.svg", "website": "" },
+  { "id": "7", "name": "TashkentMed",           "logo": "/images/clients/client-7.svg", "website": "" },
+  { "id": "8", "name": "BuildUz",               "logo": "/images/clients/client-8.svg", "website": "" },
+  { "id": "9", "name": "Agromir",               "logo": "/images/clients/client-9.svg", "website": "" },
+  { "id": "10","name": "Perfectum Mobile",       "logo": "/images/clients/client-10.svg","website": "" },
+  { "id": "11","name": "UZ Tourism Committee",   "logo": "/images/clients/client-11.svg","website": "" },
+  { "id": "12","name": "MadInfo",                "logo": "/images/clients/client-12.svg","website": "" }
+]
