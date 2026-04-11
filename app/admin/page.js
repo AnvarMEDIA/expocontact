@@ -346,6 +346,7 @@ function ImageField({ value, onChange, label, maxW = 1200, maxH = 900 }) {
       {value && (
         <div className="mt-3 flex items-start gap-3">
           <div className="w-24 h-16 rounded-lg overflow-hidden border border-white/10 bg-white/5 flex-shrink-0">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={value} alt="preview" className="w-full h-full object-cover"
               onError={e => { e.target.style.display = 'none'; }} />
           </div>
@@ -508,6 +509,7 @@ function CollectionManager({ collection, toast }) {
                         {type === 'stars' ? (
                           <span><span className="text-[#D4A843]">{'★'.repeat(item[key]||0)}</span><span className="text-white/20">{'★'.repeat(5-(item[key]||0))}</span></span>
                         ) : type === 'image' && item[key] ? (
+                          // eslint-disable-next-line @next/next/no-img-element
                           <img src={item[key]} alt="" className="w-10 h-8 object-cover rounded" />
                         ) : (
                           <span className="truncate block">{String(item[key] ?? '')}</span>
