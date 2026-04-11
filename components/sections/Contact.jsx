@@ -172,8 +172,8 @@ export default function Contact() {
                 }
                 label={t('labelPhones')}
               >
-                <a href="tel:+998712000000" className="block hover:text-gold transition-colors py-0.5">{t('phone1')}</a>
-                <a href="tel:+998901234567" className="block hover:text-gold transition-colors py-0.5">{t('phone2')}</a>
+                <a href="tel:+998977111711" className="block hover:text-gold transition-colors py-0.5">{t('phone1')}</a>
+                <a href="tel:+998971317979" className="block hover:text-gold transition-colors py-0.5">{t('phone2')}</a>
               </ContactInfoCard>
 
               <ContactInfoCard

@@ -112,13 +112,13 @@ export default function Footer({ locale }) {
             <h4 className="text-xs font-bold text-white/30 uppercase tracking-widest mb-4 text-center sm:text-left">{tf('contactsTitle')}</h4>
             <ul className="space-y-2 text-sm text-white/50 text-center sm:text-left">
               <li>
-                <a href="tel:+998712000000" className="hover:text-gold transition-colors block py-0.5">
-                  +998 71 200-00-00
+                <a href="tel:+998977111711" className="hover:text-gold transition-colors block py-0.5">
+                  +998 97 711-17-11
                 </a>
               </li>
               <li>
-                <a href="tel:+998901234567" className="hover:text-gold transition-colors block py-0.5">
-                  +998 90 123-45-67
+                <a href="tel:+998971317979" className="hover:text-gold transition-colors block py-0.5">
+                  +998 97 131-79-79
                 </a>
               </li>
               <li className="mt-3">г. Ташкент, ул. Амира Темура, 107Б</li>

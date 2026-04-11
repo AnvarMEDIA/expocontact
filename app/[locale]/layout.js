@@ -110,7 +110,7 @@ export default async function LocaleLayout({ children, params }) {
               name:       'ExpoContact',
               description:'Проектирование и строительство выставочных стендов',
               url:        'https://expocontact.uz',
-              telephone:  '+998712000000',
+              telephone:  '+998977111711',
               address: {
                 '@type':           'PostalAddress',
                 streetAddress:     'ул. Амира Темура, 107Б',
