@@ -1,24 +1,20 @@
 'use client';
 
-/**
- * Simple CMS Admin Panel — /admin
- *
- * Features:
- *  - Password login (ADMIN_PASSWORD env var, default: "admin123")
- *  - CRUD for Portfolio, Testimonials, Clients
- *  - Saves to content/data/*.json via /api/admin
- *
- * Not included in i18n routing — accessible directly at /admin
- */
-
 import { useState, useEffect, useCallback } from 'react';
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
+// ── API helper ────────────────────────────────────────────────────────────────
 const API = '/api/admin';
 
-async function apiFetch(collection, options = {}) {
-  const token = sessionStorage.getItem('cms_token') || '';
-  const res   = await fetch(`${API}?collection=${collection}`, {
+function getToken() {
+  try { return sessionStorage.getItem('cms_token') || ''; } catch { return ''; }
+}
+
+async function apiFetch(collection, options = {}, locale = null) {
+  const token = getToken();
+  const url   = locale
+    ? `${API}?collection=${collection}&locale=${locale}`
+    : `${API}?collection=${collection}`;
+  const res = await fetch(url, {
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
     ...options,
   });
@@ -26,49 +22,103 @@ async function apiFetch(collection, options = {}) {
   return res.json();
 }
 
-// ─── Field configs per collection ────────────────────────────────────────────
+// ── Toast ─────────────────────────────────────────────────────────────────────
+function useToast() {
+  const [toasts, setToasts] = useState([]);
+  const toast = useCallback((msg, type = 'success') => {
+    const id = Date.now();
+    setToasts(t => [...t, { id, msg, type }]);
+    setTimeout(() => setToasts(t => t.filter(x => x.id !== id)), 3500);
+  }, []);
+  return { toasts, toast };
+}
+
+function ToastBar({ toasts }) {
+  if (!toasts.length) return null;
+  return (
+    <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none">
+      {toasts.map(({ id, msg, type }) => (
+        <div key={id} className={`px-5 py-3 rounded-xl text-sm font-bold shadow-2xl ${
+          type === 'error' ? 'bg-red-500 text-white' : 'bg-[#D4A843] text-[#0A0F1E]'
+        }`}>{msg}</div>
+      ))}
+    </div>
+  );
+}
+
+// ── Icons (inline SVG) ────────────────────────────────────────────────────────
+const IC = {
+  dashboard:    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1" strokeWidth="2"/><rect x="14" y="3" width="7" height="7" rx="1" strokeWidth="2"/><rect x="3" y="14" width="7" height="7" rx="1" strokeWidth="2"/><rect x="14" y="14" width="7" height="7" rx="1" strokeWidth="2"/></svg>,
+  portfolio:    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>,
+  testimonials: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>,
+  clients:      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>,
+  faq:          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>,
+  services:     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3" strokeWidth="2"/></svg>,
+  settings:     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>,
+  logout:       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>,
+  menu:         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"/></svg>,
+  plus:         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"/></svg>,
+  edit:         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>,
+  trash:        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>,
+  check:        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"/></svg>,
+  x:            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"/></svg>,
+  external:     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>,
+};
+
+// ── Nav config ────────────────────────────────────────────────────────────────
+const NAV = [
+  { key: 'dashboard',    label: 'Дашборд',    icon: IC.dashboard    },
+  { key: 'portfolio',    label: 'Портфолио',  icon: IC.portfolio    },
+  { key: 'testimonials', label: 'Отзывы',     icon: IC.testimonials },
+  { key: 'clients',      label: 'Клиенты',    icon: IC.clients      },
+  { key: 'faq',          label: 'FAQ',         icon: IC.faq          },
+  { key: 'services',     label: 'Услуги',     icon: IC.services     },
+  { key: 'settings',     label: 'Инструкция', icon: IC.settings     },
+];
+
+const SECTION_TITLES = {
+  dashboard: 'Дашборд', portfolio: 'Портфолио', testimonials: 'Отзывы клиентов',
+  clients: 'Клиенты', faq: 'FAQ — Частые вопросы', services: 'Тексты услуг',
+  settings: 'Инструкция и настройки',
+};
+
+// ── Schemas ───────────────────────────────────────────────────────────────────
 const SCHEMAS = {
   portfolio: [
-    { key: 'title',      label: 'Название',    type: 'text',     required: true  },
-    { key: 'client',     label: 'Клиент',      type: 'text',     required: true  },
-    { key: 'exhibition', label: 'Выставка',    type: 'text',     required: true  },
-    { key: 'area',       label: 'Площадь (м²)',type: 'number',   required: true  },
-    { key: 'year',       label: 'Год',         type: 'number',   required: true  },
-    {
-      key: 'category', label: 'Категория', type: 'select', required: true,
-      options: ['large', 'modular', 'conference', 'international'],
-    },
-    { key: 'description', label: 'Описание', type: 'textarea', required: false },
-    { key: 'mainImage',   label: 'Фото (URL)',  type: 'text',   required: false },
+    { key: 'title',       label: 'Название',     type: 'text',     required: true  },
+    { key: 'client',      label: 'Клиент',       type: 'text',     required: true  },
+    { key: 'exhibition',  label: 'Выставка',     type: 'text',     required: true  },
+    { key: 'area',        label: 'Площадь (м²)', type: 'number',   required: true  },
+    { key: 'year',        label: 'Год',          type: 'number',   required: true  },
+    { key: 'category',    label: 'Категория',    type: 'select',   required: true,
+      options: ['large', 'modular', 'conference', 'international'] },
+    { key: 'description', label: 'Описание',     type: 'textarea', required: false },
+    { key: 'mainImage',   label: 'Фото (URL)',   type: 'image',    required: false },
   ],
   testimonials: [
-    { key: 'name',     label: 'Имя',       type: 'text',     required: true  },
-    { key: 'position', label: 'Должность', type: 'text',     required: true  },
-    { key: 'company',  label: 'Компания',  type: 'text',     required: true  },
-    { key: 'rating',   label: 'Рейтинг',  type: 'number',   required: true  },
-    { key: 'quote',    label: 'Отзыв',    type: 'textarea', required: true  },
-    { key: 'avatar',   label: 'Аватар (URL)', type: 'text', required: false },
+    { key: 'name',     label: 'Имя',          type: 'text',     required: true  },
+    { key: 'position', label: 'Должность',    type: 'text',     required: true  },
+    { key: 'company',  label: 'Компания',     type: 'text',     required: true  },
+    { key: 'rating',   label: 'Рейтинг',     type: 'stars',    required: true  },
+    { key: 'quote',    label: 'Отзыв',       type: 'textarea', required: true  },
+    { key: 'avatar',   label: 'Аватар (URL)', type: 'image',    required: false },
   ],
   clients: [
-    { key: 'name',    label: 'Название',    type: 'text', required: true  },
-    { key: 'logo',    label: 'Лого (URL)',  type: 'text', required: false },
-    { key: 'website', label: 'Сайт (URL)', type: 'text', required: false },
+    { key: 'name',    label: 'Название',    type: 'text',  required: true  },
+    { key: 'logo',    label: 'Лого (URL)',  type: 'image', required: false },
+    { key: 'website', label: 'Сайт (URL)', type: 'text',  required: false },
   ],
 };
 
-const TABS = [
-  { key: 'portfolio',    label: '📁 Портфолио' },
-  { key: 'testimonials', label: '💬 Отзывы'    },
-  { key: 'clients',      label: '🏢 Клиенты'   },
-];
-
-// ─── Login screen ─────────────────────────────────────────────────────────────
+// ── LoginScreen ───────────────────────────────────────────────────────────────
 function LoginScreen({ onLogin }) {
-  const [pw, setPw]  = useState('');
-  const [err, setErr] = useState('');
+  const [pw, setPw]       = useState('');
+  const [err, setErr]     = useState('');
+  const [loading, setLoading] = useState(false);
 
   const submit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     sessionStorage.setItem('cms_token', pw);
     try {
       await apiFetch('portfolio');
@@ -76,256 +126,225 @@ function LoginScreen({ onLogin }) {
     } catch {
       setErr('Неверный пароль');
       sessionStorage.removeItem('cms_token');
-    }
+    } finally { setLoading(false); }
   };
 
   return (
-    <div className="min-h-screen bg-[#0A0F1E] flex items-center justify-center">
+    <div className="min-h-screen bg-[#0A0F1E] flex items-center justify-center p-4">
       <div className="bg-[#141929] rounded-2xl p-8 w-full max-w-sm border border-white/10 shadow-2xl">
         <div className="mb-8 text-center">
-          <span className="font-black text-2xl text-white">
-            EXPO<span className="text-[#D4A843]">CONTACT</span>
-          </span>
-          <p className="text-white/40 text-sm mt-2">CMS Admin Panel</p>
+          <div className="w-12 h-12 rounded-xl bg-[#D4A843]/20 flex items-center justify-center mx-auto mb-4">
+            <span className="text-[#D4A843] text-xl font-black">E</span>
+          </div>
+          <p className="font-black text-xl text-white">EXPO<span className="text-[#D4A843]">CONTACT</span></p>
+          <p className="text-white/40 text-sm mt-1">CMS Admin Panel</p>
         </div>
-
         <form onSubmit={submit} className="space-y-4">
           <div>
-            <label className="block text-xs text-white/50 mb-1.5 font-semibold uppercase tracking-wider">
-              Пароль
-            </label>
-            <input
-              type="password"
-              value={pw}
-              onChange={(e) => setPw(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-white/20 focus:outline-none focus:border-[#D4A843] transition-colors"
-              placeholder="••••••••"
-              autoFocus
-            />
-            {err && <p className="text-red-400 text-xs mt-1">{err}</p>}
+            <label className="block text-xs text-white/50 mb-1.5 font-semibold uppercase tracking-wider">Пароль</label>
+            <input type="password" value={pw} onChange={e => { setPw(e.target.value); setErr(''); }}
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/20 focus:outline-none focus:border-[#D4A843] transition-colors"
+              placeholder="••••••••" autoFocus />
+            {err && <p className="text-red-400 text-xs mt-1.5">{err}</p>}
           </div>
-          <button
-            type="submit"
-            className="w-full bg-[#D4A843] text-[#0A0F1E] font-bold py-3 rounded-lg hover:bg-[#E8C06E] transition-colors"
-          >
-            Войти
+          <button type="submit" disabled={loading || !pw}
+            className="w-full bg-[#D4A843] text-[#0A0F1E] font-bold py-3 rounded-xl hover:bg-[#E8C06E] transition-colors disabled:opacity-50">
+            {loading ? 'Проверка...' : 'Войти'}
           </button>
         </form>
-
         <p className="text-white/20 text-xs text-center mt-6">
-          Пароль по умолчанию: <code className="text-[#D4A843]">admin123</code>
-          <br />Измените через ADMIN_PASSWORD в .env
+          Пароль по умолчанию: <code className="text-[#D4A843]">admin123</code><br />
+          Измените через <code className="text-white/40">ADMIN_PASSWORD</code> в .env
         </p>
       </div>
     </div>
   );
 }
 
-// ─── Item form (create / edit) ────────────────────────────────────────────────
+// ── ImageField ────────────────────────────────────────────────────────────────
+function ImageField({ value, onChange, label }) {
+  return (
+    <div>
+      <label className="block text-xs text-white/50 mb-1.5 font-semibold uppercase tracking-wider">{label}</label>
+      <input type="text" value={value} onChange={e => onChange(e.target.value)} placeholder="https://..."
+        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-white/20 focus:outline-none focus:border-[#D4A843] transition-colors" />
+      {value && (
+        <div className="mt-2 w-20 h-14 rounded-lg overflow-hidden border border-white/10 bg-white/5">
+          <img src={value} alt="" className="w-full h-full object-cover"
+            onError={e => { e.target.style.display = 'none'; }} />
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── StarInput ─────────────────────────────────────────────────────────────────
+function StarInput({ value, onChange }) {
+  const [hover, setHover] = useState(0);
+  return (
+    <div className="flex items-center gap-1">
+      {[1,2,3,4,5].map(n => (
+        <button key={n} type="button" onClick={() => onChange(n)}
+          onMouseEnter={() => setHover(n)} onMouseLeave={() => setHover(0)}
+          className="text-2xl transition-transform hover:scale-110">
+          <span className={(hover || value) >= n ? 'text-[#D4A843]' : 'text-white/20'}>★</span>
+        </button>
+      ))}
+      <span className="text-white/40 text-sm ml-2">{value}/5</span>
+    </div>
+  );
+}
+
+// ── ItemForm ──────────────────────────────────────────────────────────────────
 function ItemForm({ schema, initial = {}, onSave, onCancel }) {
   const [form, setForm] = useState(() => {
-    const defaults = {};
+    const d = {};
     schema.forEach(({ key, type }) => {
-      defaults[key] = initial[key] ?? (type === 'number' ? '' : '');
+      d[key] = initial[key] ?? (type === 'stars' ? 5 : type === 'number' ? '' : '');
     });
-    return defaults;
+    return d;
   });
-
-  const set = (key, val) => setForm((f) => ({ ...f, [key]: val }));
+  const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
 
   return (
-    <div className="bg-[#0a0f1e] border border-white/10 rounded-xl p-6 space-y-4">
+    <div className="bg-[#0d1220] border border-white/10 rounded-xl p-5 space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {schema.map(({ key, label, type, options, required }) => (
-          <div key={key} className={type === 'textarea' ? 'md:col-span-2' : ''}>
-            <label className="block text-xs text-white/50 mb-1.5 font-semibold uppercase tracking-wider">
-              {label}{required && <span className="text-[#D4A843]"> *</span>}
-            </label>
-
-            {type === 'textarea' ? (
-              <textarea
-                value={form[key]}
-                onChange={(e) => set(key, e.target.value)}
-                rows={3}
-                className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-sm placeholder-white/20 focus:outline-none focus:border-[#D4A843] transition-colors resize-none"
-              />
-            ) : type === 'select' ? (
-              <select
-                value={form[key]}
-                onChange={(e) => set(key, e.target.value)}
-                className="w-full bg-[#141929] border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:outline-none focus:border-[#D4A843] transition-colors"
-              >
-                <option value="">— выберите —</option>
-                {options.map((o) => (
-                  <option key={o} value={o}>{o}</option>
-                ))}
-              </select>
-            ) : (
-              <input
-                type={type}
-                value={form[key]}
-                onChange={(e) => set(key, e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-sm placeholder-white/20 focus:outline-none focus:border-[#D4A843] transition-colors"
-              />
-            )}
-          </div>
-        ))}
+        {schema.map(({ key, label, type, options, required }) => {
+          const wide = type === 'textarea' || type === 'image';
+          return (
+            <div key={key} className={wide ? 'md:col-span-2' : ''}>
+              {type === 'image' ? (
+                <ImageField value={form[key]} onChange={v => set(key, v)} label={label + (required ? ' *' : '')} />
+              ) : type === 'stars' ? (
+                <div>
+                  <label className="block text-xs text-white/50 mb-2 font-semibold uppercase tracking-wider">{label}{required && <span className="text-[#D4A843]"> *</span>}</label>
+                  <StarInput value={Number(form[key])} onChange={v => set(key, v)} />
+                </div>
+              ) : type === 'textarea' ? (
+                <div>
+                  <label className="block text-xs text-white/50 mb-1.5 font-semibold uppercase tracking-wider">{label}{required && <span className="text-[#D4A843]"> *</span>}</label>
+                  <textarea value={form[key]} onChange={e => set(key, e.target.value)} rows={3}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#D4A843] transition-colors resize-none" />
+                </div>
+              ) : type === 'select' ? (
+                <div>
+                  <label className="block text-xs text-white/50 mb-1.5 font-semibold uppercase tracking-wider">{label}{required && <span className="text-[#D4A843]"> *</span>}</label>
+                  <select value={form[key]} onChange={e => set(key, e.target.value)}
+                    className="w-full bg-[#141929] border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#D4A843] transition-colors">
+                    <option value="">— выберите —</option>
+                    {options.map(o => <option key={o} value={o}>{o}</option>)}
+                  </select>
+                </div>
+              ) : (
+                <div>
+                  <label className="block text-xs text-white/50 mb-1.5 font-semibold uppercase tracking-wider">{label}{required && <span className="text-[#D4A843]"> *</span>}</label>
+                  <input type={type} value={form[key]} onChange={e => set(key, e.target.value)}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#D4A843] transition-colors" />
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
-
-      <div className="flex gap-3 pt-2">
-        <button
-          onClick={() => onSave(form)}
-          className="px-6 py-2.5 bg-[#D4A843] text-[#0A0F1E] font-bold rounded-lg hover:bg-[#E8C06E] transition-colors text-sm"
-        >
-          Сохранить
-        </button>
-        <button
-          onClick={onCancel}
-          className="px-6 py-2.5 bg-white/5 text-white/60 rounded-lg hover:bg-white/10 transition-colors text-sm"
-        >
-          Отмена
-        </button>
+      <div className="flex gap-3 pt-1">
+        <button onClick={() => onSave(form)} className="flex items-center gap-2 px-5 py-2.5 bg-[#D4A843] text-[#0A0F1E] font-bold rounded-xl hover:bg-[#E8C06E] transition-colors text-sm">{IC.check} Сохранить</button>
+        <button onClick={onCancel} className="flex items-center gap-2 px-5 py-2.5 bg-white/5 text-white/60 rounded-xl hover:bg-white/10 transition-colors text-sm">{IC.x} Отмена</button>
       </div>
     </div>
   );
 }
 
-// ─── Collection manager ───────────────────────────────────────────────────────
-function CollectionManager({ collection }) {
-  const schema              = SCHEMAS[collection];
-  const [items, setItems]   = useState([]);
+// ── CollectionManager ─────────────────────────────────────────────────────────
+function CollectionManager({ collection, toast }) {
+  const schema = SCHEMAS[collection];
+  const [items, setItems]     = useState([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
   const [editingId, setEditingId] = useState(null);
-  const [msg, setMsg]       = useState('');
 
   const load = useCallback(async () => {
     setLoading(true);
-    try {
-      const data = await apiFetch(collection);
-      setItems(Array.isArray(data) ? data : []);
-    } finally {
-      setLoading(false);
-    }
+    try { setItems((await apiFetch(collection)) || []); }
+    finally { setLoading(false); }
   }, [collection]);
 
   useEffect(() => { load(); }, [load]);
 
-  const flash = (text) => { setMsg(text); setTimeout(() => setMsg(''), 3000); };
-
   const handleCreate = async (form) => {
-    await apiFetch(collection, {
-      method: 'POST',
-      body: JSON.stringify({ action: 'create', item: form }),
-    });
-    setCreating(false);
-    flash('Создано ✓');
-    load();
+    await apiFetch(collection, { method: 'POST', body: JSON.stringify({ action: 'create', item: form }) });
+    setCreating(false); toast('Запись создана'); load();
   };
-
   const handleUpdate = async (id, form) => {
-    await apiFetch(collection, {
-      method: 'POST',
-      body: JSON.stringify({ action: 'update', id, item: form }),
-    });
-    setEditingId(null);
-    flash('Сохранено ✓');
-    load();
+    await apiFetch(collection, { method: 'POST', body: JSON.stringify({ action: 'update', id, item: form }) });
+    setEditingId(null); toast('Изменения сохранены'); load();
   };
-
   const handleDelete = async (id) => {
     if (!confirm('Удалить запись?')) return;
-    await apiFetch(collection, {
-      method: 'POST',
-      body: JSON.stringify({ action: 'delete', id }),
-    });
-    flash('Удалено ✓');
-    load();
+    await apiFetch(collection, { method: 'POST', body: JSON.stringify({ action: 'delete', id }) });
+    toast('Удалено'); load();
   };
 
-  // Derive display columns from schema (first 3 fields)
   const cols = schema.slice(0, 3);
 
   return (
-    <div className="space-y-4">
-      {/* Toolbar */}
+    <div className="space-y-5">
       <div className="flex items-center justify-between">
-        <p className="text-white/40 text-sm">{items.length} записей</p>
-        <div className="flex items-center gap-3">
-          {msg && <span className="text-[#D4A843] text-sm">{msg}</span>}
-          {!creating && (
-            <button
-              onClick={() => setCreating(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-[#D4A843] text-[#0A0F1E] font-bold rounded-lg hover:bg-[#E8C06E] transition-colors text-sm"
-            >
-              + Добавить
-            </button>
-          )}
-        </div>
+        <p className="text-white/40 text-sm">{loading ? '...' : `${items.length} записей`}</p>
+        {!creating && (
+          <button onClick={() => { setCreating(true); setEditingId(null); }}
+            className="flex items-center gap-2 px-4 py-2 bg-[#D4A843] text-[#0A0F1E] font-bold rounded-xl hover:bg-[#E8C06E] transition-colors text-sm">
+            {IC.plus} Добавить
+          </button>
+        )}
       </div>
 
-      {/* Create form */}
-      {creating && (
-        <ItemForm
-          schema={schema}
-          onSave={handleCreate}
-          onCancel={() => setCreating(false)}
-        />
-      )}
+      {creating && <ItemForm schema={schema} onSave={handleCreate} onCancel={() => setCreating(false)} />}
 
-      {/* Items table */}
       {loading ? (
-        <p className="text-white/30 text-sm py-8 text-center">Загрузка...</p>
+        <p className="text-white/30 text-sm py-12 text-center">Загрузка...</p>
       ) : items.length === 0 ? (
-        <p className="text-white/20 text-sm py-8 text-center">Нет записей. Добавьте первую!</p>
+        <p className="text-white/20 text-sm py-12 text-center">Нет записей. Добавьте первую!</p>
       ) : (
         <div className="overflow-x-auto rounded-xl border border-white/10">
-          <table className="w-full text-sm">
+          <table className="w-full text-sm min-w-[480px]">
             <thead>
-              <tr className="border-b border-white/10 bg-white/3">
+              <tr className="border-b border-white/10 bg-white/[0.03]">
                 {cols.map(({ key, label }) => (
-                  <th key={key} className="text-left px-4 py-3 text-white/40 font-semibold text-xs uppercase tracking-wider">
-                    {label}
-                  </th>
+                  <th key={key} className="text-left px-4 py-3 text-white/40 font-semibold text-xs uppercase tracking-wider">{label}</th>
                 ))}
-                <th className="px-4 py-3" />
+                <th className="px-4 py-3 text-right text-white/40 font-semibold text-xs uppercase tracking-wider">Действия</th>
               </tr>
             </thead>
             <tbody>
-              {items.map((item) => (
+              {items.map(item => (
                 <>
-                  <tr key={item.id} className="border-b border-white/5 hover:bg-white/3 transition-colors">
-                    {cols.map(({ key }) => (
-                      <td key={key} className="px-4 py-3 text-white/70 truncate max-w-xs">
-                        {String(item[key] ?? '')}
+                  <tr key={item.id} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
+                    {cols.map(({ key, type }) => (
+                      <td key={key} className="px-4 py-3 text-white/70 max-w-[180px]">
+                        {type === 'stars' ? (
+                          <span><span className="text-[#D4A843]">{'★'.repeat(item[key]||0)}</span><span className="text-white/20">{'★'.repeat(5-(item[key]||0))}</span></span>
+                        ) : type === 'image' && item[key] ? (
+                          <img src={item[key]} alt="" className="w-10 h-8 object-cover rounded" />
+                        ) : (
+                          <span className="truncate block">{String(item[key] ?? '')}</span>
+                        )}
                       </td>
                     ))}
                     <td className="px-4 py-3">
-                      <div className="flex items-center gap-2 justify-end">
-                        <button
-                          onClick={() => setEditingId(editingId === item.id ? null : item.id)}
-                          className="px-3 py-1.5 bg-white/5 text-white/60 rounded hover:bg-white/10 transition-colors"
-                        >
-                          Изменить
-                        </button>
-                        <button
-                          onClick={() => handleDelete(item.id)}
-                          className="px-3 py-1.5 bg-red-500/10 text-red-400 rounded hover:bg-red-500/20 transition-colors"
-                        >
-                          Удалить
-                        </button>
+                      <div className="flex items-center gap-1.5 justify-end">
+                        <button onClick={() => { setEditingId(editingId === item.id ? null : item.id); setCreating(false); }}
+                          className="p-2 bg-white/5 text-white/60 rounded-lg hover:bg-white/10 hover:text-white transition-colors">{IC.edit}</button>
+                        <button onClick={() => handleDelete(item.id)}
+                          className="p-2 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500/20 transition-colors">{IC.trash}</button>
                       </div>
                     </td>
                   </tr>
                   {editingId === item.id && (
-                    <tr key={`edit-${item.id}`} className="bg-white/2">
-                      <td colSpan={cols.length + 1} className="px-4 py-4">
-                        <ItemForm
-                          schema={schema}
-                          initial={item}
-                          onSave={(form) => handleUpdate(item.id, form)}
-                          onCancel={() => setEditingId(null)}
-                        />
+                    <tr key={`e-${item.id}`}>
+                      <td colSpan={cols.length + 1} className="px-4 py-4 bg-white/[0.02]">
+                        <ItemForm schema={schema} initial={item}
+                          onSave={form => handleUpdate(item.id, form)}
+                          onCancel={() => setEditingId(null)} />
                       </td>
                     </tr>
                   )}
@@ -339,72 +358,371 @@ function CollectionManager({ collection }) {
   );
 }
 
-// ─── Main Admin App ───────────────────────────────────────────────────────────
-export default function AdminPage() {
-  const [authed, setAuthed]   = useState(false);
-  const [tab, setTab]         = useState('portfolio');
+// ── LocaleTabs ────────────────────────────────────────────────────────────────
+function LocaleTabs({ active, onChange }) {
+  return (
+    <div className="flex gap-2">
+      {['ru', 'en', 'uz'].map(l => (
+        <button key={l} onClick={() => onChange(l)}
+          className={`px-4 py-1.5 rounded-lg text-sm font-bold transition-colors ${active === l ? 'bg-[#D4A843] text-[#0A0F1E]' : 'bg-white/5 text-white/50 hover:bg-white/10'}`}>
+          {l.toUpperCase()}
+        </button>
+      ))}
+    </div>
+  );
+}
 
-  // Check if already logged in
+// ── FaqManager ────────────────────────────────────────────────────────────────
+function FaqManager({ toast }) {
+  const [locale, setLocale]     = useState('ru');
+  const [items, setItems]       = useState([]);
+  const [loading, setLoading]   = useState(true);
+  const [creating, setCreating] = useState(false);
+  const [editIdx, setEditIdx]   = useState(null);
+  const [form, setForm]         = useState({ q: '', a: '' });
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try { setItems((await apiFetch('faq', {}, locale)) || []); }
+    finally { setLoading(false); }
+  }, [locale]);
+
+  useEffect(() => { load(); }, [load]);
+
+  const reset = () => setForm({ q: '', a: '' });
+
+  const handleCreate = async () => {
+    if (!form.q || !form.a) { toast('Заполните вопрос и ответ', 'error'); return; }
+    await apiFetch('faq', { method: 'POST', body: JSON.stringify({ action: 'create', item: form }) }, locale);
+    setCreating(false); reset(); toast('Вопрос добавлен'); load();
+  };
+  const handleUpdate = async (idx) => {
+    await apiFetch('faq', { method: 'POST', body: JSON.stringify({ action: 'update', id: String(idx), item: form }) }, locale);
+    setEditIdx(null); reset(); toast('Сохранено'); load();
+  };
+  const handleDelete = async (idx) => {
+    if (!confirm('Удалить вопрос?')) return;
+    await apiFetch('faq', { method: 'POST', body: JSON.stringify({ action: 'delete', id: String(idx) }) }, locale);
+    toast('Удалено'); load();
+  };
+
+  const FaqForm = ({ onSave, onCancel }) => (
+    <div className="bg-[#0d1220] border border-white/10 rounded-xl p-5 space-y-4">
+      <div>
+        <label className="block text-xs text-white/50 mb-1.5 font-semibold uppercase tracking-wider">Вопрос *</label>
+        <input type="text" value={form.q} onChange={e => setForm(f => ({ ...f, q: e.target.value }))}
+          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#D4A843] transition-colors" placeholder="Введите вопрос..." />
+      </div>
+      <div>
+        <label className="block text-xs text-white/50 mb-1.5 font-semibold uppercase tracking-wider">Ответ *</label>
+        <textarea value={form.a} onChange={e => setForm(f => ({ ...f, a: e.target.value }))} rows={4}
+          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#D4A843] transition-colors resize-none" placeholder="Введите ответ..." />
+      </div>
+      <div className="flex gap-3">
+        <button onClick={onSave} className="flex items-center gap-2 px-5 py-2.5 bg-[#D4A843] text-[#0A0F1E] font-bold rounded-xl hover:bg-[#E8C06E] transition-colors text-sm">{IC.check} Сохранить</button>
+        <button onClick={onCancel} className="flex items-center gap-2 px-5 py-2.5 bg-white/5 text-white/60 rounded-xl hover:bg-white/10 transition-colors text-sm">{IC.x} Отмена</button>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="space-y-5">
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
+          <LocaleTabs active={locale} onChange={l => { setLocale(l); setCreating(false); setEditIdx(null); }} />
+          <span className="text-white/20 text-sm">{loading ? '...' : `${items.length} вопросов`}</span>
+        </div>
+        {!creating && editIdx === null && (
+          <button onClick={() => { setCreating(true); reset(); }}
+            className="flex items-center gap-2 px-4 py-2 bg-[#D4A843] text-[#0A0F1E] font-bold rounded-xl hover:bg-[#E8C06E] transition-colors text-sm">
+            {IC.plus} Добавить вопрос
+          </button>
+        )}
+      </div>
+
+      {creating && <FaqForm onSave={handleCreate} onCancel={() => { setCreating(false); reset(); }} />}
+
+      {loading ? <p className="text-white/30 text-sm py-12 text-center">Загрузка...</p> : (
+        <div className="space-y-3">
+          {items.length === 0 && <p className="text-white/20 text-sm py-12 text-center">Нет вопросов для этого языка</p>}
+          {items.map((item, idx) => (
+            <div key={idx} className="border border-white/10 rounded-xl overflow-hidden">
+              {editIdx === idx ? (
+                <div className="p-4">
+                  <FaqForm onSave={() => handleUpdate(idx)} onCancel={() => { setEditIdx(null); reset(); }} />
+                </div>
+              ) : (
+                <div className="p-4 hover:bg-white/[0.02] transition-colors flex items-start justify-between gap-3">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-white font-medium text-sm mb-1">{item.q}</p>
+                    <p className="text-white/40 text-sm line-clamp-2">{item.a}</p>
+                    <span className="text-[10px] font-bold text-white/20 uppercase tracking-wider mt-1 block">#{idx + 1}</span>
+                  </div>
+                  <div className="flex gap-1.5 flex-shrink-0">
+                    <button onClick={() => { setEditIdx(idx); setForm({ q: item.q, a: item.a }); setCreating(false); }}
+                      className="p-2 bg-white/5 text-white/60 rounded-lg hover:bg-white/10 hover:text-white transition-colors">{IC.edit}</button>
+                    <button onClick={() => handleDelete(idx)}
+                      className="p-2 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500/20 transition-colors">{IC.trash}</button>
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── ServicesManager ───────────────────────────────────────────────────────────
+function ServicesManager({ toast }) {
+  const [locale, setLocale]   = useState('ru');
+  const [items, setItems]     = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [editId, setEditId]   = useState(null);
+  const [form, setForm]       = useState({ title: '', short: '', full: '' });
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try { setItems((await apiFetch('services', {}, locale)) || []); }
+    finally { setLoading(false); }
+  }, [locale]);
+
+  useEffect(() => { load(); }, [load]);
+
+  const handleUpdate = async () => {
+    await apiFetch('services', { method: 'POST', body: JSON.stringify({ action: 'update', id: editId, item: form }) }, locale);
+    setEditId(null); toast('Услуга обновлена'); load();
+  };
+
+  return (
+    <div className="space-y-5">
+      <div className="flex items-center gap-3 flex-wrap">
+        <LocaleTabs active={locale} onChange={l => { setLocale(l); setEditId(null); }} />
+        <span className="text-white/20 text-xs">Только редактирование текстов</span>
+      </div>
+
+      {loading ? <p className="text-white/30 text-sm py-12 text-center">Загрузка...</p> : (
+        <div className="space-y-3">
+          {items.map(item => (
+            <div key={item.id} className="border border-white/10 rounded-xl overflow-hidden">
+              {editId === item.id ? (
+                <div className="p-5 space-y-4">
+                  <p className="text-[#D4A843] text-xs font-bold uppercase tracking-wider">{item.id}</p>
+                  {[['title','Заголовок','text'],['short','Краткое описание','text'],['full','Полное описание','textarea']].map(([k,l,t]) => (
+                    <div key={k}>
+                      <label className="block text-xs text-white/50 mb-1.5 font-semibold uppercase tracking-wider">{l}</label>
+                      {t === 'textarea' ? (
+                        <textarea value={form[k]} onChange={e => setForm(f => ({ ...f, [k]: e.target.value }))} rows={4}
+                          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#D4A843] transition-colors resize-none" />
+                      ) : (
+                        <input type="text" value={form[k]} onChange={e => setForm(f => ({ ...f, [k]: e.target.value }))}
+                          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#D4A843] transition-colors" />
+                      )}
+                    </div>
+                  ))}
+                  <div className="flex gap-3">
+                    <button onClick={handleUpdate} className="flex items-center gap-2 px-5 py-2.5 bg-[#D4A843] text-[#0A0F1E] font-bold rounded-xl hover:bg-[#E8C06E] transition-colors text-sm">{IC.check} Сохранить</button>
+                    <button onClick={() => setEditId(null)} className="flex items-center gap-2 px-5 py-2.5 bg-white/5 text-white/60 rounded-xl hover:bg-white/10 transition-colors text-sm">{IC.x} Отмена</button>
+                  </div>
+                </div>
+              ) : (
+                <div className="p-4 flex items-start justify-between gap-3 hover:bg-white/[0.02] transition-colors">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[#D4A843] text-xs font-bold uppercase tracking-wider mb-1">{item.id}</p>
+                    <p className="text-white font-medium text-sm">{item.title}</p>
+                    <p className="text-white/40 text-sm line-clamp-1 mt-0.5">{item.short}</p>
+                  </div>
+                  <button onClick={() => { setEditId(item.id); setForm({ title: item.title||'', short: item.short||'', full: item.full||'' }); }}
+                    className="flex-shrink-0 p-2 bg-white/5 text-white/60 rounded-lg hover:bg-white/10 hover:text-white transition-colors">{IC.edit}</button>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Dashboard ─────────────────────────────────────────────────────────────────
+function Dashboard({ onNavigate }) {
+  const [counts, setCounts] = useState({ portfolio: '…', testimonials: '…', clients: '…' });
+
+  useEffect(() => {
+    Promise.all([apiFetch('portfolio'), apiFetch('testimonials'), apiFetch('clients')])
+      .then(([p, t, c]) => setCounts({ portfolio: p?.length ?? 0, testimonials: t?.length ?? 0, clients: c?.length ?? 0 }))
+      .catch(() => {});
+  }, []);
+
+  return (
+    <div className="space-y-6">
+      <p className="text-white/40 text-sm">Добро пожаловать в панель управления ExpoContact CMS</p>
+
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {[
+          { label: 'Проектов в портфолио', value: counts.portfolio,    section: 'portfolio',    color: 'text-[#D4A843]'  },
+          { label: 'Отзывов клиентов',     value: counts.testimonials, section: 'testimonials', color: 'text-blue-400'   },
+          { label: 'Компаний-клиентов',    value: counts.clients,      section: 'clients',      color: 'text-emerald-400'},
+        ].map(({ label, value, section, color }) => (
+          <button key={section} onClick={() => onNavigate(section)}
+            className="bg-[#141929] border border-white/10 rounded-xl p-5 text-left hover:border-[#D4A843]/30 transition-colors group">
+            <p className={`text-3xl font-black mb-1 ${color}`}>{value}</p>
+            <p className="text-white/50 text-sm">{label}</p>
+            <p className="text-white/20 text-xs mt-2 group-hover:text-[#D4A843] transition-colors">Управлять →</p>
+          </button>
+        ))}
+      </div>
+
+      <div className="bg-[#141929] border border-white/10 rounded-xl p-5">
+        <h3 className="text-white font-semibold mb-3 text-sm">Быстрые действия</h3>
+        <div className="flex flex-wrap gap-2">
+          {[['portfolio','+ Проект'],['testimonials','+ Отзыв'],['clients','+ Клиент'],['faq','+ FAQ']].map(([s,l]) => (
+            <button key={s} onClick={() => onNavigate(s)}
+              className="px-4 py-2 bg-white/5 text-white/60 rounded-xl text-sm hover:bg-white/10 hover:text-white transition-colors">{l}</button>
+          ))}
+        </div>
+      </div>
+
+      <div className="bg-[#141929] border border-[#D4A843]/20 rounded-xl p-5">
+        <h3 className="text-[#D4A843] font-semibold mb-2 text-sm">Подсказка</h3>
+        <p className="text-white/50 text-sm leading-relaxed">
+          Портфолио, отзывы и клиенты хранятся в <code className="text-white/70">content/data/*.json</code>.<br />
+          FAQ и тексты услуг — в <code className="text-white/70">content/ru.json</code>, <code className="text-white/70">en.json</code>, <code className="text-white/70">uz.json</code>.<br />
+          Изменения применяются сразу без перезапуска.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// ── SettingsPage ──────────────────────────────────────────────────────────────
+function SettingsPage() {
+  return (
+    <div className="space-y-5 max-w-2xl">
+      {[
+        {
+          title: 'Безопасность — смена пароля',
+          content: (
+            <>
+              <p className="text-white/60 text-sm mb-3">Пароль по умолчанию: <code className="text-[#D4A843] bg-[#D4A843]/10 px-2 py-0.5 rounded">admin123</code></p>
+              <p className="text-white/60 text-sm mb-2">Создайте файл <code className="text-white/80">.env.local</code> в корне проекта:</p>
+              <pre className="bg-[#0A0F1E] rounded-lg p-4 text-emerald-400 text-xs overflow-x-auto">ADMIN_PASSWORD=ваш_надёжный_пароль</pre>
+              <p className="text-white/30 text-xs mt-2">После изменения перезапустите сервер (npm run dev или redeploy на Vercel).</p>
+            </>
+          ),
+        },
+        {
+          title: 'Структура файлов',
+          content: (
+            <pre className="bg-[#0A0F1E] rounded-lg p-4 text-white/50 text-xs overflow-x-auto leading-relaxed">{`content/\n├── ru.json   ← Тексты на русском\n├── en.json   ← Тексты на английском\n├── uz.json   ← Тексты на узбекском\n└── data/\n    ├── portfolio.json\n    ├── testimonials.json\n    └── clients.json`}</pre>
+          ),
+        },
+        {
+          title: 'Загрузка изображений',
+          content: (
+            <ul className="list-disc list-inside space-y-1 text-white/50 text-sm">
+              <li>Положите файл в <code className="text-white/70">public/images/</code> → URL: <code className="text-white/70">/images/photo.jpg</code></li>
+              <li>Используйте Cloudinary, ImgBB или другой CDN</li>
+              <li>Tilda CDN (static.tildacdn.one) — уже используется для логотипов</li>
+            </ul>
+          ),
+        },
+        {
+          title: 'Деплой на Vercel',
+          content: (
+            <ul className="list-disc list-inside space-y-1 text-white/50 text-sm">
+              <li>Добавьте <code className="text-white/70">ADMIN_PASSWORD</code> в Environment Variables на Vercel</li>
+              <li>Запись данных работает только при наличии файловой системы (не на Edge)</li>
+              <li>Изменения сбрасываются при новом деплое — для продакшна используйте внешнюю БД (Supabase, PlanetScale)</li>
+            </ul>
+          ),
+        },
+      ].map(({ title, content }) => (
+        <div key={title} className="bg-[#141929] border border-white/10 rounded-xl p-6">
+          <h3 className="text-white font-bold mb-4 text-sm">{title}</h3>
+          {content}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ── Sidebar ───────────────────────────────────────────────────────────────────
+function Sidebar({ section, onNavigate, onLogout, open, onClose }) {
+  return (
+    <>
+      {open && <div className="fixed inset-0 bg-black/50 z-30 lg:hidden" onClick={onClose} />}
+      <aside className={`fixed top-0 left-0 h-full w-60 bg-[#0d1220] border-r border-white/5 z-40 flex flex-col transition-transform duration-300 ${open ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 lg:static lg:z-auto`}>
+        <div className="px-5 py-5 border-b border-white/5">
+          <p className="font-black text-lg text-white">EXPO<span className="text-[#D4A843]">CONTACT</span></p>
+          <p className="text-white/25 text-xs mt-0.5">CMS Admin</p>
+        </div>
+        <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+          {NAV.map(({ key, label, icon }) => (
+            <button key={key} onClick={() => onNavigate(key)}
+              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors text-left ${section === key ? 'bg-[#D4A843]/15 text-[#D4A843]' : 'text-white/50 hover:bg-white/5 hover:text-white'}`}>
+              {icon}{label}
+            </button>
+          ))}
+        </nav>
+        <div className="px-3 py-4 border-t border-white/5 space-y-1">
+          <a href="/" target="_blank" rel="noopener noreferrer"
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-white/40 hover:bg-white/5 hover:text-white transition-colors">
+            {IC.external} Перейти на сайт
+          </a>
+          <button onClick={onLogout}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-white/40 hover:bg-red-500/10 hover:text-red-400 transition-colors">
+            {IC.logout} Выйти
+          </button>
+        </div>
+      </aside>
+    </>
+  );
+}
+
+// ── AdminApp ──────────────────────────────────────────────────────────────────
+export default function AdminPage() {
+  const [authed, setAuthed]       = useState(false);
+  const [section, setSection]     = useState('dashboard');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { toasts, toast }         = useToast();
+
   useEffect(() => {
     const token = sessionStorage.getItem('cms_token');
-    if (token) {
-      apiFetch('portfolio').then(() => setAuthed(true)).catch(() => {});
-    }
+    if (token) apiFetch('portfolio').then(() => setAuthed(true)).catch(() => {});
   }, []);
+
+  const navigate = (s) => { setSection(s); setSidebarOpen(false); };
+  const logout   = () => { sessionStorage.removeItem('cms_token'); setAuthed(false); };
 
   if (!authed) return <LoginScreen onLogin={() => setAuthed(true)} />;
 
   return (
-    <div className="min-h-screen bg-[#0A0F1E] text-white">
+    <div className="min-h-screen bg-[#0A0F1E] text-white flex">
+      <Sidebar section={section} onNavigate={navigate} onLogout={logout} open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      {/* Header */}
-      <header className="border-b border-white/5 bg-[#141929]">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div>
-            <span className="font-black text-lg text-white">
-              EXPO<span className="text-[#D4A843]">CONTACT</span>
-            </span>
-            <span className="ml-3 text-white/30 text-sm">CMS Admin Panel</span>
-          </div>
-          <div className="flex items-center gap-4">
-            <a
-              href="/"
-              className="text-white/40 hover:text-white text-sm transition-colors"
-            >
-              ← На сайт
-            </a>
-            <button
-              onClick={() => { sessionStorage.removeItem('cms_token'); setAuthed(false); }}
-              className="text-white/30 hover:text-red-400 text-sm transition-colors"
-            >
-              Выйти
-            </button>
-          </div>
-        </div>
-      </header>
+      <div className="flex-1 flex flex-col min-w-0">
+        <header className="border-b border-white/5 bg-[#0d1220] px-4 sm:px-6 py-4 flex items-center gap-4 sticky top-0 z-20">
+          <button onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="lg:hidden p-2 -ml-1 text-white/50 hover:text-white transition-colors rounded-lg hover:bg-white/5">
+            {IC.menu}
+          </button>
+          <h1 className="font-bold text-white text-base">{SECTION_TITLES[section]}</h1>
+        </header>
 
-      <div className="max-w-6xl mx-auto px-6 py-8">
-
-        {/* Tabs */}
-        <div className="flex gap-2 mb-8">
-          {TABS.map(({ key, label }) => (
-            <button
-              key={key}
-              onClick={() => setTab(key)}
-              className={`px-5 py-2.5 rounded-lg font-semibold text-sm transition-colors ${
-                tab === key
-                  ? 'bg-[#D4A843] text-[#0A0F1E]'
-                  : 'bg-white/5 text-white/60 hover:bg-white/10'
-              }`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-
-        {/* Collection manager */}
-        <CollectionManager key={tab} collection={tab} />
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-x-hidden">
+          {section === 'dashboard'    && <Dashboard onNavigate={navigate} />}
+          {section === 'portfolio'    && <CollectionManager key="portfolio"    collection="portfolio"    toast={toast} />}
+          {section === 'testimonials' && <CollectionManager key="testimonials" collection="testimonials" toast={toast} />}
+          {section === 'clients'      && <CollectionManager key="clients"      collection="clients"      toast={toast} />}
+          {section === 'faq'          && <FaqManager toast={toast} />}
+          {section === 'services'     && <ServicesManager toast={toast} />}
+          {section === 'settings'     && <SettingsPage />}
+        </main>
       </div>
+
+      <ToastBar toasts={toasts} />
     </div>
   );
 }
