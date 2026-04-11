@@ -182,23 +182,29 @@ export async function GET(request) {
   try {
     const ALL = { metrics: 'ym:s:visits', date1: '2000-01-01', date2: 'today' };
 
-    const [
-      todayVal, weekVal, monthVal, totalVal,
-      chartResp, countriesResp, devicesResp, osResp, browsersResp, pagesResp,
-      ageResp, genderResp,
-    ] = await Promise.all([
-      metrikaTotal(oauthToken, 'today',        'today'),
-      metrikaTotal(oauthToken, daysAgo(6),     'today'),
-      metrikaTotal(oauthToken, daysAgo(29),    'today'),
-      metrikaTotal(oauthToken, '2000-01-01',   'today'),
+    // Metrika limits parallel requests per token → execute in batches of 3
+    const [todayVal, weekVal, monthVal] = await Promise.all([
+      metrikaTotal(oauthToken, 'today',      'today'),
+      metrikaTotal(oauthToken, daysAgo(6),   'today'),
+      metrikaTotal(oauthToken, daysAgo(29),  'today'),
+    ]);
+
+    const [totalVal, chartResp, countriesResp] = await Promise.all([
+      metrikaTotal(oauthToken, '2000-01-01', 'today'),
       metrika(oauthToken, { metrics: 'ym:s:visits', date1: daysAgo(6), date2: 'today', group: 'day' }),
-      metrika(oauthToken, { ...ALL, dimensions: 'ym:s:regionCountry',   limit: 15, sort: '-ym:s:visits' }),
+      metrika(oauthToken, { ...ALL, dimensions: 'ym:s:regionCountry', limit: 15, sort: '-ym:s:visits' }),
+    ]);
+
+    const [devicesResp, osResp, browsersResp] = await Promise.all([
       metrika(oauthToken, { ...ALL, dimensions: 'ym:s:deviceCategory',  limit: 10 }),
       metrika(oauthToken, { ...ALL, dimensions: 'ym:s:operatingSystem', limit: 10, sort: '-ym:s:visits' }),
       metrika(oauthToken, { ...ALL, dimensions: 'ym:s:browser',         limit: 10, sort: '-ym:s:visits' }),
-      metrika(oauthToken, { ...ALL, dimensions: 'ym:s:startURL',        limit: 10, sort: '-ym:s:visits' }),
-      metrika(oauthToken, { ...ALL, dimensions: 'ym:s:ageInterval',     limit: 10 }).catch(() => ({ data: [] })),
-      metrika(oauthToken, { ...ALL, dimensions: 'ym:s:gender',          limit: 5  }).catch(() => ({ data: [] })),
+    ]);
+
+    const [pagesResp, ageResp, genderResp] = await Promise.all([
+      metrika(oauthToken, { ...ALL, dimensions: 'ym:s:startURL',    limit: 10, sort: '-ym:s:visits' }),
+      metrika(oauthToken, { ...ALL, dimensions: 'ym:s:ageInterval', limit: 10 }).catch(() => ({ data: [] })),
+      metrika(oauthToken, { ...ALL, dimensions: 'ym:s:gender',      limit: 5  }).catch(() => ({ data: [] })),
     ]);
 
     // 7-day chart from time-series response
