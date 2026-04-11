@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
 // ── API helper ────────────────────────────────────────────────────────────────
 const API = '/api/admin';
@@ -93,7 +93,7 @@ const SCHEMAS = {
     { key: 'category',    label: 'Категория',    type: 'select',   required: true,
       options: ['large', 'modular', 'conference', 'international'] },
     { key: 'description', label: 'Описание',     type: 'textarea', required: false },
-    { key: 'mainImage',   label: 'Фото (URL)',   type: 'image',    required: false },
+    { key: 'mainImage',   label: 'Фото (URL)',   type: 'image',    required: false, maxW: 1200, maxH: 900  },
   ],
   testimonials: [
     { key: 'name',     label: 'Имя',          type: 'text',     required: true  },
@@ -101,11 +101,11 @@ const SCHEMAS = {
     { key: 'company',  label: 'Компания',     type: 'text',     required: true  },
     { key: 'rating',   label: 'Рейтинг',     type: 'stars',    required: true  },
     { key: 'quote',    label: 'Отзыв',       type: 'textarea', required: true  },
-    { key: 'avatar',   label: 'Аватар (URL)', type: 'image',    required: false },
+    { key: 'avatar',   label: 'Аватар (URL)', type: 'image',    required: false, maxW: 400,  maxH: 400  },
   ],
   clients: [
     { key: 'name',    label: 'Название',    type: 'text',  required: true  },
-    { key: 'logo',    label: 'Лого (URL)',  type: 'image', required: false },
+    { key: 'logo',    label: 'Лого (URL)',  type: 'image', required: false, maxW: 600,  maxH: 300  },
     { key: 'website', label: 'Сайт (URL)', type: 'text',  required: false },
   ],
 };
@@ -226,17 +226,136 @@ function LoginScreen({ onLogin }) {
   );
 }
 
-// ── ImageField ────────────────────────────────────────────────────────────────
-function ImageField({ value, onChange, label }) {
+// ── Client-side image resize (Canvas API) ─────────────────────────────────────
+function resizeImage(file, maxW, maxH, quality = 0.88) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        let { width: w, height: h } = img;
+        if (w > maxW || h > maxH) {
+          const r = Math.min(maxW / w, maxH / h);
+          w = Math.round(w * r);
+          h = Math.round(h * r);
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        canvas.toBlob(resolve, 'image/jpeg', quality);
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+// ── ImageField — file upload + URL ────────────────────────────────────────────
+function ImageField({ value, onChange, label, maxW = 1200, maxH = 900 }) {
+  const [tab, setTab]         = useState('file');
+  const [uploading, setUploading] = useState(false);
+  const [drag, setDrag]       = useState(false);
+  const [progress, setProgress] = useState('');
+  const inputRef = useRef(null);
+
+  const upload = async (file) => {
+    if (!file) return;
+    setUploading(true);
+    setProgress('Сжимаем...');
+    try {
+      const blob = await resizeImage(file, maxW, maxH);
+      setProgress('Загружаем...');
+      const fd = new FormData();
+      fd.append('file', blob, file.name.replace(/\.[^.]+$/, '.jpg'));
+      const res = await fetch('/api/admin/upload', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${getToken()}` },
+        body: fd,
+      });
+      const data = await res.json();
+      if (data.url) { onChange(data.url); setProgress(''); }
+      else setProgress(data.error || 'Ошибка загрузки');
+    } catch { setProgress('Ошибка загрузки'); }
+    finally { setUploading(false); }
+  };
+
+  const onDrop = (e) => {
+    e.preventDefault(); setDrag(false);
+    const f = e.dataTransfer.files?.[0];
+    if (f && f.type.startsWith('image/')) upload(f);
+  };
+
+  const hint = `max ${maxW}×${maxH}px · JPG/PNG/WebP · до 10 МБ`;
+
   return (
     <div>
-      <label className="block text-xs text-white/50 mb-1.5 font-semibold uppercase tracking-wider">{label}</label>
-      <input type="text" value={value} onChange={e => onChange(e.target.value)} placeholder="https://..."
-        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-white/20 focus:outline-none focus:border-[#D4A843] transition-colors" />
+      {/* Label + tabs */}
+      <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
+        <label className="text-xs text-white/50 font-semibold uppercase tracking-wider">{label}</label>
+        <div className="flex rounded-lg overflow-hidden border border-white/10 text-xs font-semibold">
+          {[['file','С диска'],['url','По ссылке']].map(([k,l]) => (
+            <button key={k} type="button" onClick={() => setTab(k)}
+              className={`px-3 py-1.5 transition-colors ${tab === k ? 'bg-[#D4A843] text-[#0A0F1E]' : 'bg-white/5 text-white/50 hover:bg-white/10'}`}>
+              {l}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {tab === 'file' ? (
+        <>
+          {/* Drop zone */}
+          <div
+            onDrop={onDrop}
+            onDragOver={e => { e.preventDefault(); setDrag(true); }}
+            onDragLeave={() => setDrag(false)}
+            onClick={() => !uploading && inputRef.current?.click()}
+            className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all select-none ${
+              drag ? 'border-[#D4A843] bg-[#D4A843]/5' : 'border-white/10 hover:border-white/20 hover:bg-white/[0.02]'
+            } ${uploading ? 'pointer-events-none opacity-60' : ''}`}
+          >
+            <input ref={inputRef} type="file" accept="image/*" className="hidden"
+              onChange={e => { const f = e.target.files?.[0]; if (f) upload(f); e.target.value = ''; }} />
+
+            {uploading ? (
+              <div className="flex items-center justify-center gap-2 text-[#D4A843] text-sm font-semibold">
+                <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                </svg>
+                {progress}
+              </div>
+            ) : (
+              <>
+                <svg className="w-8 h-8 mx-auto mb-2 text-white/20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                </svg>
+                <p className="text-white/50 text-sm">Перетащите или <span className="text-[#D4A843]">нажмите для выбора</span></p>
+                <p className="text-white/20 text-xs mt-1">{hint}</p>
+              </>
+            )}
+          </div>
+          {progress && !uploading && <p className="text-red-400 text-xs mt-1.5">{progress}</p>}
+        </>
+      ) : (
+        <input type="text" value={value} onChange={e => onChange(e.target.value)} placeholder="https://..."
+          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-white/20 focus:outline-none focus:border-[#D4A843] transition-colors" />
+      )}
+
+      {/* Preview */}
       {value && (
-        <div className="mt-2 w-20 h-14 rounded-lg overflow-hidden border border-white/10 bg-white/5">
-          <img src={value} alt="" className="w-full h-full object-cover"
-            onError={e => { e.target.style.display = 'none'; }} />
+        <div className="mt-3 flex items-start gap-3">
+          <div className="w-24 h-16 rounded-lg overflow-hidden border border-white/10 bg-white/5 flex-shrink-0">
+            <img src={value} alt="preview" className="w-full h-full object-cover"
+              onError={e => { e.target.style.display = 'none'; }} />
+          </div>
+          <div className="flex-1 min-w-0 pt-1">
+            <p className="text-white/30 text-xs truncate">{value}</p>
+            <button type="button" onClick={() => onChange('')}
+              className="text-red-400/60 hover:text-red-400 text-xs mt-1 transition-colors">
+              Удалить фото
+            </button>
+          </div>
         </div>
       )}
     </div>
@@ -274,12 +393,12 @@ function ItemForm({ schema, initial = {}, onSave, onCancel }) {
   return (
     <div className="bg-[#0d1220] border border-white/10 rounded-xl p-5 space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {schema.map(({ key, label, type, options, required }) => {
+        {schema.map(({ key, label, type, options, required, maxW, maxH }) => {
           const wide = type === 'textarea' || type === 'image';
           return (
             <div key={key} className={wide ? 'md:col-span-2' : ''}>
               {type === 'image' ? (
-                <ImageField value={form[key]} onChange={v => set(key, v)} label={label + (required ? ' *' : '')} />
+                <ImageField value={form[key]} onChange={v => set(key, v)} label={label + (required ? ' *' : '')} maxW={maxW} maxH={maxH} />
               ) : type === 'stars' ? (
                 <div>
                   <label className="block text-xs text-white/50 mb-2 font-semibold uppercase tracking-wider">{label}{required && <span className="text-[#D4A843]"> *</span>}</label>
