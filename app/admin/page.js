@@ -744,7 +744,7 @@ function AnalyticsPage() {
   const load = useCallback(async () => {
     try {
       const token = getToken();
-      const res = await fetch('/api/analytics/stats', {
+      const res = await fetch('/api/analytics/metrika', {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) throw new Error('Ошибка авторизации');
@@ -766,13 +766,16 @@ function AnalyticsPage() {
   if (error)   return <p className="text-red-400 text-sm py-16 text-center">Ошибка: {error}</p>;
   if (!data)   return null;
 
-  const maxChart = Math.max(...data.chart.map(d => d.count), 1);
-  const maxDev   = Math.max(...(data.devices || []).map(d => d.count), 1);
-  const maxOs    = Math.max(...(data.os      || []).map(d => d.count), 1);
-  const maxBr    = Math.max(...(data.browsers|| []).map(d => d.count), 1);
+  const isMetrika = data.source === 'yandex_metrika';
+  const maxChart  = Math.max(...(data.chart   || []).map(d => d.count), 1);
+  const maxDev    = Math.max(...(data.devices || []).map(d => d.count), 1);
+  const maxOs     = Math.max(...(data.os      || []).map(d => d.count), 1);
+  const maxBr     = Math.max(...(data.browsers|| []).map(d => d.count), 1);
+  const maxAge    = Math.max(...(data.age     || []).map(d => d.count), 1);
+  const maxGender = Math.max(...(data.gender  || []).map(d => d.count), 1);
 
-  const DEVICE_COLORS  = { desktop: 'bg-blue-400',    mobile: 'bg-emerald-400', tablet: 'bg-purple-400' };
-  const DEVICE_LABELS  = { desktop: 'Компьютер',      mobile: 'Телефон',        tablet: 'Планшет'       };
+  const DEVICE_COLORS = { desktop: 'bg-blue-400', mobile: 'bg-emerald-400', tablet: 'bg-purple-400', tv: 'bg-pink-400' };
+  const DEVICE_LABELS = { desktop: 'Компьютер', mobile: 'Телефон', tablet: 'Планшет', tv: 'Телевизор' };
 
   function BarRow({ label, count, max, color = 'bg-[#D4A843]' }) {
     const pct = max > 0 ? Math.round((count / max) * 100) : 0;
@@ -789,13 +792,30 @@ function AnalyticsPage() {
 
   return (
     <div className="space-y-6">
+      {/* Source badge */}
+      <div className="flex items-center gap-2">
+        {isMetrika ? (
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FFCC00]/10 border border-[#FFCC00]/30 text-[#FFCC00] text-xs font-semibold">
+            <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            Яндекс.Метрика · счётчик {/* */}108497871
+          </span>
+        ) : (
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-white/40 text-xs">
+            Локальный трекер · добавьте YANDEX_METRIKA_TOKEN для полной аналитики
+          </span>
+        )}
+        <button onClick={load} className="p-1 text-white/20 hover:text-white/60 transition-colors" title="Обновить">
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+        </button>
+      </div>
+
       {/* Stat cards */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
         {[
           { label: 'Онлайн сейчас', value: data.onlineNow, color: 'text-emerald-400', pulse: true },
           { label: 'Сегодня',        value: data.today,     color: 'text-blue-400'                },
-          { label: 'За неделю',      value: data.week,      color: 'text-purple-400'              },
-          { label: 'За месяц',       value: data.month,     color: 'text-[#D4A843]'               },
+          { label: 'За 7 дней',      value: data.week,      color: 'text-purple-400'              },
+          { label: 'За 30 дней',     value: data.month,     color: 'text-[#D4A843]'               },
           { label: 'Всего',          value: data.total,     color: 'text-white'                   },
         ].map(({ label, value, color, pulse }) => (
           <div key={label} className="bg-[#141929] border border-white/10 rounded-xl p-4">
@@ -817,7 +837,7 @@ function AnalyticsPage() {
       <div className="bg-[#141929] border border-white/10 rounded-xl p-5">
         <h3 className="text-white font-bold mb-5 text-sm">Посещений за 7 дней</h3>
         <div className="flex items-end gap-1.5 h-28">
-          {data.chart.map(({ label, count }) => (
+          {(data.chart || []).map(({ label, count }) => (
             <div key={label} className="flex-1 flex flex-col items-center gap-1">
               <span className="text-white/40 text-[10px] h-4 flex items-end">{count > 0 ? count : ''}</span>
               <div className="w-full flex items-end justify-center" style={{ height: '80px' }}>
@@ -836,7 +856,7 @@ function AnalyticsPage() {
         {/* Countries */}
         <div className="bg-[#141929] border border-white/10 rounded-xl p-5">
           <h3 className="text-white font-bold mb-4 text-sm">Страны</h3>
-          {data.countries.length === 0
+          {(data.countries || []).length === 0
             ? <p className="text-white/30 text-sm">Нет данных</p>
             : <div className="space-y-3">
                 {data.countries.map(({ code, name, count }) => (
@@ -849,7 +869,7 @@ function AnalyticsPage() {
         {/* Top pages */}
         <div className="bg-[#141929] border border-white/10 rounded-xl p-5">
           <h3 className="text-white font-bold mb-4 text-sm">Топ страниц</h3>
-          {data.pages.length === 0
+          {(data.pages || []).length === 0
             ? <p className="text-white/30 text-sm">Нет данных</p>
             : <div className="space-y-3">
                 {data.pages.map(({ key, count }) => (
@@ -892,15 +912,53 @@ function AnalyticsPage() {
         </div>
       </div>
 
-      {/* Age note */}
-      <div className="bg-[#141929] border border-[#D4A843]/20 rounded-xl p-5">
-        <h3 className="text-[#D4A843] font-semibold mb-2 text-sm">Возраст и демография</h3>
-        <p className="text-white/40 text-sm leading-relaxed">
-          Данные о возрасте посетителей недоступны без внешнего сервиса.
-          Для получения демографии подключите <strong className="text-white/60">Google Analytics 4</strong> или <strong className="text-white/60">Яндекс.Метрику</strong> —
-          они определяют возраст и интересы на основе аккаунтов пользователей.
-        </p>
-      </div>
+      {/* Demographics — shown only when Metrika provides real data */}
+      {isMetrika && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          {/* Age */}
+          <div className="bg-[#141929] border border-white/10 rounded-xl p-5">
+            <h3 className="text-white font-bold mb-4 text-sm">Возраст</h3>
+            {(data.age || []).length === 0
+              ? <p className="text-white/30 text-sm">Недостаточно данных — нужно больше Яндекс-аккаунтов среди посетителей</p>
+              : <div className="space-y-3">
+                  {data.age.map(({ key, count }) => (
+                    <BarRow key={key} label={key} count={count} max={maxAge} color="bg-[#D4A843]" />
+                  ))}
+                </div>
+            }
+          </div>
+
+          {/* Gender */}
+          <div className="bg-[#141929] border border-white/10 rounded-xl p-5">
+            <h3 className="text-white font-bold mb-4 text-sm">Пол</h3>
+            {(data.gender || []).length === 0
+              ? <p className="text-white/30 text-sm">Недостаточно данных</p>
+              : <div className="space-y-3">
+                  {data.gender.map(({ key, count }) => (
+                    <BarRow key={key} label={key} count={count} max={maxGender}
+                      color={key === 'Мужчины' ? 'bg-blue-400' : 'bg-pink-400'} />
+                  ))}
+                </div>
+            }
+          </div>
+        </div>
+      )}
+
+      {/* Token setup hint — shown only when not connected */}
+      {!isMetrika && (
+        <div className="bg-[#141929] border border-[#D4A843]/20 rounded-xl p-5">
+          <h3 className="text-[#D4A843] font-semibold mb-2 text-sm">Подключить Яндекс.Метрику</h3>
+          <p className="text-white/50 text-sm mb-3 leading-relaxed">
+            Для возраста, пола и точной статистики добавьте OAuth-токен в переменные окружения Vercel.
+          </p>
+          <ol className="space-y-1.5 text-white/40 text-sm list-decimal list-inside">
+            <li>Откройте <code className="text-white/60">oauth.yandex.ru</code> → создайте приложение с правом <code className="text-white/60">metrika:read</code></li>
+            <li>Получите OAuth-токен</li>
+            <li>В Vercel: Settings → Environment Variables → добавьте <code className="text-white/60">YANDEX_METRIKA_TOKEN</code></li>
+            <li>Сделайте редеплой проекта</li>
+          </ol>
+        </div>
+      )}
     </div>
   );
 }
