@@ -5,14 +5,18 @@
     "portfolio": "Portfolio",
     "process":   "Process",
     "contacts":  "Contacts",
-    "cta":       "Get a Quote"
+    "cta":       "Get a Quote",
+    "openMenu":  "Open menu"
   },
   "hero": {
     "headline":    "Your stand — your first impression",
     "subheadline": "We design and build exhibition stands in Uzbekistan and Central Asia",
     "cta1":        "View Our Work",
     "cta2":        "Get a Quote",
-    "badge":       "20 years · 5000+ projects · Central Asia"
+    "badge":       "20 years · 5000+ projects · Central Asia",
+    "mini1":       "years exp.",
+    "mini2":       "projects",
+    "mini3":       "countries"
   },
   "stats": {
     "title": "ExpoContact in Numbers",
@@ -81,9 +85,11 @@
     "filterModular": "Modular",
     "filterConference": "Conferences",
     "filterInternational": "International",
-    "areaLabel":   "m²",
-    "viewProject": "View Project",
-    "close":       "Close"
+    "areaLabel":    "m²",
+    "viewProject":  "View Project",
+    "close":        "Close",
+    "clientLabel":  "Client",
+    "noProjects":   "No projects in this category"
   },
   "process": {
     "title":    "How We Work",
@@ -132,8 +138,10 @@
     "subtitle": "Over 500 companies across Central Asia"
   },
   "testimonials": {
-    "title":    "What Clients Say",
-    "subtitle": "Real reviews from partners and clients",
+    "title":      "What Clients Say",
+    "subtitle":   "Real reviews from partners and clients",
+    "swipeHint":  "← swipe to navigate →",
+    "starsLabel": "out of 5 stars",
     "items": [
       {
         "name":    "Alisher Karimov",
@@ -221,12 +229,20 @@
     "phone2":       "+998 90 123-45-67",
     "address":      "Tashkent, 107B Amir Temur Street",
     "hours":        "Mon–Fri: 9:00–18:00",
-    "whatsapp":     "Message on WhatsApp",
-    "mapPlaceholder": "Map"
+    "whatsapp":         "Message on WhatsApp",
+    "mapPlaceholder":   "Map",
+    "labelPhones":      "Phone Numbers",
+    "labelAddress":     "Address",
+    "labelHours":       "Working Hours",
+    "labelMessenger":   "Messenger",
+    "placeholderName":  "John Smith",
+    "placeholderCompany": "Acme Corp"
   },
   "footer": {
-    "tagline":    "Premium exhibition stands in Central Asia",
-    "copyright":  "© 2024 ExpoContact. All rights reserved.",
-    "madeWith":   "Made with ❤️ in Tashkent"
+    "tagline":       "Premium exhibition stands in Central Asia",
+    "copyright":     "© 2024 ExpoContact. All rights reserved.",
+    "madeWith":      "Made with ❤️ in Tashkent",
+    "navTitle":      "Navigation",
+    "contactsTitle": "Contacts"
   }
 }

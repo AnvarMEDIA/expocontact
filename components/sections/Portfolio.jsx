@@ -64,7 +64,7 @@ function Lightbox({ project, onClose, t }) {
           <button
             onClick={onClose}
             className="absolute top-3 right-3 z-10 w-9 h-9 flex items-center justify-center rounded-full bg-white/10 text-white/70 hover:bg-white/20 hover:text-white transition-colors"
-            aria-label="Закрыть"
+            aria-label={t('close')}
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -98,7 +98,7 @@ function Lightbox({ project, onClose, t }) {
 
             <div className="flex items-center justify-between pt-4 border-t border-white/10">
               <div>
-                <p className="text-xs text-white/30 uppercase tracking-wider">Клиент</p>
+                <p className="text-xs text-white/30 uppercase tracking-wider">{t('clientLabel')}</p>
                 <p className="text-white font-semibold text-sm sm:text-base">{project.client}</p>
               </div>
               <button
@@ -239,7 +239,7 @@ export default function Portfolio({ projects }) {
         </motion.div>
 
         {filtered.length === 0 && (
-          <p className="text-center text-white/30 py-16 text-sm">Нет проектов в этой категории</p>
+          <p className="text-center text-white/30 py-16 text-sm">{t('noProjects')}</p>
         )}
       </div>
 

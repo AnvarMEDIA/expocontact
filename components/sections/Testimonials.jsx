@@ -5,8 +5,9 @@ import { useTranslations } from 'next-intl';
 import { motion, AnimatePresence } from 'framer-motion';
 
 function Stars({ rating }) {
+  const t = useTranslations('testimonials');
   return (
-    <div className="flex gap-0.5" aria-label={`${rating} из 5 звёзд`}>
+    <div className="flex gap-0.5" aria-label={`${rating} ${t('starsLabel')}`}>
       {Array.from({ length: 5 }).map((_, i) => (
         <svg
           key={i}
@@ -145,7 +146,7 @@ export default function Testimonials({ testimonials }) {
             </motion.div>
           </AnimatePresence>
           {/* Swipe hint */}
-          <p className="text-center text-white/20 text-xs mt-3 tracking-wider">← проведите для переключения →</p>
+          <p className="text-center text-white/20 text-xs mt-3 tracking-wider">{t('swipeHint')}</p>
         </div>
 
         {/* Controls */}

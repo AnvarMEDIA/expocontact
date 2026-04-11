@@ -5,14 +5,18 @@
     "portfolio": "Portfolio",
     "process":   "Jarayon",
     "contacts":  "Aloqa",
-    "cta":       "Ariza qoldirish"
+    "cta":       "Ariza qoldirish",
+    "openMenu":  "Menyuni ochish"
   },
   "hero": {
     "headline":    "Sizning stendingiz — birinchi taassurotingiz",
     "subheadline": "O'zbekiston va Markaziy Osiyoda ko'rgazma stendlarini loyihalash va quramiz",
     "cta1":        "Ishlarimizni ko'rish",
     "cta2":        "Ariza qoldirish",
-    "badge":       "20 yil · 5000+ loyiha · Markaziy Osiyo"
+    "badge":       "20 yil · 5000+ loyiha · Markaziy Osiyo",
+    "mini1":       "yil tajriba",
+    "mini2":       "loyiha",
+    "mini3":       "davlat"
   },
   "stats": {
     "title": "ExpoContact raqamlarda",
@@ -81,9 +85,11 @@
     "filterModular": "Modulli",
     "filterConference": "Konferensiyalar",
     "filterInternational": "Xalqaro",
-    "areaLabel":   "m²",
-    "viewProject": "Loyihani ko'rish",
-    "close":       "Yopish"
+    "areaLabel":    "m²",
+    "viewProject":  "Loyihani ko'rish",
+    "close":        "Yopish",
+    "clientLabel":  "Mijoz",
+    "noProjects":   "Bu kategoriyada loyihalar yo'q"
   },
   "process": {
     "title":    "Qanday ishlashamiz",
@@ -132,8 +138,10 @@
     "subtitle": "Butun Markaziy Osiyoda 500 dan ortiq kompaniya"
   },
   "testimonials": {
-    "title":    "Mijozlar nima deydi",
-    "subtitle": "Hamkorlar va buyurtmachilarning haqiqiy sharhlari",
+    "title":      "Mijozlar nima deydi",
+    "subtitle":   "Hamkorlar va buyurtmachilarning haqiqiy sharhlari",
+    "swipeHint":  "← suring →",
+    "starsLabel": "5 dan yulduz",
     "items": [
       {
         "name":    "Alisher Karimov",
@@ -221,12 +229,20 @@
     "phone2":       "+998 90 123-45-67",
     "address":      "Toshkent sh., Amir Temur ko'chasi, 107B",
     "hours":        "Du–Ju: 9:00–18:00",
-    "whatsapp":     "WhatsApp da yozish",
-    "mapPlaceholder": "Xarita"
+    "whatsapp":         "WhatsApp da yozish",
+    "mapPlaceholder":   "Xarita",
+    "labelPhones":      "Telefonlar",
+    "labelAddress":     "Manzil",
+    "labelHours":       "Ish vaqti",
+    "labelMessenger":   "Messenger",
+    "placeholderName":  "Alisher Karimov",
+    "placeholderCompany": "Kompaniya nomi"
   },
   "footer": {
-    "tagline":    "Markaziy Osiyoda premium ko'rgazma stendlari",
-    "copyright":  "© 2024 ExpoContact. Barcha huquqlar himoyalangan.",
-    "madeWith":   "Toshkentda ❤️ bilan yaratilgan"
+    "tagline":       "Markaziy Osiyoda premium ko'rgazma stendlari",
+    "copyright":     "© 2024 ExpoContact. Barcha huquqlar himoyalangan.",
+    "madeWith":      "Toshkentda ❤️ bilan yaratilgan",
+    "navTitle":      "Navigatsiya",
+    "contactsTitle": "Aloqa"
   }
 }

@@ -172,9 +172,9 @@ export default function Hero({ onRequestQuote }) {
           animate="visible"
         >
           {[
-            { n: '20+',   l: 'лет опыта' },
-            { n: '5000+', l: 'проектов'  },
-            { n: '3',     l: 'страны'    },
+            { n: '20+',   l: t('mini1') },
+            { n: '5000+', l: t('mini2') },
+            { n: '3',     l: t('mini3') },
           ].map(({ n, l }) => (
             <div key={n} className="glass-gold px-4 sm:px-5 py-2 sm:py-3 rounded-xl text-center">
               <p className="font-heading font-black text-gold text-lg sm:text-xl leading-none">{n}</p>

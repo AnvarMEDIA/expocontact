@@ -95,7 +95,7 @@ export default function Footer({ locale }) {
 
           {/* Navigation — hidden on mobile, shown sm+ */}
           <div className="hidden sm:block">
-            <h4 className="text-xs font-bold text-white/30 uppercase tracking-widest mb-4">Навигация</h4>
+            <h4 className="text-xs font-bold text-white/30 uppercase tracking-widest mb-4">{tf('navTitle')}</h4>
             <ul className="space-y-2">
               {navLinks.map(({ href, labelKey }) => (
                 <li key={href}>
@@ -109,7 +109,7 @@ export default function Footer({ locale }) {
 
           {/* Contact info */}
           <div>
-            <h4 className="text-xs font-bold text-white/30 uppercase tracking-widest mb-4 text-center sm:text-left">Контакты</h4>
+            <h4 className="text-xs font-bold text-white/30 uppercase tracking-widest mb-4 text-center sm:text-left">{tf('contactsTitle')}</h4>
             <ul className="space-y-2 text-sm text-white/50 text-center sm:text-left">
               <li>
                 <a href="tel:+998712000000" className="hover:text-gold transition-colors block py-0.5">

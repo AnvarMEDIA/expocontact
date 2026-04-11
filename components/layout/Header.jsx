@@ -134,7 +134,7 @@ export default function Header({ locale, onRequestQuote }) {
               <button
                 className="md:hidden relative w-9 h-9 flex flex-col gap-1.5 items-center justify-center"
                 onClick={() => setMobileOpen(true)}
-                aria-label="Открыть меню"
+                aria-label={t('openMenu')}
               >
                 <span className="block w-5 h-0.5 bg-white rounded-full" />
                 <span className="block w-5 h-0.5 bg-white rounded-full" />
