@@ -3,6 +3,7 @@ import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import { Analytics } from '@vercel/analytics/next';
+import AnalyticsTracker from '@/components/AnalyticsTracker';
 import '@/app/globals.css';
 
 // ── SEO metadata per locale ──────────────────────────────────────────────────
@@ -133,6 +134,7 @@ export default async function LocaleLayout({ children, params }) {
           {children}
         </NextIntlClientProvider>
         <Analytics />
+        <AnalyticsTracker />
       </body>
     </html>
   );

@@ -66,8 +66,11 @@ const IC = {
 };
 
 // ── Nav config ────────────────────────────────────────────────────────────────
+const IC_ANALYTICS = <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>;
+
 const NAV = [
   { key: 'dashboard',    label: 'Дашборд',    icon: IC.dashboard    },
+  { key: 'analytics',    label: 'Аналитика',  icon: IC_ANALYTICS    },
   { key: 'portfolio',    label: 'Портфолио',  icon: IC.portfolio    },
   { key: 'testimonials', label: 'Отзывы',     icon: IC.testimonials },
   { key: 'clients',      label: 'Клиенты',    icon: IC.clients      },
@@ -77,7 +80,8 @@ const NAV = [
 ];
 
 const SECTION_TITLES = {
-  dashboard: 'Дашборд', portfolio: 'Портфолио', testimonials: 'Отзывы клиентов',
+  dashboard: 'Дашборд', analytics: 'Аналитика посетителей',
+  portfolio: 'Портфолио', testimonials: 'Отзывы клиентов',
   clients: 'Клиенты', faq: 'FAQ — Частые вопросы', services: 'Тексты услуг',
   settings: 'Инструкция и настройки',
 };
@@ -731,6 +735,176 @@ function ServicesManager({ toast }) {
   );
 }
 
+// ── AnalyticsPage ─────────────────────────────────────────────────────────────
+function AnalyticsPage() {
+  const [data, setData]       = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError]     = useState(null);
+
+  const load = useCallback(async () => {
+    try {
+      const token = getToken();
+      const res = await fetch('/api/analytics/stats', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error('Ошибка авторизации');
+      setData(await res.json());
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    load();
+    const id = setInterval(load, 30_000);
+    return () => clearInterval(id);
+  }, [load]);
+
+  if (loading) return <p className="text-white/30 text-sm py-16 text-center">Загрузка статистики...</p>;
+  if (error)   return <p className="text-red-400 text-sm py-16 text-center">Ошибка: {error}</p>;
+  if (!data)   return null;
+
+  const maxChart = Math.max(...data.chart.map(d => d.count), 1);
+  const maxDev   = Math.max(...(data.devices || []).map(d => d.count), 1);
+  const maxOs    = Math.max(...(data.os      || []).map(d => d.count), 1);
+  const maxBr    = Math.max(...(data.browsers|| []).map(d => d.count), 1);
+
+  const DEVICE_COLORS  = { desktop: 'bg-blue-400',    mobile: 'bg-emerald-400', tablet: 'bg-purple-400' };
+  const DEVICE_LABELS  = { desktop: 'Компьютер',      mobile: 'Телефон',        tablet: 'Планшет'       };
+
+  function BarRow({ label, count, max, color = 'bg-[#D4A843]' }) {
+    const pct = max > 0 ? Math.round((count / max) * 100) : 0;
+    return (
+      <div className="flex items-center gap-3">
+        <span className="w-28 text-white/50 text-xs truncate flex-shrink-0">{label}</span>
+        <div className="flex-1 bg-white/5 rounded-full h-1.5">
+          <div className={`${color} h-1.5 rounded-full transition-all duration-500`} style={{ width: `${pct}%` }} />
+        </div>
+        <span className="text-white/60 text-xs w-8 text-right flex-shrink-0">{count}</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Stat cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+        {[
+          { label: 'Онлайн сейчас', value: data.onlineNow, color: 'text-emerald-400', pulse: true },
+          { label: 'Сегодня',        value: data.today,     color: 'text-blue-400'                },
+          { label: 'За неделю',      value: data.week,      color: 'text-purple-400'              },
+          { label: 'За месяц',       value: data.month,     color: 'text-[#D4A843]'               },
+          { label: 'Всего',          value: data.total,     color: 'text-white'                   },
+        ].map(({ label, value, color, pulse }) => (
+          <div key={label} className="bg-[#141929] border border-white/10 rounded-xl p-4">
+            <div className="flex items-center gap-2 mb-1">
+              {pulse && (
+                <span className="relative flex h-2 w-2 flex-shrink-0">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
+                </span>
+              )}
+              <p className={`text-2xl font-black ${color}`}>{value}</p>
+            </div>
+            <p className="text-white/40 text-xs">{label}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* 7-day chart */}
+      <div className="bg-[#141929] border border-white/10 rounded-xl p-5">
+        <h3 className="text-white font-bold mb-5 text-sm">Посещений за 7 дней</h3>
+        <div className="flex items-end gap-1.5 h-28">
+          {data.chart.map(({ label, count }) => (
+            <div key={label} className="flex-1 flex flex-col items-center gap-1">
+              <span className="text-white/40 text-[10px] h-4 flex items-end">{count > 0 ? count : ''}</span>
+              <div className="w-full flex items-end justify-center" style={{ height: '80px' }}>
+                <div
+                  className="w-full bg-[#D4A843] rounded-t opacity-80 hover:opacity-100 transition-opacity"
+                  style={{ height: `${Math.max((count / maxChart) * 80, count > 0 ? 3 : 0)}px` }}
+                />
+              </div>
+              <span className="text-white/30 text-[9px] text-center leading-tight whitespace-nowrap">{label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Countries */}
+        <div className="bg-[#141929] border border-white/10 rounded-xl p-5">
+          <h3 className="text-white font-bold mb-4 text-sm">Страны</h3>
+          {data.countries.length === 0
+            ? <p className="text-white/30 text-sm">Нет данных</p>
+            : <div className="space-y-3">
+                {data.countries.map(({ code, name, count }) => (
+                  <BarRow key={code} label={name} count={count} max={data.countries[0].count} />
+                ))}
+              </div>
+          }
+        </div>
+
+        {/* Top pages */}
+        <div className="bg-[#141929] border border-white/10 rounded-xl p-5">
+          <h3 className="text-white font-bold mb-4 text-sm">Топ страниц</h3>
+          {data.pages.length === 0
+            ? <p className="text-white/30 text-sm">Нет данных</p>
+            : <div className="space-y-3">
+                {data.pages.map(({ key, count }) => (
+                  <BarRow key={key} label={key} count={count} max={data.pages[0].count} color="bg-blue-400" />
+                ))}
+              </div>
+          }
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        {/* Devices */}
+        <div className="bg-[#141929] border border-white/10 rounded-xl p-5">
+          <h3 className="text-white font-bold mb-4 text-sm">Устройства</h3>
+          <div className="space-y-3">
+            {(data.devices || []).map(({ key, count }) => (
+              <BarRow key={key} label={DEVICE_LABELS[key] || key} count={count} max={maxDev} color={DEVICE_COLORS[key] || 'bg-white/40'} />
+            ))}
+          </div>
+        </div>
+
+        {/* OS */}
+        <div className="bg-[#141929] border border-white/10 rounded-xl p-5">
+          <h3 className="text-white font-bold mb-4 text-sm">Операционные системы</h3>
+          <div className="space-y-3">
+            {(data.os || []).map(({ key, count }) => (
+              <BarRow key={key} label={key} count={count} max={maxOs} color="bg-purple-400" />
+            ))}
+          </div>
+        </div>
+
+        {/* Browsers */}
+        <div className="bg-[#141929] border border-white/10 rounded-xl p-5">
+          <h3 className="text-white font-bold mb-4 text-sm">Браузеры</h3>
+          <div className="space-y-3">
+            {(data.browsers || []).map(({ key, count }) => (
+              <BarRow key={key} label={key} count={count} max={maxBr} color="bg-orange-400" />
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Age note */}
+      <div className="bg-[#141929] border border-[#D4A843]/20 rounded-xl p-5">
+        <h3 className="text-[#D4A843] font-semibold mb-2 text-sm">Возраст и демография</h3>
+        <p className="text-white/40 text-sm leading-relaxed">
+          Данные о возрасте посетителей недоступны без внешнего сервиса.
+          Для получения демографии подключите <strong className="text-white/60">Google Analytics 4</strong> или <strong className="text-white/60">Яндекс.Метрику</strong> —
+          они определяют возраст и интересы на основе аккаунтов пользователей.
+        </p>
+      </div>
+    </div>
+  );
+}
+
 // ── Dashboard ─────────────────────────────────────────────────────────────────
 function Dashboard({ onNavigate }) {
   const [counts, setCounts] = useState({ portfolio: '…', testimonials: '…', clients: '…' });
@@ -899,6 +1073,7 @@ export default function AdminPage() {
 
         <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-x-hidden">
           {section === 'dashboard'    && <Dashboard onNavigate={navigate} />}
+          {section === 'analytics'    && <AnalyticsPage />}
           {section === 'portfolio'    && <CollectionManager key="portfolio"    collection="portfolio"    toast={toast} />}
           {section === 'testimonials' && <CollectionManager key="testimonials" collection="testimonials" toast={toast} />}
           {section === 'clients'      && <CollectionManager key="clients"      collection="clients"      toast={toast} />}
