@@ -747,8 +747,14 @@ function AnalyticsPage() {
       const res = await fetch('/api/analytics/metrika', {
         headers: { Authorization: `Bearer ${token}` },
       });
-      if (!res.ok) throw new Error('Ошибка авторизации');
-      setData(await res.json());
+      if (res.status === 401) throw new Error('Неверный пароль — попробуйте выйти и войти заново');
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error || `Ошибка сервера (${res.status})`);
+      }
+      const json = await res.json();
+      setData(json);
+      setError(null);
     } catch (e) {
       setError(e.message);
     } finally {
@@ -792,6 +798,13 @@ function AnalyticsPage() {
 
   return (
     <div className="space-y-6">
+      {/* Metrika fallback warning */}
+      {data.metrikaError && (
+        <div className="bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 text-red-400 text-xs">
+          Яндекс.Метрика недоступна, показаны локальные данные. Ошибка: {data.metrikaError}
+        </div>
+      )}
+
       {/* Source badge */}
       <div className="flex items-center gap-2">
         {isMetrika ? (

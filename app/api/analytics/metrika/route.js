@@ -129,51 +129,53 @@ const AGE_LABELS = {
 const GENDER_LABELS = { 'male': 'Мужчины', 'female': 'Женщины', 'unknown': 'Неизвестно' };
 
 // ── Route ─────────────────────────────────────────────────────────────────────
+function buildLocalResponse(localData, onlineNow, now) {
+  const today  = localData.filter(e => e.ts >= startOf(now, 'day'));
+  const week   = localData.filter(e => e.ts >= startOf(now, 'week'));
+  const month  = localData.filter(e => e.ts >= startOf(now, 'month'));
+
+  const chart = Array.from({ length: 7 }, (_, i) => {
+    const d    = new Date(now); d.setDate(d.getDate() - (6 - i));
+    const from = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+    const to   = from + 86400000;
+    return {
+      label: d.toLocaleDateString('ru-RU', { weekday: 'short', day: 'numeric', month: 'numeric' }),
+      count: localData.filter(e => e.ts >= from && e.ts < to).length,
+    };
+  });
+
+  return {
+    source:    'local',
+    onlineNow,
+    today:     today.length,
+    week:      week.length,
+    month:     month.length,
+    total:     localData.length,
+    chart,
+    countries: countBy(localData, 'country').slice(0, 15).map(({ key, count }) => ({
+      code: key, name: COUNTRY_NAMES_LOCAL[key] || key, count,
+    })),
+    devices:   countBy(localData, 'device'),
+    os:        countBy(localData, 'os'),
+    browsers:  countBy(localData, 'browser'),
+    pages:     countBy(localData, 'page').slice(0, 10),
+    age:       [],
+    gender:    [],
+  };
+}
+
 export async function GET(request) {
   if (!checkAuth(request))
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  // "Online now" always comes from local heartbeat
-  const localData = await readLocal();
-  const now       = Date.now();
-  const onlineNow = localData.filter(e => now - e.ts < 3 * 60 * 1000).length;
-
+  const now        = Date.now();
+  const localData  = await readLocal();
+  const onlineNow  = localData.filter(e => now - e.ts < 3 * 60 * 1000).length;
   const oauthToken = process.env.YANDEX_METRIKA_TOKEN;
 
-  // ── No token → local analytics fallback ──────────────────────────────────
+  // ── No token → local fallback ─────────────────────────────────────────────
   if (!oauthToken) {
-    const today  = localData.filter(e => e.ts >= startOf(now, 'day'));
-    const week   = localData.filter(e => e.ts >= startOf(now, 'week'));
-    const month  = localData.filter(e => e.ts >= startOf(now, 'month'));
-
-    const chart = Array.from({ length: 7 }, (_, i) => {
-      const d    = new Date(now); d.setDate(d.getDate() - (6 - i));
-      const from = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
-      const to   = from + 86400000;
-      return {
-        label: d.toLocaleDateString('ru-RU', { weekday: 'short', day: 'numeric', month: 'numeric' }),
-        count: localData.filter(e => e.ts >= from && e.ts < to).length,
-      };
-    });
-
-    return NextResponse.json({
-      source:    'local',
-      onlineNow,
-      today:     today.length,
-      week:      week.length,
-      month:     month.length,
-      total:     localData.length,
-      chart,
-      countries: countBy(localData, 'country').slice(0, 15).map(({ key, count }) => ({
-        code: key, name: COUNTRY_NAMES_LOCAL[key] || key, count,
-      })),
-      devices:   countBy(localData, 'device'),
-      os:        countBy(localData, 'os'),
-      browsers:  countBy(localData, 'browser'),
-      pages:     countBy(localData, 'page').slice(0, 10),
-      age:       [],
-      gender:    [],
-    });
+    return NextResponse.json(buildLocalResponse(localData, onlineNow, now));
   }
 
   // ── Yandex.Metrika path ───────────────────────────────────────────────────
@@ -209,7 +211,6 @@ export async function GET(request) {
         count: Math.round(values[i] ?? 0),
       };
     });
-    // Pad to 7 days if API returned fewer
     while (chart.length < 7) {
       const d = new Date(now); d.setDate(d.getDate() - (6 - chart.length));
       chart.unshift({ label: d.toLocaleDateString('ru-RU', { weekday: 'short', day: 'numeric', month: 'numeric' }), count: 0 });
@@ -256,6 +257,10 @@ export async function GET(request) {
       gender,
     });
   } catch (e) {
-    return NextResponse.json({ error: e.message, source: 'error' }, { status: 500 });
+    // Metrika API failed — fall back to local data, include error for debugging
+    return NextResponse.json({
+      ...buildLocalResponse(localData, onlineNow, now),
+      metrikaError: e.message,
+    });
   }
 }
