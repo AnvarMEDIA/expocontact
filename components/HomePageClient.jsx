@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import { usePathname, useRouter } from 'next/navigation';
 import BrandLogo from './BrandLogo';
+import HeroLogo3D from './HeroLogo3D';
 import '@/app/landing.css';
 
 /* ════════════════════════════════════════════════════════════════════════════
@@ -468,9 +469,9 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
         <div className="hero__vignette" aria-hidden />
         <div className="hero__glow" aria-hidden />
 
-        <div className="hero__logo3d">
-          <div className="hero__logo3d-svg"><BrandLogo /></div>
-          <span className="hero__logo3d-hint">ExpoContact · Studio</span>
+        <div className="hero__logo3d" id="logo3d">
+          <HeroLogo3D />
+          <span className="hero__logo3d-hint">Drag · 360°</span>
         </div>
 
         <div className="hero__content">
