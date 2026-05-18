@@ -12,14 +12,27 @@ import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 
 /* ──────────────────────────────────────────────────────────────────────────────
- *  ExpoContact /new — editorial redesign inspired by Tonellidesign
- *  Cream palette, serif headlines, asymmetric grid, heavy scroll-triggered motion.
+ *  ExpoContact /new — modern editorial redesign
+ *  Pure white background · brand navy + gold accents · Inter throughout
+ *  Tightly-clamped typography for 1K → 2K screens · heavy motion
  * ────────────────────────────────────────────────────────────────────────────── */
 
 const EASE = [0.22, 1, 0.36, 1];
+const LOGO_W = 'https://static.tildacdn.one/tild3233-3438-4034-a138-316162306464/ExpoContact_-_Logo_W.png';
 
-// ── Word-by-word reveal for editorial headlines ──────────────────────────────
-function SplitHeadline({ text, className = '', delay = 0, stagger = 0.06 }) {
+const COLORS = {
+  bg:       '#FFFFFF',
+  text:     '#0A0F1E',
+  muted:    '#5F6679',
+  divider:  '#E5E7EB',
+  soft:     '#F8F9FB',
+  accent:   '#D4A843',
+  accentDk: '#B8882E',
+  dark:     '#0A0F1E',
+};
+
+// ── Word-by-word reveal ──────────────────────────────────────────────────────
+function SplitHeadline({ text, className = '', delay = 0, stagger = 0.05 }) {
   const words = text.split(' ');
   return (
     <span className={className} aria-label={text}>
@@ -39,22 +52,22 @@ function SplitHeadline({ text, className = '', delay = 0, stagger = 0.06 }) {
   );
 }
 
-// ── Generic scroll-reveal wrapper ────────────────────────────────────────────
-function Reveal({ children, delay = 0, y = 36, className = '', once = true }) {
+// ── Scroll-reveal wrapper ────────────────────────────────────────────────────
+function Reveal({ children, delay = 0, y = 32, className = '' }) {
   return (
     <motion.div
       className={className}
       initial={{ opacity: 0, y }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once, margin: '-60px' }}
-      transition={{ duration: 0.9, ease: EASE, delay }}
+      viewport={{ once: true, margin: '-60px' }}
+      transition={{ duration: 0.85, ease: EASE, delay }}
     >
       {children}
     </motion.div>
   );
 }
 
-// ── Animated number counter, fires on view ───────────────────────────────────
+// ── Number counter ───────────────────────────────────────────────────────────
 function CountUp({ to, suffix = '', duration = 2 }) {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: '-40px' });
@@ -81,39 +94,45 @@ function CountUp({ to, suffix = '', duration = 2 }) {
   );
 }
 
-// ── Gradient image-placeholder with grain ────────────────────────────────────
+// ── Image placeholder — clean light gradients with subtle motifs ─────────────
 function ImageBlock({
-  tone = 'beige',
+  tone = 'cream',
   ratio = 'aspect-[4/5]',
   className = '',
   label,
   caption,
   motif,
+  hover = true,
 }) {
   const tones = {
-    beige:    'from-[#E8E1D2] via-[#D6CDB8] to-[#A89A78]',
-    sand:     'from-[#E5DBC0] via-[#C6B58E] to-[#9C8868]',
-    charcoal: 'from-[#3B3A36] via-[#26251F] to-[#13120F]',
-    stone:    'from-[#D6D1C5] via-[#B0A998] to-[#7A7464]',
-    bronze:   'from-[#C9A26A] via-[#9C7333] to-[#5F4319]',
-    warm:     'from-[#EDDFC2] via-[#CBA76E] to-[#7E5A2A]',
+    cream:    'from-[#F5F2EC] via-[#E8E2D2] to-[#C9BFA3]',
+    sand:     'from-[#EFE6D0] via-[#D9C89D] to-[#A88D5C]',
+    dark:     'from-[#1A2238] via-[#0F1729] to-[#050811]',
+    stone:    'from-[#EDEEF1] via-[#C9CCD3] to-[#8E919A]',
+    gold:     'from-[#E8C06E] via-[#D4A843] to-[#9C7A24]',
+    paper:    'from-[#FAFAF7] via-[#EFECDF] to-[#D9D3BE]',
   };
   return (
-    <div className={`relative overflow-hidden bg-gradient-to-br ${tones[tone]} ${ratio} ${className}`}>
-      {/* grain */}
+    <motion.div
+      whileHover={hover ? { scale: 1.015 } : undefined}
+      transition={{ duration: 0.5, ease: EASE }}
+      className={`relative overflow-hidden bg-gradient-to-br ${tones[tone]} ${ratio} ${className} rounded-[2px] shadow-[0_1px_2px_rgba(10,15,30,0.04)]`}
+    >
+      {/* fine grain */}
       <div
-        className="absolute inset-0 mix-blend-soft-light opacity-60 pointer-events-none"
+        className="absolute inset-0 mix-blend-soft-light opacity-50 pointer-events-none"
         style={{
           backgroundImage:
-            "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E\")",
+            "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E\")",
         }}
       />
-      {/* motif: abstract geometric stand silhouette */}
       {motif && (
         <svg
           viewBox="0 0 200 250"
           preserveAspectRatio="xMidYMid meet"
-          className="absolute inset-0 w-full h-full opacity-25 mix-blend-overlay"
+          className={`absolute inset-0 w-full h-full opacity-30 mix-blend-overlay ${
+            tone === 'dark' ? 'text-white' : 'text-[#0A0F1E]'
+          }`}
           aria-hidden
         >
           {motif === 'stand' && (
@@ -146,35 +165,44 @@ function ImageBlock({
         </svg>
       )}
       {label && (
-        <div className="absolute top-5 left-5 text-[10px] tracking-[0.2em] uppercase text-white/70 font-medium">
+        <div
+          className={`absolute top-5 left-5 text-[10px] tracking-[0.22em] uppercase font-medium ${
+            tone === 'dark' ? 'text-white/70' : 'text-[#0A0F1E]/60'
+          }`}
+        >
           {label}
         </div>
       )}
       {caption && (
-        <div className="absolute bottom-5 left-5 right-5 text-white/90 text-sm font-light leading-snug">
+        <div
+          className={`absolute bottom-5 left-5 right-5 text-sm font-light leading-snug ${
+            tone === 'dark' ? 'text-white/90' : 'text-[#0A0F1E]/80'
+          }`}
+        >
           {caption}
         </div>
       )}
-    </div>
+    </motion.div>
   );
 }
 
-// ── Marquee row ──────────────────────────────────────────────────────────────
+// ── Marquee ──────────────────────────────────────────────────────────────────
 function Marquee({ items }) {
   return (
-    <div className="overflow-hidden border-y border-[#D8D3C8] bg-[#EFEAE0]">
+    <div className="overflow-hidden border-y border-[#E5E7EB] bg-[#F8F9FB]">
       <motion.div
-        className="flex gap-16 whitespace-nowrap py-6"
+        className="flex gap-16 whitespace-nowrap py-7"
         animate={{ x: ['0%', '-50%'] }}
         transition={{ duration: 40, ease: 'linear', repeat: Infinity }}
       >
         {[...items, ...items].map((t, i) => (
           <span
             key={i}
-            className="inline-flex items-center gap-6 text-[#1B1B1B]/70 text-sm tracking-[0.3em] uppercase font-light"
+            className="inline-flex items-center gap-6 text-[#0A0F1E]/65 tracking-[0.28em] uppercase font-medium"
+            style={{ fontSize: 'clamp(11px, 0.85vw, 14px)' }}
           >
             {t}
-            <span className="text-[#B8882E]">✦</span>
+            <span className="text-[#D4A843]">✦</span>
           </span>
         ))}
       </motion.div>
@@ -185,23 +213,26 @@ function Marquee({ items }) {
 // ── Accordion item ───────────────────────────────────────────────────────────
 function AccordionItem({ q, a, open, onClick }) {
   return (
-    <div className="border-b border-[#D8D3C8]">
+    <div className="border-b border-[#E5E7EB]">
       <button
         onClick={onClick}
-        className="w-full py-6 flex items-center justify-between gap-6 text-left group"
+        className="w-full py-7 flex items-center justify-between gap-6 text-left group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#D4A843] focus-visible:ring-offset-4 focus-visible:ring-offset-white rounded-sm"
       >
-        <span className="text-[15px] sm:text-base font-medium text-[#1B1B1B] tracking-tight">
+        <span
+          className="font-medium text-[#0A0F1E] tracking-tight pr-6"
+          style={{ fontSize: 'clamp(15px, 1.15vw, 18px)' }}
+        >
           {q}
         </span>
         <motion.span
           animate={{ rotate: open ? 45 : 0 }}
           transition={{ duration: 0.35, ease: EASE }}
-          className="shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-[#1B1B1B] group-hover:text-[#B8882E] transition-colors"
+          className="shrink-0 w-8 h-8 rounded-full border border-[#E5E7EB] flex items-center justify-center text-[#0A0F1E] group-hover:border-[#D4A843] group-hover:text-[#D4A843] transition-colors"
           aria-hidden
         >
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-            <line x1="7" y1="1" x2="7" y2="13" stroke="currentColor" strokeWidth="1.2" />
-            <line x1="1" y1="7" x2="13" y2="7" stroke="currentColor" strokeWidth="1.2" />
+            <line x1="7" y1="1" x2="7" y2="13" stroke="currentColor" strokeWidth="1.4" />
+            <line x1="1" y1="7" x2="13" y2="7" stroke="currentColor" strokeWidth="1.4" />
           </svg>
         </motion.span>
       </button>
@@ -214,7 +245,10 @@ function AccordionItem({ q, a, open, onClick }) {
             transition={{ duration: 0.4, ease: EASE }}
             className="overflow-hidden"
           >
-            <p className="pb-6 pr-12 text-[14px] leading-relaxed text-[#6B6A65] font-light">
+            <p
+              className="pb-7 pr-14 leading-relaxed text-[#5F6679] font-light"
+              style={{ fontSize: 'clamp(14px, 1vw, 16px)' }}
+            >
               {a}
             </p>
           </motion.div>
@@ -224,8 +258,8 @@ function AccordionItem({ q, a, open, onClick }) {
   );
 }
 
-// ── Magnetic CTA button ──────────────────────────────────────────────────────
-function MagneticButton({ children, href, onClick, dark = false, className = '' }) {
+// ── Magnetic CTA ─────────────────────────────────────────────────────────────
+function MagneticButton({ children, href, onClick, variant = 'dark', className = '' }) {
   const ref = useRef(null);
   const [pos, setPos] = useState({ x: 0, y: 0 });
   const handleMove = (e) => {
@@ -233,14 +267,19 @@ function MagneticButton({ children, href, onClick, dark = false, className = '' 
     if (!r) return;
     const x = e.clientX - (r.left + r.width / 2);
     const y = e.clientY - (r.top + r.height / 2);
-    setPos({ x: x * 0.25, y: y * 0.25 });
+    setPos({ x: x * 0.22, y: y * 0.22 });
   };
   const reset = () => setPos({ x: 0, y: 0 });
-  const cls = `inline-flex items-center gap-3 px-8 py-4 text-sm tracking-[0.15em] uppercase font-medium transition-colors duration-300 rounded-full ${
-    dark
-      ? 'bg-[#1B1B1B] text-[#F4F1EA] hover:bg-[#B8882E]'
-      : 'bg-[#1B1B1B] text-[#F4F1EA] hover:bg-[#B8882E]'
-  } ${className}`;
+
+  const styles = {
+    dark:  'bg-[#0A0F1E] text-white hover:bg-[#D4A843]',
+    gold:  'bg-[#D4A843] text-[#0A0F1E] hover:bg-[#E8C06E]',
+    ghost: 'bg-transparent text-[#0A0F1E] border border-[#0A0F1E] hover:bg-[#0A0F1E] hover:text-white',
+  };
+
+  const cls = `inline-flex items-center gap-3 px-9 py-4 tracking-[0.15em] uppercase font-semibold transition-colors duration-300 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-[#D4A843] focus-visible:ring-offset-2 focus-visible:ring-offset-white ${styles[variant]} ${className}`;
+  const sizeStyle = { fontSize: 'clamp(12px, 0.85vw, 14px)' };
+
   const Inner = (
     <motion.span
       animate={{ x: pos.x, y: pos.y }}
@@ -250,6 +289,7 @@ function MagneticButton({ children, href, onClick, dark = false, className = '' 
       {children}
     </motion.span>
   );
+
   if (href) {
     return (
       <Link
@@ -258,6 +298,7 @@ function MagneticButton({ children, href, onClick, dark = false, className = '' 
         onMouseMove={handleMove}
         onMouseLeave={reset}
         className={cls}
+        style={sizeStyle}
       >
         {Inner}
       </Link>
@@ -270,6 +311,7 @@ function MagneticButton({ children, href, onClick, dark = false, className = '' 
       onMouseMove={handleMove}
       onMouseLeave={reset}
       className={cls}
+      style={sizeStyle}
     >
       {Inner}
     </button>
@@ -280,40 +322,51 @@ function MagneticButton({ children, href, onClick, dark = false, className = '' 
 //   MAIN LANDING
 // ════════════════════════════════════════════════════════════════════════════
 export default function NewLanding({ locale, projects, clients }) {
-  const tNav = useTranslations('nav');
-  const tHero = useTranslations('hero');
   const tStats = useTranslations('stats');
-  const tServices = useTranslations('services');
   const tFAQ = useTranslations('faq');
-  const tContact = useTranslations('contact');
 
-  // ── Body theme override (cream) ────────────────────────────────────────────
+  // ── Body theme override ────────────────────────────────────────────────────
   useEffect(() => {
     const body = document.body;
     const prev = {
       bg: body.style.backgroundColor,
       color: body.style.color,
     };
-    body.style.backgroundColor = '#F4F1EA';
-    body.style.color = '#1B1B1B';
+    body.style.backgroundColor = COLORS.bg;
+    body.style.color = COLORS.text;
     return () => {
       body.style.backgroundColor = prev.bg;
       body.style.color = prev.color;
     };
   }, []);
 
-  // ── Stats data ─────────────────────────────────────────────────────────────
   const statsItems = tStats.raw('items');
-
-  // ── Services data ──────────────────────────────────────────────────────────
-  const services = tServices.raw('items');
-
-  // ── FAQ data ───────────────────────────────────────────────────────────────
   const faqItems = tFAQ.raw('items');
   const [openFaq, setOpenFaq] = useState(0);
-
-  // ── Approach accordion ─────────────────────────────────────────────────────
   const [openApproach, setOpenApproach] = useState(0);
+
+  // ── Scroll progress bar ────────────────────────────────────────────────────
+  const { scrollYProgress } = useScroll();
+  const progressX = useTransform(scrollYProgress, [0, 1], ['0%', '100%']);
+
+  // ── Active section detection ───────────────────────────────────────────────
+  const [activeSection, setActiveSection] = useState('hero');
+  useEffect(() => {
+    const sections = ['hero', 'about', 'story', 'approach', 'sustain', 'faq', 'contact'];
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) setActiveSection(entry.target.id);
+        });
+      },
+      { rootMargin: '-40% 0px -55% 0px' }
+    );
+    sections.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+    return () => observer.disconnect();
+  }, []);
 
   // ── Hero parallax ──────────────────────────────────────────────────────────
   const heroRef = useRef(null);
@@ -321,28 +374,24 @@ export default function NewLanding({ locale, projects, clients }) {
     target: heroRef,
     offset: ['start start', 'end start'],
   });
-  const heroImgY = useTransform(heroProg, [0, 1], ['0%', '40%']);
-  const heroSmallY = useTransform(heroProg, [0, 1], ['0%', '-25%']);
+  const heroImgY = useTransform(heroProg, [0, 1], ['0%', '38%']);
+  const heroSmallY = useTransform(heroProg, [0, 1], ['0%', '-22%']);
 
-  // ── Wordmark reveal in footer ──────────────────────────────────────────────
+  // ── Wordmark scroll ref ────────────────────────────────────────────────────
   const wordmarkRef = useRef(null);
-  const { scrollYProgress: wmProg } = useScroll({
-    target: wordmarkRef,
-    offset: ['start end', 'end end'],
-  });
 
-  // ── Approach items (custom) ────────────────────────────────────────────────
+  // ── Approach items ─────────────────────────────────────────────────────────
   const approachItems = [
     {
       title:
-        locale === 'ru' ? 'Разработано через исследование'
-        : locale === 'uz' ? 'Tadqiqot orqali ishlab chiqilgan'
-        : 'Developed through deep research',
+        locale === 'ru' ? 'Глубокое исследование'
+        : locale === 'uz' ? 'Chuqur tadqiqot'
+        : 'Deep research',
       body:
         locale === 'ru'
-          ? 'Каждый проект начинается с погружения в бренд клиента, изучения целевой аудитории и анализа конкурентного поля выставки.'
+          ? 'Каждый проект начинается с погружения в бренд клиента, изучения аудитории и анализа конкурентного поля выставки.'
           : locale === 'uz'
-          ? 'Har bir loyiha mijoz brendiga chuqurlashishdan, maqsadli auditoriyani o\'rganishdan va ko\'rgazma raqobat maydonini tahlil qilishdan boshlanadi.'
+          ? 'Har bir loyiha mijoz brendiga chuqurlashishdan, auditoriyani o\'rganishdan va raqobat maydonini tahlil qilishdan boshlanadi.'
           : 'Every project begins with brand immersion, audience study and a careful read of the exhibition\'s competitive landscape.',
     },
     {
@@ -354,55 +403,46 @@ export default function NewLanding({ locale, projects, clients }) {
         locale === 'ru'
           ? 'Мы выверяем геометрию, ритм фасадов и зональные пропорции — стенд должен читаться с дистанции и работать вблизи.'
           : locale === 'uz'
-          ? 'Geometriya, fasad ritmi va hududiy proporsiyalarni sinchkovlik bilan ishlab chiqamiz — stend uzoqdan o\'qilishi va yaqindan ishlashi kerak.'
+          ? 'Geometriya, fasad ritmi va hududiy proporsiyalarni sinchkovlik bilan ishlab chiqamiz.'
           : 'We calibrate geometry, façade rhythm and zoning so the stand reads from a distance and works close-up.',
     },
     {
       title:
-        locale === 'ru' ? 'Одержимость светом и материалом'
-        : locale === 'uz' ? 'Yorug\'lik va materialga ehtiros'
-        : 'Obsession with light and material',
+        locale === 'ru' ? 'Свет и материал как архитектура'
+        : locale === 'uz' ? 'Yorug\'lik va material — me\'morchilik kabi'
+        : 'Light & material as architecture',
       body:
         locale === 'ru'
-          ? 'Освещение проектируется как самостоятельный слой архитектуры. Материалы подбираются по тактильному ощущению, а не по каталогу.'
+          ? 'Освещение проектируется как самостоятельный слой архитектуры. Материалы подбираются по тактильному ощущению.'
           : locale === 'uz'
-          ? 'Yoritish me\'morchilikning mustaqil qatlami sifatida loyihalanadi. Materiallar katalog bo\'yicha emas, his-tuyg\'ular bo\'yicha tanlanadi.'
-          : 'Lighting is engineered as a layer of architecture in its own right. Materials are chosen by touch, not by catalogue.',
+          ? 'Yoritish me\'morchilikning mustaqil qatlami sifatida loyihalanadi. Materiallar his-tuyg\'ular bo\'yicha tanlanadi.'
+          : 'Lighting is engineered as a layer of architecture. Materials are chosen by touch, not by catalogue.',
     },
   ];
 
-  // ── Editorial copy (hero / sections) ───────────────────────────────────────
+  // ── Editorial copy ─────────────────────────────────────────────────────────
   const copy = {
     ru: {
-      heroH1Top: 'Видение в форме и',
-      heroH1Bot: 'функции ExpoContact',
-      heroFound:
-        'Основано в 2004 году. ExpoContact вырос из увлечения архитектурой ясности к ведущему голосу в строительстве выставочных стендов Центральной Азии.',
-      heroQuote:
-        'То, что начиналось как одна выставка в Ташкенте, превратилось в студию, где форма, свет и функция взаимодействуют ежедневно.',
-      aboutLabel: '/ О нас',
-      awardsLabel: 'Награды',
-      aboutH:
-        'Мы видим выставочный стенд как нечто большее, чем конструкцию. Это способ перевести стратегию в восприятие и построить осмысленный контакт.',
-      aboutPara:
-        'Мы верим в очистку дизайна до самого существенного — ясность, баланс, истина — так, чтобы остающееся было безошибочно мощным. Наш процесс начинается с понимания: вашего пространства, вашего намерения. Из этого мы лепим визуальный язык, одновременно поэтический и функциональный.',
+      heroEst: 'Основано в 2004 — Ташкент · Центральная Азия',
+      heroH1Top: 'Видение в форме',
+      heroH1Bot: 'и функции стенда',
+      heroFound: 'ExpoContact вырос из увлечения архитектурой ясности к ведущему голосу в строительстве выставочных стендов Центральной Азии.',
+      heroQuote: 'То, что начиналось как одна выставка в Ташкенте, превратилось в студию, где форма, свет и функция взаимодействуют ежедневно.',
+      aboutLabel: 'О нас',
+      awardsLabel: 'Награды и пресса',
+      aboutH: 'Мы видим выставочный стенд как нечто большее, чем конструкцию. Это способ перевести стратегию в восприятие и построить осмысленный контакт.',
+      aboutPara: 'Мы верим в очистку дизайна до самого существенного — ясность, баланс, истина — так, чтобы остающееся было безошибочно мощным. Наш процесс начинается с понимания: вашего пространства, вашего намерения.',
       showMore: 'Подробнее',
-      storyTitle:
-        'ExpoContact — творческая студия, построенная на убеждении, что выставочный стенд — это не декорация, это повествование.',
-      storyBody:
-        'Мы помогаем брендам, основателям и маркетинговым командам воплощать видения через продуманные дизайн-системы, выраженный визуальный язык и целеустремлённую эстетику.',
+      storyTitle: 'ExpoContact — творческая студия, построенная на убеждении, что выставочный стенд это не декорация, это повествование.',
+      storyBody: 'Мы помогаем брендам, основателям и маркетинговым командам воплощать видения через продуманные дизайн-системы, выраженный визуальный язык и целеустремлённую эстетику.',
       projectsTitle: 'Избранные проекты',
-      approachTitle:
-        'Наш подход сочетает выверенные европейские техники с современными производственными инновациями, создавая объекты, которые ощущаются лёгкими, но укоренёнными в точности.',
-      approachIntro:
-        'Наше наследие построено на эволюции. За два десятилетия мы переопределили, чем может быть выставочный стенд — от холодного модуля к скульптурному теплу.',
-      sustainTitle:
-        'Мы остаёмся приверженными ответственно сертифицированным материалам, этичной поставке и точному производству, которое делает работу долговечной во времени и значении.',
-      sustainAside:
-        'Мы формируем каждую идею с намерением — от первого эскиза до финального пикселя. Каждый компонент выполнен с заботой и точностью.',
+      approachTitle: 'Наш подход сочетает выверенные европейские техники с современными производственными инновациями, создавая объекты, которые ощущаются лёгкими, но укоренёнными в точности.',
+      approachIntro: 'Наше наследие построено на эволюции. За два десятилетия мы переопределили, чем может быть выставочный стенд.',
+      sustainTitle: 'Мы остаёмся приверженными ответственно сертифицированным материалам, этичной поставке и точному производству, которое делает работу долговечной во времени и значении.',
+      sustainAside: 'Мы формируем каждую идею с намерением — от первого эскиза до финального исполнения.',
       ctaH: 'Готовы поднять',
       ctaH2: 'вашу выставку?',
-      ctaSub: 'Поделитесь брифом — мы вернёмся с концепцией в течение суток.',
+      ctaSub: 'Поделитесь брифом — мы вернёмся с концепцией в течение 24 часов.',
       ctaBtn: 'Связаться',
       stayInformed: 'Будьте в курсе.',
       stayInspired: 'Будьте вдохновлены.',
@@ -416,45 +456,39 @@ export default function NewLanding({ locale, projects, clients }) {
       infoLegal: 'Юридическое',
       navAbout: 'О нас',
       navServices: 'Услуги',
+      navProjects: 'Проекты',
+      navApproach: 'Подход',
       navFaq: 'FAQ',
       navContact: 'Контакты',
       copyrights: '© 2026 ExpoContact. Все права защищены.',
       legalTerms: 'Условия использования',
       legalPrivacy: 'Конфиденциальность',
+      skipToContent: 'Перейти к содержанию',
     },
     en: {
-      heroH1Top: 'Vision in Form and',
-      heroH1Bot: 'Function of ExpoContact',
-      heroFound:
-        'Founded in 2004, ExpoContact grew from a fascination with architectural clarity into a leading voice in exhibition stand construction across Central Asia.',
-      heroQuote:
-        'What began as a single show in Tashkent has grown into a studio where form, light and function interact daily.',
-      aboutLabel: '/ About Us',
-      awardsLabel: 'Awards',
-      aboutH:
-        'At ExpoContact, we see an exhibition stand as more than structure. It is a way to translate strategy into perception and build meaningful contact.',
-      aboutPara:
-        'We believe in stripping design down to its most essential elements — clarity, balance, truth — so that what remains is unmistakably powerful. Our process starts with understanding: your space, your intent. From there, we sculpt a visual language that is both poetic and functional.',
+      heroEst: 'EST. 2004 — Tashkent · Central Asia',
+      heroH1Top: 'Vision in form',
+      heroH1Bot: 'and function',
+      heroFound: 'ExpoContact grew from a fascination with architectural clarity into a leading voice in exhibition stand construction across Central Asia.',
+      heroQuote: 'What began as a single show in Tashkent has grown into a studio where form, light and function interact daily.',
+      aboutLabel: 'About',
+      awardsLabel: 'Awards & Press',
+      aboutH: 'At ExpoContact, we see an exhibition stand as more than structure. It is a way to translate strategy into perception and build meaningful contact.',
+      aboutPara: 'We believe in stripping design down to its most essential elements — clarity, balance, truth — so that what remains is unmistakably powerful. Our process starts with understanding: your space, your intent.',
       showMore: 'Show More',
-      storyTitle:
-        'ExpoContact is a creative studio built on the belief that an exhibition stand is not decoration — it is storytelling.',
-      storyBody:
-        'We help brands, founders and marketing teams bring their visions to life through sophisticated design systems, distinctive visual identities and purposeful aesthetics.',
+      storyTitle: 'ExpoContact is a creative studio built on the belief that an exhibition stand is not decoration — it is storytelling.',
+      storyBody: 'We help brands, founders and marketing teams bring their visions to life through sophisticated design systems, distinctive visual identities and purposeful aesthetics.',
       projectsTitle: 'Selected Projects',
-      approachTitle:
-        'Our approach fuses time-honoured European techniques with modern manufacturing innovation, creating objects that feel weightless, yet grounded in precision.',
-      approachIntro:
-        'Our legacy is built on evolution. Over two decades we have redefined what an exhibition stand can be — from cold modular grids to sculptural warmth.',
-      sustainTitle:
-        'We remain committed to responsibly sourced materials, ethical supply and refined production processes that ensure our work endures in both time and relevance.',
-      sustainAside:
-        'We shape every idea with intent, from the first sketch to the final pixel. Each component is handled with precision and care.',
-      ctaH: 'Ready to Elevate',
-      ctaH2: 'Your Exhibition?',
+      approachTitle: 'Our approach fuses time-honoured European techniques with modern manufacturing innovation, creating objects that feel weightless, yet grounded in precision.',
+      approachIntro: 'Our legacy is built on evolution. Over two decades we have redefined what an exhibition stand can be.',
+      sustainTitle: 'We remain committed to responsibly sourced materials, ethical supply and refined production processes that ensure our work endures.',
+      sustainAside: 'We shape every idea with intent — from the first sketch to the final pixel.',
+      ctaH: 'Ready to elevate',
+      ctaH2: 'your exhibition?',
       ctaSub: 'Share a brief — we will respond with a concept within 24 hours.',
       ctaBtn: 'Contact Us',
-      stayInformed: 'Stay Informed.',
-      stayInspired: 'Stay Inspired.',
+      stayInformed: 'Stay informed.',
+      stayInspired: 'Stay inspired.',
       email: 'Your email',
       subscribe: 'Subscribe',
       colInfo: 'Information',
@@ -465,39 +499,33 @@ export default function NewLanding({ locale, projects, clients }) {
       infoLegal: 'Legal',
       navAbout: 'About',
       navServices: 'Services',
+      navProjects: 'Projects',
+      navApproach: 'Approach',
       navFaq: 'FAQ',
       navContact: 'Contact',
       copyrights: '© 2026 ExpoContact. All rights reserved.',
       legalTerms: 'Terms of Use',
       legalPrivacy: 'Privacy Policy',
+      skipToContent: 'Skip to content',
     },
     uz: {
+      heroEst: '2004 yildan — Toshkent · Markaziy Osiyo',
       heroH1Top: 'Shakl va funksiyada',
-      heroH1Bot: 'ExpoContact ko\'rinishi',
-      heroFound:
-        '2004 yilda asos solingan. ExpoContact me\'moriy aniqlikka qiziqishdan Markaziy Osiyodagi ko\'rgazma stendlari yetakchi ovoziga aylangan.',
-      heroQuote:
-        'Toshkentdagi bitta ko\'rgazma sifatida boshlangan narsa shakl, yorug\'lik va funksiya kunlik o\'zaro ta\'sirlashadigan studiyaga aylandi.',
-      aboutLabel: '/ Biz haqimizda',
+      heroH1Bot: 'stend ko\'rinishi',
+      heroFound: 'ExpoContact me\'moriy aniqlikka qiziqishdan Markaziy Osiyodagi ko\'rgazma stendlari yetakchi ovoziga aylangan.',
+      heroQuote: 'Toshkentdagi bitta ko\'rgazma sifatida boshlangan narsa shakl, yorug\'lik va funksiya kunlik o\'zaro ta\'sirlashadigan studiyaga aylandi.',
+      aboutLabel: 'Biz haqimizda',
       awardsLabel: 'Mukofotlar',
-      aboutH:
-        'ExpoContactda biz ko\'rgazma stendini konstruksiyadan ko\'ra ko\'proq narsa deb bilamiz. Bu strategiyani idrokga aylantirish va mazmunli aloqa qurish usulidir.',
-      aboutPara:
-        'Biz dizaynni eng muhim elementlarga — aniqlik, muvozanat, haqiqat — qisqartirishga ishonamiz, shunda qoladigan narsa shubhasiz kuchli bo\'ladi. Jarayonimiz tushunishdan boshlanadi: maydoningiz, niyatingiz. Bundan keyin biz ham she\'riy, ham funksional vizual tilni shakllantiramiz.',
+      aboutH: 'ExpoContactda biz ko\'rgazma stendini konstruksiyadan ko\'ra ko\'proq narsa deb bilamiz. Bu strategiyani idrokga aylantirish va mazmunli aloqa qurish usulidir.',
+      aboutPara: 'Biz dizaynni eng muhim elementlarga — aniqlik, muvozanat, haqiqat — qisqartirishga ishonamiz. Jarayonimiz tushunishdan boshlanadi: maydoningiz, niyatingiz.',
       showMore: 'Batafsil',
-      storyTitle:
-        'ExpoContact — ko\'rgazma stendi bezak emas, balki hikoya degan ishonchga asoslangan ijodiy studio.',
-      storyBody:
-        'Brendlar, ta\'sischilar va marketing jamoalariga murakkab dizayn tizimlari, o\'ziga xos vizual o\'ziga xosliklar va maqsadli estetika orqali tasavvurlarni hayotga olib chiqishga yordam beramiz.',
+      storyTitle: 'ExpoContact — ko\'rgazma stendi bezak emas, balki hikoya degan ishonchga asoslangan ijodiy studio.',
+      storyBody: 'Brendlar, ta\'sischilar va marketing jamoalariga murakkab dizayn tizimlari va maqsadli estetika orqali tasavvurlarni hayotga olib chiqishga yordam beramiz.',
       projectsTitle: 'Tanlangan loyihalar',
-      approachTitle:
-        'Bizning yondashuvimiz an\'anaviy Yevropa texnikalarini zamonaviy ishlab chiqarish innovatsiyasi bilan birlashtiradi, vaznsiz, lekin aniqlikka asoslangan obyektlarni yaratadi.',
-      approachIntro:
-        'Bizning merosimiz evolyutsiyaga asoslangan. Yigirma yil ichida biz ko\'rgazma stendi nima bo\'lishi mumkinligini qayta belgilab oldik.',
-      sustainTitle:
-        'Biz mas\'uliyatli olingan materiallarga, axloqiy yetkazib berishga va mehnatimizning vaqt va dolzarbligida davom etishini ta\'minlaydigan nozik ishlab chiqarish jarayonlariga sodiq qolamiz.',
-      sustainAside:
-        'Birinchi eskizdan oxirgi piksellargacha har bir g\'oyani niyat bilan shakllantiramiz. Har bir komponent aniqlik va g\'amxo\'rlik bilan ishlanadi.',
+      approachTitle: 'Bizning yondashuvimiz an\'anaviy Yevropa texnikalarini zamonaviy ishlab chiqarish innovatsiyasi bilan birlashtiradi.',
+      approachIntro: 'Bizning merosimiz evolyutsiyaga asoslangan. Yigirma yil ichida biz ko\'rgazma stendi nima bo\'lishi mumkinligini qayta belgilab oldik.',
+      sustainTitle: 'Biz mas\'uliyatli olingan materiallarga, axloqiy yetkazib berishga va nozik ishlab chiqarish jarayonlariga sodiq qolamiz.',
+      sustainAside: 'Birinchi eskizdan oxirgi piksellargacha har bir g\'oyani niyat bilan shakllantiramiz.',
       ctaH: 'Ko\'rgazmangizni',
       ctaH2: 'yuksaltirishga tayyormisiz?',
       ctaSub: 'Brifni yuboring — 24 soat ichida konsepsiya bilan javob beramiz.',
@@ -514,16 +542,18 @@ export default function NewLanding({ locale, projects, clients }) {
       infoLegal: 'Huquqiy',
       navAbout: 'Biz haqimizda',
       navServices: 'Xizmatlar',
+      navProjects: 'Loyihalar',
+      navApproach: 'Yondashuv',
       navFaq: 'FAQ',
       navContact: 'Aloqa',
       copyrights: '© 2026 ExpoContact. Barcha huquqlar himoyalangan.',
       legalTerms: 'Foydalanish shartlari',
       legalPrivacy: 'Maxfiylik siyosati',
+      skipToContent: 'Asosiy mazmunga o\'tish',
     },
   };
   const c = copy[locale] || copy.en;
 
-  // ── Marquee items ──────────────────────────────────────────────────────────
   const marqueeItems = [
     'UzAutoShow', 'AgriExpo CA', 'TechExpo', 'WorldFood Uz',
     'OGU Expo', 'Tashkent Build', 'BeautyExpo', 'Pharma CA',
@@ -531,76 +561,201 @@ export default function NewLanding({ locale, projects, clients }) {
 
   return (
     <>
-      {/* Fonts: Fraunces (serif) for editorial display, Inter already loaded by layout */}
+      {/* Modern sans-serif: Inter Display weights 200–900 (additive to layout load) */}
       <link
         rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700;800;900&display=swap"
       />
 
       <div
-        className="min-h-screen bg-[#F4F1EA] text-[#1B1B1B] selection:bg-[#1B1B1B] selection:text-[#F4F1EA] antialiased"
-        style={{ fontFamily: 'Inter, sans-serif' }}
+        className="min-h-screen bg-white text-[#0A0F1E] selection:bg-[#0A0F1E] selection:text-white antialiased"
+        style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif' }}
       >
-        {/* Local utility classes via inline style tag */}
+        {/* ── Global utility classes ──────────────────────────────────────── */}
         <style jsx global>{`
-          .font-serif-display { font-family: 'Fraunces', 'Times New Roman', serif; font-feature-settings: 'ss01'; letter-spacing: -0.02em; }
-          .nm-link { position: relative; }
-          .nm-link::after {
+          .display-1 {
+            font-size: clamp(44px, 7.2vw, 156px);
+            line-height: 0.94;
+            letter-spacing: -0.045em;
+            font-weight: 300;
+          }
+          .display-2 {
+            font-size: clamp(32px, 4.4vw, 88px);
+            line-height: 1.06;
+            letter-spacing: -0.035em;
+            font-weight: 300;
+          }
+          .display-3 {
+            font-size: clamp(26px, 3vw, 56px);
+            line-height: 1.12;
+            letter-spacing: -0.025em;
+            font-weight: 400;
+          }
+          .display-num {
+            font-size: clamp(48px, 5.6vw, 112px);
+            line-height: 0.94;
+            letter-spacing: -0.035em;
+            font-weight: 300;
+            font-variant-numeric: tabular-nums;
+          }
+          .body-lg {
+            font-size: clamp(15px, 1.05vw, 18px);
+            line-height: 1.65;
+          }
+          .body-md {
+            font-size: clamp(14px, 0.95vw, 16px);
+            line-height: 1.65;
+          }
+          .body-sm {
+            font-size: clamp(13px, 0.85vw, 15px);
+            line-height: 1.6;
+          }
+          .label-xs {
+            font-size: clamp(10.5px, 0.78vw, 12px);
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            font-weight: 500;
+          }
+          .nav-link {
+            font-size: clamp(13px, 0.95vw, 16px);
+            font-weight: 500;
+            position: relative;
+            transition: color 0.3s ease;
+          }
+          .nav-link::after {
             content: '';
             position: absolute;
             left: 0; right: 0;
-            bottom: -3px;
-            height: 1px;
-            background: currentColor;
+            bottom: -6px;
+            height: 1.5px;
+            background: #D4A843;
             transform: scaleX(0);
             transform-origin: right;
             transition: transform 0.5s cubic-bezier(0.22,1,0.36,1);
           }
-          .nm-link:hover::after { transform: scaleX(1); transform-origin: left; }
-          .editorial-hr { background: linear-gradient(90deg, transparent, #B8B1A0 50%, transparent); height: 1px; }
+          .nav-link:hover::after,
+          .nav-link[data-active='true']::after { transform: scaleX(1); transform-origin: left; }
+          .nav-link[data-active='true'] { color: #D4A843; }
+
+          .logo-invert {
+            /* logo is white-on-transparent; invert to dark for white bg */
+            filter: brightness(0) saturate(100%);
+          }
+          .logo-as-is { filter: none; }
+
+          .container-pad {
+            padding-left: clamp(20px, 4vw, 64px);
+            padding-right: clamp(20px, 4vw, 64px);
+          }
+
+          .container-x {
+            max-width: 1680px;
+            margin-left: auto;
+            margin-right: auto;
+          }
+
+          /* skip link */
+          .skip-link {
+            position: absolute;
+            top: -100px;
+            left: 16px;
+            z-index: 100;
+            background: #0A0F1E;
+            color: #fff;
+            padding: 10px 18px;
+            border-radius: 6px;
+            font-size: 13px;
+            transition: top 0.25s ease;
+          }
+          .skip-link:focus { top: 16px; }
+
+          /* Custom scrollbar */
+          ::-webkit-scrollbar       { width: 6px; height: 6px; }
+          ::-webkit-scrollbar-track { background: #F8F9FB; }
+          ::-webkit-scrollbar-thumb { background: #D4A843; border-radius: 3px; }
         `}</style>
+
+        {/* skip-to-content */}
+        <a href="#hero" className="skip-link">{c.skipToContent}</a>
+
+        {/* scroll progress bar */}
+        <motion.div
+          aria-hidden
+          className="fixed top-0 left-0 h-[2px] bg-[#D4A843] z-[60] origin-left"
+          style={{ scaleX: scrollYProgress, width: '100%' }}
+        />
 
         {/* ════════════════════════════════════════════════════════════════ */}
         {/*  NAV                                                              */}
         {/* ════════════════════════════════════════════════════════════════ */}
-        <NavBar copy={c} locale={locale} />
+        <NavBar copy={c} locale={locale} activeSection={activeSection} />
 
         {/* ════════════════════════════════════════════════════════════════ */}
         {/*  HERO                                                             */}
         {/* ════════════════════════════════════════════════════════════════ */}
         <section
+          id="hero"
           ref={heroRef}
-          className="relative pt-28 sm:pt-32 pb-24 px-6 sm:px-10 max-w-[1400px] mx-auto"
+          className="container-x container-pad relative pt-36 sm:pt-40 lg:pt-44 pb-24"
         >
-          <div className="grid grid-cols-12 gap-6">
+          <div className="grid grid-cols-12 gap-x-6 gap-y-12">
             {/* Top headline */}
             <div className="col-span-12 lg:col-span-8 relative z-10">
               <motion.p
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.2, duration: 0.8 }}
-                className="text-[11px] tracking-[0.25em] uppercase text-[#6B6A65] mb-6 font-medium"
+                className="label-xs text-[#5F6679] mb-8"
               >
-                EST. 2004 — Tashkent · Central Asia
+                {c.heroEst}
               </motion.p>
 
-              <h1 className="font-serif-display text-[12vw] sm:text-[8.5vw] lg:text-[6.2vw] leading-[0.95] font-light text-[#1B1B1B]">
+              <h1 className="display-1 text-[#0A0F1E]">
                 <span className="block">
                   <SplitHeadline text={c.heroH1Top} delay={0.3} />
                 </span>
-                <span className="block italic font-normal text-[#1B1B1B]/95">
-                  <SplitHeadline text={c.heroH1Bot} delay={0.6} />
+                <span className="block">
+                  <SplitHeadline text={c.heroH1Bot} delay={0.5} />
+                  <motion.span
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 1.3, duration: 0.7, ease: EASE }}
+                    className="inline-block align-baseline ml-3 text-[#D4A843]"
+                    aria-hidden
+                  >
+                    .
+                  </motion.span>
                 </span>
               </h1>
 
               <motion.p
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.4, duration: 0.8, ease: EASE }}
-                className="mt-10 max-w-md text-sm leading-relaxed text-[#6B6A65] font-light"
+                transition={{ delay: 1.3, duration: 0.8, ease: EASE }}
+                className="mt-12 max-w-lg body-md text-[#5F6679] font-light"
               >
                 {c.heroFound}
               </motion.p>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.5, duration: 0.8, ease: EASE }}
+                className="mt-10 flex flex-wrap items-center gap-4"
+              >
+                <MagneticButton href={`/${locale}#contacts`} variant="dark">
+                  {c.ctaBtn}
+                  <span aria-hidden>→</span>
+                </MagneticButton>
+                <a
+                  href="#story"
+                  className="inline-flex items-center gap-2 text-[#0A0F1E] body-sm font-medium nav-link"
+                  style={{ paddingBottom: 4 }}
+                >
+                  {c.projectsTitle}
+                  <span aria-hidden>↓</span>
+                </a>
+              </motion.div>
             </div>
 
             {/* Top-right floating image */}
@@ -608,29 +763,29 @@ export default function NewLanding({ locale, projects, clients }) {
               style={{ y: heroImgY }}
               initial={{ opacity: 0, scale: 1.05 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.6, duration: 1.2, ease: EASE }}
-              className="col-span-12 lg:col-span-4 lg:col-start-9 lg:row-start-1 lg:-mt-4 text-[#1B1B1B]"
+              transition={{ delay: 0.5, duration: 1.2, ease: EASE }}
+              className="col-span-12 lg:col-span-4 lg:col-start-9 lg:row-start-1 lg:-mt-4"
             >
               <ImageBlock
-                tone="charcoal"
+                tone="dark"
                 ratio="aspect-[3/4]"
                 motif="stand"
-                label="Featured Project"
+                label="Featured"
                 caption="Silk Road Motors — UzAutoShow 2023"
-                className="w-full lg:max-w-[320px] lg:ml-auto"
+                className="w-full lg:max-w-[360px] lg:ml-auto"
               />
             </motion.div>
 
-            {/* Bottom-left small image + center quote */}
+            {/* Bottom-left small image */}
             <motion.div
               style={{ y: heroSmallY }}
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1.2, duration: 1, ease: EASE }}
-              className="col-span-6 lg:col-span-3 mt-16"
+              transition={{ delay: 1.1, duration: 1, ease: EASE }}
+              className="col-span-6 lg:col-span-3 mt-8"
             >
               <ImageBlock
-                tone="warm"
+                tone="gold"
                 ratio="aspect-[5/4]"
                 motif="arch"
                 label="In Studio"
@@ -638,9 +793,12 @@ export default function NewLanding({ locale, projects, clients }) {
               />
             </motion.div>
 
-            <div className="col-span-12 lg:col-span-5 lg:col-start-5 mt-16 lg:mt-32 flex items-center">
+            <div className="col-span-12 lg:col-span-5 lg:col-start-5 mt-4 lg:mt-20 flex items-center">
               <Reveal delay={0.2}>
-                <p className="font-serif-display text-2xl sm:text-[28px] leading-snug italic font-light text-[#1B1B1B]/90 max-w-xl">
+                <p
+                  className="text-[#0A0F1E]/85 font-light leading-snug max-w-xl"
+                  style={{ fontSize: 'clamp(18px, 1.6vw, 28px)', letterSpacing: '-0.015em' }}
+                >
                   &ldquo;{c.heroQuote}&rdquo;
                 </p>
               </Reveal>
@@ -652,13 +810,13 @@ export default function NewLanding({ locale, projects, clients }) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 2, duration: 1 }}
-            className="absolute right-6 sm:right-10 bottom-10 flex flex-col items-center gap-3 text-[10px] tracking-[0.3em] uppercase text-[#6B6A65]"
+            className="absolute right-6 sm:right-10 bottom-10 flex flex-col items-center gap-3 label-xs text-[#5F6679]"
           >
             <span>Scroll</span>
             <motion.span
               animate={{ y: [0, 10, 0] }}
               transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-              className="w-px h-10 bg-gradient-to-b from-[#6B6A65] to-transparent"
+              className="w-px h-10 bg-gradient-to-b from-[#5F6679] to-transparent"
             />
           </motion.div>
         </section>
@@ -666,20 +824,18 @@ export default function NewLanding({ locale, projects, clients }) {
         {/* ════════════════════════════════════════════════════════════════ */}
         {/*  STATS                                                            */}
         {/* ════════════════════════════════════════════════════════════════ */}
-        <section className="border-t border-b border-[#D8D3C8]">
-          <div className="max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-[#D8D3C8]">
+        <section className="border-t border-b border-[#E5E7EB]">
+          <div className="container-x grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-[#E5E7EB]">
             {statsItems.slice(0, 3).map((s, i) => (
               <Reveal
                 key={i}
-                delay={i * 0.15}
-                className="px-8 sm:px-12 py-12 sm:py-16 flex flex-col gap-3"
+                delay={i * 0.12}
+                className="container-pad py-14 sm:py-20 flex flex-col gap-4"
               >
-                <div className="font-serif-display text-5xl sm:text-6xl font-light text-[#1B1B1B]">
+                <div className="display-num text-[#0A0F1E]">
                   <CountUp to={s.value} suffix={s.suffix || ''} duration={2 + i * 0.3} />
                 </div>
-                <p className="text-[11px] tracking-[0.25em] uppercase text-[#6B6A65] font-medium">
-                  {s.label}
-                </p>
+                <p className="label-xs text-[#5F6679]">{s.label}</p>
               </Reveal>
             ))}
           </div>
@@ -688,25 +844,25 @@ export default function NewLanding({ locale, projects, clients }) {
         {/* ════════════════════════════════════════════════════════════════ */}
         {/*  ABOUT                                                            */}
         {/* ════════════════════════════════════════════════════════════════ */}
-        <section className="max-w-[1400px] mx-auto px-6 sm:px-10 py-24 sm:py-32">
-          <div className="flex justify-between items-baseline mb-16 text-[11px] tracking-[0.25em] uppercase text-[#6B6A65]">
-            <span>{c.aboutLabel}</span>
-            <span>{c.awardsLabel}</span>
+        <section id="about" className="container-x container-pad py-28 sm:py-36">
+          <div className="flex justify-between items-baseline mb-16 label-xs text-[#5F6679]">
+            <span>/ {c.aboutLabel}</span>
+            <span>{c.awardsLabel} →</span>
           </div>
 
           <Reveal>
-            <h2 className="font-serif-display text-3xl sm:text-[40px] lg:text-[52px] leading-[1.15] font-light max-w-4xl mx-auto text-center text-[#1B1B1B]">
+            <h2 className="display-2 max-w-5xl mx-auto text-center text-[#0A0F1E]">
               {c.aboutH}
             </h2>
           </Reveal>
 
-          <div className="grid grid-cols-12 gap-6 mt-20">
+          <div className="grid grid-cols-12 gap-6 mt-24">
             <Reveal className="col-span-12 lg:col-span-5 lg:col-start-8 order-1 lg:order-2" delay={0.1}>
-              <div className="bg-[#EFEAE0] p-8 sm:p-10 rounded-sm">
-                <p className="text-[14px] leading-relaxed text-[#1B1B1B]/85 font-light mb-6">
+              <div className="bg-[#F8F9FB] p-10 sm:p-12 rounded-sm">
+                <p className="body-md text-[#0A0F1E]/85 font-light mb-8">
                   {c.aboutPara}
                 </p>
-                <button className="inline-flex items-center gap-3 text-[11px] tracking-[0.25em] uppercase text-[#1B1B1B] nm-link font-medium">
+                <button className="inline-flex items-center gap-3 label-xs text-[#0A0F1E] nav-link" style={{ paddingBottom: 6 }}>
                   {c.showMore}
                   <span aria-hidden>→</span>
                 </button>
@@ -714,7 +870,7 @@ export default function NewLanding({ locale, projects, clients }) {
             </Reveal>
 
             <Reveal className="col-span-6 lg:col-span-3 lg:col-start-1 order-2 lg:order-1 mt-10 lg:mt-16" delay={0.2}>
-              <ImageBlock tone="bronze" ratio="aspect-[3/4]" motif="grid" />
+              <ImageBlock tone="gold" ratio="aspect-[3/4]" motif="grid" />
             </Reveal>
 
             <Reveal className="col-span-6 lg:col-span-4 order-3 mt-10 lg:mt-32" delay={0.3}>
@@ -731,22 +887,21 @@ export default function NewLanding({ locale, projects, clients }) {
         {/* ════════════════════════════════════════════════════════════════ */}
         {/*  STORY                                                            */}
         {/* ════════════════════════════════════════════════════════════════ */}
-        <section className="max-w-[1400px] mx-auto px-6 sm:px-10 py-24 sm:py-32">
+        <section id="story" className="container-x container-pad py-28 sm:py-36">
           <div className="grid grid-cols-12 gap-8 items-start">
             <Reveal className="col-span-12 lg:col-span-7">
-              <h2 className="font-serif-display text-3xl sm:text-[42px] lg:text-[48px] leading-[1.15] font-light text-[#1B1B1B] max-w-3xl">
+              <h2 className="display-3 text-[#0A0F1E] max-w-3xl">
                 {c.storyTitle}
               </h2>
-              <p className="mt-10 max-w-xl text-[15px] leading-relaxed text-[#6B6A65] font-light">
+              <p className="mt-10 max-w-xl body-md text-[#5F6679] font-light">
                 {c.storyBody}
               </p>
 
-              {/* Projects list with arrow */}
-              <div className="mt-16">
-                <div className="text-[11px] tracking-[0.25em] uppercase text-[#6B6A65] mb-6 font-medium">
+              <div className="mt-16" id="projects">
+                <div className="label-xs text-[#5F6679] mb-6">
                   {c.projectsTitle}
                 </div>
-                <div className="border-t border-[#D8D3C8]">
+                <div className="border-t border-[#E5E7EB]">
                   {projects.slice(0, 4).map((p, i) => (
                     <ProjectRow key={p.id} project={p} delay={i * 0.1} />
                   ))}
@@ -755,13 +910,13 @@ export default function NewLanding({ locale, projects, clients }) {
             </Reveal>
 
             <Reveal className="col-span-12 lg:col-span-4 lg:col-start-9 lg:sticky lg:top-32" delay={0.3}>
-              <ImageBlock tone="charcoal" ratio="aspect-[3/4]" motif="arch" label="Heritage" />
-              <p className="mt-6 text-xs text-[#6B6A65] font-light leading-relaxed max-w-xs">
+              <ImageBlock tone="dark" ratio="aspect-[3/4]" motif="arch" label="Heritage" />
+              <p className="mt-6 body-sm text-[#5F6679] font-light max-w-xs">
                 {locale === 'ru'
-                  ? 'Мы формируем каждую идею с намерением — от первого эскиза до финального исполнения. Каждый объект обрабатывается с заботой и точностью.'
+                  ? 'Мы формируем каждую идею с намерением — от первого эскиза до финального исполнения.'
                   : locale === 'uz'
-                  ? 'Birinchi eskizdan oxirgi bajarilishigacha har bir g\'oyani niyat bilan shakllantiramiz. Har bir obyekt g\'amxo\'rlik va aniqlik bilan ishlanadi.'
-                  : 'We shape every idea with intent — from the first sketch to the final execution. Each object is handled with care and precision.'}
+                  ? 'Birinchi eskizdan oxirgi bajarilishigacha har bir g\'oyani niyat bilan shakllantiramiz.'
+                  : 'We shape every idea with intent — from the first sketch to the final execution.'}
               </p>
             </Reveal>
           </div>
@@ -770,37 +925,43 @@ export default function NewLanding({ locale, projects, clients }) {
         {/* ════════════════════════════════════════════════════════════════ */}
         {/*  APPROACH                                                         */}
         {/* ════════════════════════════════════════════════════════════════ */}
-        <section className="bg-[#EFEAE0] py-24 sm:py-32">
-          <div className="max-w-[1400px] mx-auto px-6 sm:px-10 grid grid-cols-12 gap-8">
+        <section id="approach" className="bg-[#F8F9FB] py-28 sm:py-36">
+          <div className="container-x container-pad grid grid-cols-12 gap-8">
             <Reveal className="col-span-12 lg:col-span-7">
-              <h2 className="font-serif-display text-2xl sm:text-[34px] lg:text-[40px] leading-[1.2] font-light max-w-2xl text-[#1B1B1B]">
+              <h2 className="display-3 text-[#0A0F1E] max-w-2xl">
                 {c.approachTitle}
               </h2>
-              <p className="mt-10 max-w-md text-[14px] leading-relaxed text-[#6B6A65] font-light">
+              <p className="mt-10 max-w-lg body-md text-[#5F6679] font-light">
                 {c.approachIntro}
               </p>
 
-              <div className="mt-16 border-t border-[#D8D3C8]">
+              <div className="mt-16 border-t border-[#E5E7EB]">
                 {approachItems.map((item, i) => (
-                  <div key={i} className="border-b border-[#D8D3C8]">
+                  <div key={i} className="border-b border-[#E5E7EB]">
                     <button
                       onClick={() => setOpenApproach(openApproach === i ? -1 : i)}
-                      className="w-full py-5 flex items-center justify-between gap-6 text-left group"
+                      className="w-full py-6 flex items-center justify-between gap-6 text-left group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#D4A843] focus-visible:ring-offset-4 focus-visible:ring-offset-[#F8F9FB] rounded-sm"
                     >
-                      <span className="flex items-center gap-6">
-                        <span className="text-[11px] tracking-[0.2em] text-[#6B6A65] font-medium">
+                      <span className="flex items-center gap-8">
+                        <span className="label-xs text-[#5F6679] tabular-nums">
                           0{i + 1}
                         </span>
-                        <span className="text-[15px] font-medium text-[#1B1B1B]">
+                        <span
+                          className="font-medium text-[#0A0F1E]"
+                          style={{ fontSize: 'clamp(15px, 1.15vw, 18px)' }}
+                        >
                           {item.title}
                         </span>
                       </span>
                       <motion.span
                         animate={{ rotate: openApproach === i ? 45 : 0 }}
                         transition={{ duration: 0.35, ease: EASE }}
-                        className="text-[#1B1B1B] group-hover:text-[#B8882E] transition-colors"
+                        className="shrink-0 w-8 h-8 rounded-full border border-[#E5E7EB] flex items-center justify-center text-[#0A0F1E] group-hover:border-[#D4A843] group-hover:text-[#D4A843] transition-colors"
                       >
-                        +
+                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                          <line x1="6" y1="1" x2="6" y2="11" stroke="currentColor" strokeWidth="1.4" />
+                          <line x1="1" y1="6" x2="11" y2="6" stroke="currentColor" strokeWidth="1.4" />
+                        </svg>
                       </motion.span>
                     </button>
                     <AnimatePresence initial={false}>
@@ -812,7 +973,7 @@ export default function NewLanding({ locale, projects, clients }) {
                           transition={{ duration: 0.4, ease: EASE }}
                           className="overflow-hidden"
                         >
-                          <p className="pb-5 pl-14 pr-12 text-[14px] leading-relaxed text-[#6B6A65] font-light">
+                          <p className="pb-6 pl-[clamp(64px,8vw,96px)] pr-12 body-sm text-[#5F6679] font-light">
                             {item.body}
                           </p>
                         </motion.div>
@@ -824,7 +985,7 @@ export default function NewLanding({ locale, projects, clients }) {
             </Reveal>
 
             <Reveal className="col-span-12 lg:col-span-4 lg:col-start-9" delay={0.2}>
-              <ImageBlock tone="sand" ratio="aspect-[4/5]" motif="stand" label="Process" />
+              <ImageBlock tone="cream" ratio="aspect-[4/5]" motif="stand" label="Process" />
             </Reveal>
           </div>
         </section>
@@ -832,22 +993,22 @@ export default function NewLanding({ locale, projects, clients }) {
         {/* ════════════════════════════════════════════════════════════════ */}
         {/*  SUSTAINABILITY                                                   */}
         {/* ════════════════════════════════════════════════════════════════ */}
-        <section className="max-w-[1400px] mx-auto px-6 sm:px-10 py-24 sm:py-32">
+        <section id="sustain" className="container-x container-pad py-28 sm:py-36">
           <Reveal>
-            <h2 className="font-serif-display text-2xl sm:text-[34px] lg:text-[40px] leading-[1.2] font-light max-w-3xl text-[#1B1B1B]">
+            <h2 className="display-3 text-[#0A0F1E] max-w-3xl">
               {c.sustainTitle}
             </h2>
           </Reveal>
 
           <div className="grid grid-cols-12 gap-6 mt-20">
             <Reveal className="col-span-6 lg:col-span-4" delay={0.1}>
-              <ImageBlock tone="beige" ratio="aspect-[4/5]" motif="grid" label="Materials" />
+              <ImageBlock tone="paper" ratio="aspect-[4/5]" motif="grid" label="Materials" />
             </Reveal>
             <Reveal className="col-span-6 lg:col-span-5" delay={0.25}>
               <ImageBlock tone="stone" ratio="aspect-[5/4]" motif="stand" label="Production" />
             </Reveal>
             <Reveal className="col-span-12 lg:col-span-3 lg:flex lg:items-end" delay={0.4}>
-              <p className="text-[13px] leading-relaxed text-[#6B6A65] font-light">
+              <p className="body-sm text-[#5F6679] font-light">
                 {c.sustainAside}
               </p>
             </Reveal>
@@ -857,26 +1018,26 @@ export default function NewLanding({ locale, projects, clients }) {
         {/* ════════════════════════════════════════════════════════════════ */}
         {/*  FAQ                                                              */}
         {/* ════════════════════════════════════════════════════════════════ */}
-        <section className="bg-[#EFEAE0] py-24 sm:py-32">
-          <div className="max-w-[1400px] mx-auto px-6 sm:px-10 grid grid-cols-12 gap-8">
+        <section id="faq" className="bg-[#F8F9FB] py-28 sm:py-36">
+          <div className="container-x container-pad grid grid-cols-12 gap-8">
             <Reveal className="col-span-12 lg:col-span-4 lg:sticky lg:top-32 lg:self-start">
-              <div className="text-[11px] tracking-[0.25em] uppercase text-[#6B6A65] mb-6 font-medium">
+              <div className="label-xs text-[#5F6679] mb-6">
                 / {tFAQ('title')}
               </div>
-              <h2 className="font-serif-display text-2xl sm:text-[32px] lg:text-[38px] leading-[1.2] font-light text-[#1B1B1B]">
+              <h2 className="display-3 text-[#0A0F1E]">
                 {locale === 'ru'
-                  ? 'Мы верим в прозрачность, точность и простоту — не только в дизайне, но и в коммуникации.'
+                  ? 'Прозрачность, точность и простота — не только в дизайне, но и в коммуникации.'
                   : locale === 'uz'
-                  ? 'Biz shaffoflik, aniqlik va soddalikka ishonamiz — nafaqat dizaynda, balki muloqotda ham.'
-                  : 'We believe in transparency, precision and simplicity — not only in our designs but in how we communicate.'}
+                  ? 'Shaffoflik, aniqlik va soddalik — nafaqat dizaynda, balki muloqotda ham.'
+                  : 'Transparency, precision and simplicity — not only in design, but in how we communicate.'}
               </h2>
-              <div className="mt-10 hidden lg:block">
-                <ImageBlock tone="beige" ratio="aspect-[4/3]" motif="arch" />
+              <div className="mt-12 hidden lg:block">
+                <ImageBlock tone="cream" ratio="aspect-[4/3]" motif="arch" />
               </div>
             </Reveal>
 
             <Reveal className="col-span-12 lg:col-span-7 lg:col-start-6" delay={0.1}>
-              <div className="border-t border-[#D8D3C8]">
+              <div className="border-t border-[#E5E7EB]">
                 {faqItems.map((it, i) => (
                   <AccordionItem
                     key={i}
@@ -894,34 +1055,47 @@ export default function NewLanding({ locale, projects, clients }) {
         {/* ════════════════════════════════════════════════════════════════ */}
         {/*  CTA                                                              */}
         {/* ════════════════════════════════════════════════════════════════ */}
-        <section className="relative overflow-hidden">
-          <div className="max-w-[1400px] mx-auto px-6 sm:px-10 py-24 sm:py-32 grid grid-cols-12 gap-8 items-center relative">
-            <Reveal className="col-span-12 lg:col-span-6">
-              <h2 className="font-serif-display text-5xl sm:text-6xl lg:text-[88px] leading-[1.02] font-light text-[#1B1B1B]">
+        <section id="contact" className="relative overflow-hidden bg-white">
+          <div className="container-x container-pad py-28 sm:py-36 grid grid-cols-12 gap-8 items-center relative">
+            <Reveal className="col-span-12 lg:col-span-7">
+              <h2 className="display-1 text-[#0A0F1E]" style={{ fontSize: 'clamp(40px, 6vw, 128px)' }}>
                 <span className="block"><SplitHeadline text={c.ctaH} delay={0.1} /></span>
-                <span className="block italic"><SplitHeadline text={c.ctaH2} delay={0.4} /></span>
+                <span className="block">
+                  <SplitHeadline text={c.ctaH2} delay={0.4} />
+                  <motion.span
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.9, duration: 0.6 }}
+                    className="text-[#D4A843]"
+                    aria-hidden
+                  >.</motion.span>
+                </span>
               </h2>
-              <p className="mt-8 text-[14px] text-[#6B6A65] max-w-md font-light leading-relaxed">
+              <p className="mt-8 body-md text-[#5F6679] max-w-md font-light">
                 {c.ctaSub}
               </p>
-              <Reveal delay={0.7} className="mt-10">
-                <MagneticButton href={`/${locale}#contacts`}>
+              <Reveal delay={0.6} className="mt-10 flex flex-wrap gap-4">
+                <MagneticButton href={`/${locale}#contacts`} variant="dark">
                   {c.ctaBtn}
                   <span aria-hidden>→</span>
+                </MagneticButton>
+                <MagneticButton href={`/${locale}`} variant="ghost">
+                  {c.projectsTitle}
                 </MagneticButton>
               </Reveal>
             </Reveal>
 
             <Reveal className="col-span-12 lg:col-span-5 lg:col-start-8" delay={0.2}>
-              <ImageBlock tone="charcoal" ratio="aspect-[4/3]" motif="stand" label="Reserved Stand" />
+              <ImageBlock tone="dark" ratio="aspect-[4/3]" motif="stand" label="Reserved Stand" />
             </Reveal>
 
             {/* decorative orb */}
             <motion.div
               aria-hidden
-              className="absolute -right-32 -top-32 w-[400px] h-[400px] rounded-full bg-gradient-to-br from-[#D6CDB8] to-transparent opacity-40 blur-3xl"
+              className="absolute -right-32 -top-32 w-[420px] h-[420px] rounded-full bg-gradient-to-br from-[#D4A843]/30 to-transparent blur-3xl"
               animate={{ scale: [1, 1.1, 1], rotate: [0, 90, 0] }}
-              transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
+              transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
             />
           </div>
         </section>
@@ -929,27 +1103,32 @@ export default function NewLanding({ locale, projects, clients }) {
         {/* ════════════════════════════════════════════════════════════════ */}
         {/*  FOOTER                                                           */}
         {/* ════════════════════════════════════════════════════════════════ */}
-        <footer className="bg-[#0F0E0C] text-[#F4F1EA] pt-20 pb-0 overflow-hidden">
-          <div className="max-w-[1400px] mx-auto px-6 sm:px-10">
-            {/* Top row: newsletter + columns */}
+        <footer className="bg-[#0A0F1E] text-white pt-24 pb-0 overflow-hidden">
+          <div className="container-x container-pad">
             <div className="grid grid-cols-12 gap-8 pb-20">
               <Reveal className="col-span-12 lg:col-span-5">
-                <h3 className="font-serif-display text-3xl sm:text-4xl font-light leading-tight">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={LOGO_W}
+                  alt="ExpoContact"
+                  className="h-10 w-auto mb-8 logo-as-is"
+                />
+                <h3 className="text-3xl sm:text-4xl font-light leading-tight tracking-tight" style={{ fontSize: 'clamp(24px, 2.4vw, 40px)' }}>
                   {c.stayInformed}<br />
-                  <span className="italic">{c.stayInspired}</span>
+                  <span className="text-[#D4A843]">{c.stayInspired}</span>
                 </h3>
                 <form
-                  className="mt-8 flex items-center border-b border-[#F4F1EA]/30 pb-3 max-w-md"
+                  className="mt-10 flex items-center border-b border-white/25 pb-3 max-w-md focus-within:border-[#D4A843] transition-colors"
                   onSubmit={(e) => e.preventDefault()}
                 >
                   <input
                     type="email"
                     placeholder={c.email}
-                    className="bg-transparent flex-1 text-sm text-[#F4F1EA] placeholder:text-[#F4F1EA]/50 focus:outline-none font-light"
+                    className="bg-transparent flex-1 text-sm text-white placeholder:text-white/40 focus:outline-none font-light"
                   />
                   <button
                     type="submit"
-                    className="text-[11px] tracking-[0.25em] uppercase text-[#F4F1EA]/70 hover:text-[#B8882E] transition-colors font-medium"
+                    className="label-xs text-white/70 hover:text-[#D4A843] transition-colors"
                   >
                     {c.subscribe} →
                   </button>
@@ -970,19 +1149,18 @@ export default function NewLanding({ locale, projects, clients }) {
               </Reveal>
             </div>
 
-            {/* Wordmark — animated scroll reveal */}
+            {/* Wordmark */}
             <div ref={wordmarkRef} className="relative">
-              <WordmarkReveal text="expocontact" progress={wmProg} />
+              <WordmarkReveal text="expocontact" />
             </div>
 
-            {/* bottom row */}
-            <div className="border-t border-[#F4F1EA]/20 mt-6 py-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] tracking-[0.15em] uppercase text-[#F4F1EA]/50">
+            <div className="border-t border-white/15 mt-6 py-6 flex flex-col sm:flex-row items-center justify-between gap-4 label-xs text-white/40">
               <span>{c.copyrights}</span>
-              <div className="flex items-center gap-6">
-                <Link href={`/${locale}`} className="hover:text-[#B8882E] transition-colors">
+              <div className="flex items-center gap-8">
+                <Link href={`/${locale}`} className="hover:text-[#D4A843] transition-colors">
                   {c.legalTerms}
                 </Link>
-                <Link href={`/${locale}`} className="hover:text-[#B8882E] transition-colors">
+                <Link href={`/${locale}`} className="hover:text-[#D4A843] transition-colors">
                   {c.legalPrivacy}
                 </Link>
               </div>
@@ -998,8 +1176,9 @@ export default function NewLanding({ locale, projects, clients }) {
 //   SUB-COMPONENTS
 // ════════════════════════════════════════════════════════════════════════════
 
-function NavBar({ copy: c, locale }) {
+function NavBar({ copy: c, locale, activeSection }) {
   const [scrolled, setScrolled] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   useEffect(() => {
     const on = () => setScrolled(window.scrollY > 30);
     on();
@@ -1007,65 +1186,175 @@ function NavBar({ copy: c, locale }) {
     return () => window.removeEventListener('scroll', on);
   }, []);
 
+  const links = [
+    { href: '#about',    label: c.navAbout,    id: 'about' },
+    { href: '#story',    label: c.navProjects, id: 'story' },
+    { href: '#approach', label: c.navApproach, id: 'approach' },
+    { href: '#faq',      label: c.navFaq,      id: 'faq' },
+    { href: '#contact',  label: c.navContact,  id: 'contact' },
+  ];
+
   return (
-    <motion.nav
-      initial={{ y: -100, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.8, ease: EASE }}
-      className={`fixed top-0 inset-x-0 z-50 transition-all duration-500 ${
-        scrolled
-          ? 'bg-[#F4F1EA]/85 backdrop-blur-md border-b border-[#D8D3C8]/60'
-          : 'bg-transparent border-b border-transparent'
-      }`}
-    >
-      <div className="max-w-[1400px] mx-auto px-6 sm:px-10 h-16 flex items-center justify-between">
-        {/* Brand */}
-        <Link href={`/${locale}/new`} className="flex items-center gap-2">
-          <span className="font-serif-display text-xl font-medium tracking-tight text-[#1B1B1B]">
-            expo<span className="italic font-light">contact</span>
-          </span>
-        </Link>
+    <>
+      <motion.nav
+        initial={{ y: -80, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.8, ease: EASE }}
+        className={`fixed top-0 inset-x-0 z-50 transition-all duration-500 ${
+          scrolled
+            ? 'bg-white/85 backdrop-blur-md border-b border-[#E5E7EB]/80'
+            : 'bg-white/0 border-b border-transparent'
+        }`}
+      >
+        <div
+          className="container-x container-pad flex items-center justify-between"
+          style={{ height: 'clamp(72px, 6vw, 96px)' }}
+        >
+          {/* Brand logo (white→black filter for white bg) */}
+          <Link
+            href={`/${locale}/new`}
+            className="flex items-center shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#D4A843] rounded"
+            aria-label="ExpoContact"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={LOGO_W}
+              alt="ExpoContact"
+              className="logo-invert"
+              style={{ height: 'clamp(26px, 2.2vw, 36px)', width: 'auto' }}
+            />
+          </Link>
 
-        {/* Center nav (split into two groups like Tonelli) */}
-        <div className="hidden lg:flex items-center gap-10 text-[12px] text-[#1B1B1B]/85 font-medium">
-          <div className="flex flex-col items-end">
-            <a href="#about" className="nm-link">{c.navAbout}</a>
-            <a href="#services" className="nm-link text-[#1B1B1B]/60 text-[11px]">{c.navServices}</a>
-          </div>
-          <div className="flex flex-col items-end">
-            <a href="#projects" className="nm-link">Projects</a>
-            <a href="#approach" className="nm-link text-[#1B1B1B]/60 text-[11px]">Approach</a>
-          </div>
-          <div className="flex flex-col items-end">
-            <a href="#faq" className="nm-link">FAQ</a>
-            <a href="#story" className="nm-link text-[#1B1B1B]/60 text-[11px]">Story</a>
-          </div>
-        </div>
-
-        {/* Right: locale + contact */}
-        <div className="flex items-center gap-6">
-          <div className="hidden sm:flex items-center gap-2 text-[11px] tracking-[0.2em] uppercase text-[#1B1B1B]/70">
-            {['ru', 'en', 'uz'].map((l, i) => (
-              <span key={l} className="flex items-center gap-2">
-                {i > 0 && <span className="text-[#1B1B1B]/30">·</span>}
-                <Link
-                  href={`/${l}/new`}
-                  className={l === locale ? 'text-[#1B1B1B] font-semibold' : 'hover:text-[#1B1B1B]'}
-                >
-                  {l.toUpperCase()}
-                </Link>
-              </span>
+          {/* Center nav — single row */}
+          <div className="hidden lg:flex items-center gap-[clamp(20px,2.4vw,40px)] text-[#0A0F1E]">
+            {links.map((l) => (
+              <a
+                key={l.id}
+                href={l.href}
+                className="nav-link"
+                data-active={activeSection === l.id}
+              >
+                {l.label}
+              </a>
             ))}
           </div>
-          <a
-            href="#contact"
-            className="text-[12px] font-medium text-[#1B1B1B] nm-link"
-          >
-            {c.navContact}
-          </a>
+
+          {/* Right cluster */}
+          <div className="flex items-center gap-[clamp(12px,1.6vw,24px)]">
+            <div className="hidden sm:flex items-center gap-2 text-[#0A0F1E]/55">
+              {['ru', 'en', 'uz'].map((l, i) => (
+                <span key={l} className="flex items-center gap-2" style={{ fontSize: 'clamp(11px, 0.8vw, 13px)' }}>
+                  {i > 0 && <span className="text-[#0A0F1E]/25">·</span>}
+                  <Link
+                    href={`/${l}/new`}
+                    className={`tracking-[0.2em] uppercase font-semibold transition-colors focus:outline-none focus-visible:ring-1 focus-visible:ring-[#D4A843] rounded px-0.5 ${
+                      l === locale ? 'text-[#D4A843]' : 'hover:text-[#0A0F1E]'
+                    }`}
+                  >
+                    {l.toUpperCase()}
+                  </Link>
+                </span>
+              ))}
+            </div>
+            <a
+              href="#contact"
+              className="hidden md:inline-flex items-center gap-2 bg-[#0A0F1E] text-white hover:bg-[#D4A843] transition-colors px-6 py-3 rounded-full font-semibold tracking-[0.12em] uppercase"
+              style={{ fontSize: 'clamp(11px, 0.8vw, 13px)' }}
+            >
+              {c.ctaBtn || c.navContact}
+              <span aria-hidden>→</span>
+            </a>
+            {/* mobile burger */}
+            <button
+              onClick={() => setMobileOpen(true)}
+              className="lg:hidden w-10 h-10 flex flex-col gap-1.5 items-center justify-center text-[#0A0F1E]"
+              aria-label="Open menu"
+            >
+              <span className="block w-5 h-px bg-current" />
+              <span className="block w-5 h-px bg-current" />
+              <span className="block w-3 h-px bg-[#D4A843] self-start" />
+            </button>
+          </div>
         </div>
-      </div>
-    </motion.nav>
+      </motion.nav>
+
+      {/* Mobile panel */}
+      <AnimatePresence>
+        {mobileOpen && (
+          <>
+            <motion.div
+              key="mob-bd"
+              className="fixed inset-0 z-[55] bg-[#0A0F1E]/40 backdrop-blur-sm lg:hidden"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setMobileOpen(false)}
+            />
+            <motion.div
+              key="mob-panel"
+              className="fixed top-0 right-0 bottom-0 z-[60] w-[88vw] max-w-sm bg-white border-l border-[#E5E7EB] flex flex-col shadow-2xl lg:hidden"
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ duration: 0.35, ease: EASE }}
+            >
+              <div className="flex items-center justify-between px-6 pt-6 pb-10">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={LOGO_W} alt="ExpoContact" className="h-7 w-auto logo-invert" />
+                <button
+                  onClick={() => setMobileOpen(false)}
+                  className="w-9 h-9 flex items-center justify-center rounded-full bg-[#F8F9FB] text-[#0A0F1E]"
+                  aria-label="Close"
+                >
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                    <line x1="1" y1="1" x2="13" y2="13" stroke="currentColor" strokeWidth="1.4" />
+                    <line x1="13" y1="1" x2="1" y2="13" stroke="currentColor" strokeWidth="1.4" />
+                  </svg>
+                </button>
+              </div>
+              <nav className="flex-1 px-6">
+                {links.map((l, i) => (
+                  <motion.a
+                    key={l.id}
+                    href={l.href}
+                    onClick={() => setMobileOpen(false)}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.05 + i * 0.06 }}
+                    className="block py-5 border-b border-[#E5E7EB] text-2xl font-light text-[#0A0F1E] tracking-tight"
+                  >
+                    {l.label}
+                  </motion.a>
+                ))}
+              </nav>
+              <div className="px-6 pb-8 space-y-4">
+                <div className="flex gap-2">
+                  {['ru', 'en', 'uz'].map((l) => (
+                    <Link
+                      key={l}
+                      href={`/${l}/new`}
+                      onClick={() => setMobileOpen(false)}
+                      className={`flex-1 py-2 rounded-full text-center text-xs font-bold tracking-[0.2em] uppercase ${
+                        l === locale ? 'bg-[#0A0F1E] text-white' : 'bg-[#F8F9FB] text-[#0A0F1E]/60'
+                      }`}
+                    >
+                      {l.toUpperCase()}
+                    </Link>
+                  ))}
+                </div>
+                <a
+                  href="#contact"
+                  onClick={() => setMobileOpen(false)}
+                  className="block bg-[#0A0F1E] text-white text-center py-4 rounded-full font-semibold tracking-[0.15em] uppercase text-sm"
+                >
+                  {c.ctaBtn}
+                </a>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </>
   );
 }
 
@@ -1077,24 +1366,27 @@ function ProjectRow({ project, delay }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-30px' }}
       transition={{ duration: 0.7, ease: EASE, delay }}
-      className="flex items-center justify-between py-5 border-b border-[#D8D3C8] group"
+      className="flex items-center justify-between py-6 border-b border-[#E5E7EB] group"
     >
-      <div className="flex items-baseline gap-6 min-w-0">
-        <span className="text-[10px] tracking-[0.25em] uppercase text-[#6B6A65] font-medium tabular-nums">
+      <div className="flex items-baseline gap-8 min-w-0">
+        <span className="label-xs text-[#5F6679] tabular-nums">
           {project.year}
         </span>
-        <span className="text-[14px] sm:text-[15px] font-medium text-[#1B1B1B] truncate group-hover:text-[#B8882E] transition-colors">
+        <span
+          className="font-medium text-[#0A0F1E] truncate group-hover:text-[#D4A843] transition-colors"
+          style={{ fontSize: 'clamp(15px, 1.15vw, 19px)' }}
+        >
           {project.title}
         </span>
       </div>
       <motion.span
-        className="shrink-0 text-[#1B1B1B] group-hover:text-[#B8882E]"
+        className="shrink-0 text-[#0A0F1E] group-hover:text-[#D4A843]"
         initial={{ x: 0 }}
         whileHover={{ x: 6 }}
         transition={{ duration: 0.3, ease: EASE }}
       >
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
-          <path d="M2 12L12 2M12 2H4M12 2V10" stroke="currentColor" strokeWidth="1.2" />
+        <svg width="16" height="16" viewBox="0 0 14 14" fill="none" aria-hidden>
+          <path d="M2 12L12 2M12 2H4M12 2V10" stroke="currentColor" strokeWidth="1.3" />
         </svg>
       </motion.span>
     </motion.a>
@@ -1104,13 +1396,11 @@ function ProjectRow({ project, delay }) {
 function FooterColumn({ title, items }) {
   return (
     <div>
-      <h4 className="text-[11px] tracking-[0.25em] uppercase text-[#F4F1EA]/50 mb-5 font-medium">
-        {title}
-      </h4>
-      <ul className="space-y-2.5">
+      <h4 className="label-xs text-white/50 mb-6">{title}</h4>
+      <ul className="space-y-3">
         {items.map((it, i) => (
           <li key={i}>
-            <a href="#" className="text-[13px] text-[#F4F1EA]/85 hover:text-[#B8882E] transition-colors font-light">
+            <a href="#" className="text-white/85 hover:text-[#D4A843] transition-colors font-light" style={{ fontSize: 'clamp(13px, 0.95vw, 15px)' }}>
               {it}
             </a>
           </li>
@@ -1120,13 +1410,16 @@ function FooterColumn({ title, items }) {
   );
 }
 
-function WordmarkReveal({ text, progress }) {
+function WordmarkReveal({ text }) {
   const letters = text.split('');
   return (
     <div className="relative w-full flex items-end justify-center select-none">
       <h2
-        className="font-serif-display font-light text-[#F4F1EA] leading-[0.85] text-center"
-        style={{ fontSize: 'clamp(64px, 16vw, 240px)', letterSpacing: '-0.04em' }}
+        className="font-light text-white leading-[0.85] text-center"
+        style={{
+          fontSize: 'clamp(56px, 17vw, 280px)',
+          letterSpacing: '-0.055em',
+        }}
       >
         {letters.map((ch, i) => (
           <motion.span
