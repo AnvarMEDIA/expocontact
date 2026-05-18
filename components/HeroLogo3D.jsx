@@ -59,7 +59,7 @@ export default function HeroLogo3D() {
       const key = new THREE.DirectionalLight(0xffd9a0, 3.0);
       key.position.set(160, 120, 220);
       scene.add(key);
-      const rim = new THREE.DirectionalLight(0xeb6414, 2.6);
+      const rim = new THREE.DirectionalLight(0xd7550a, 2.6);
       rim.position.set(-180, 60, -120);
       scene.add(rim);
       const fill = new THREE.PointLight(0xffb070, 2.0, 800);
@@ -72,13 +72,13 @@ export default function HeroLogo3D() {
       const group = new THREE.Group();
       scene.add(group);
 
-      // Brand orange #EB6414 — lower metalness lets the surface colour read,
+      // Brand orange #D7550A — lower metalness lets the surface colour read,
       // emissive at the same hue keeps the logo glowing in dark sections.
       const mat = new THREE.MeshStandardMaterial({
-        color: 0xeb6414,
+        color: 0xd7550a,
         metalness: 0.35,
         roughness: 0.45,
-        emissive: 0xeb6414,
+        emissive: 0xd7550a,
         emissiveIntensity: 0.55,
       });
 
