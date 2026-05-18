@@ -1,13 +1,13 @@
 /**
- * Server Component — точка входа для каждой локали (/ru, /en, /uz).
- * Читает данные из JSON-файлов на сервере и передаёт их в клиентский HomePage.
+ * Server Component — entry point for each locale (/ru, /en, /uz).
+ * Reads JSON data on the server and passes it to the HomePage client.
  */
 import HomePageClient from '@/components/HomePageClient';
 
-// Данные загружаются на сервере — не попадают в клиентский бандл
 import portfolioData    from '@/content/data/portfolio.json';
 import testimonialsData from '@/content/data/testimonials.json';
 import clientsData      from '@/content/data/clients.json';
+import settingsData     from '@/content/data/settings.json';
 
 export default async function Page({ params }) {
   const { locale } = await params;
@@ -18,6 +18,7 @@ export default async function Page({ params }) {
       projects={portfolioData}
       testimonials={testimonialsData}
       clients={clientsData}
+      settings={settingsData}
     />
   );
 }

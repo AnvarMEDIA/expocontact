@@ -20,6 +20,7 @@ const CONTENT_DIR = path.join(process.cwd(), 'content');
 
 const DATA_COLLECTIONS   = ['portfolio', 'testimonials', 'clients'];
 const LOCALE_COLLECTIONS = ['faq', 'services'];
+const SINGLETON_COLLECTIONS = ['settings'];
 const LOCALES            = ['ru', 'en', 'uz'];
 
 // ── Auth ─────────────────────────────────────────────────────────────────────
@@ -40,6 +41,24 @@ async function readData(collection) {
 }
 
 async function writeData(collection, data) {
+  await fs.writeFile(
+    path.join(DATA_DIR, `${collection}.json`),
+    JSON.stringify(data, null, 2),
+    'utf8',
+  );
+}
+
+// Singleton helpers (object-shaped JSON files in content/data/).
+async function readSingleton(collection) {
+  try {
+    const raw = await fs.readFile(path.join(DATA_DIR, `${collection}.json`), 'utf8');
+    return JSON.parse(raw);
+  } catch {
+    return {};
+  }
+}
+
+async function writeSingleton(collection, data) {
   await fs.writeFile(
     path.join(DATA_DIR, `${collection}.json`),
     JSON.stringify(data, null, 2),
@@ -76,6 +95,10 @@ export async function GET(request) {
 
   if (DATA_COLLECTIONS.includes(collection)) {
     return NextResponse.json(await readData(collection));
+  }
+
+  if (SINGLETON_COLLECTIONS.includes(collection)) {
+    return NextResponse.json(await readSingleton(collection));
   }
 
   if (LOCALE_COLLECTIONS.includes(collection)) {
@@ -120,6 +143,15 @@ export async function POST(request) {
       await writeData(collection, data);
       return NextResponse.json({ ok: true });
     }
+  }
+
+  // ── Singleton collections (whole-object save) ─────────────────────────────
+  if (SINGLETON_COLLECTIONS.includes(collection)) {
+    if (action === 'save') {
+      await writeSingleton(collection, item ?? {});
+      return NextResponse.json({ ok: true });
+    }
+    return NextResponse.json({ error: 'Unsupported action' }, { status: 400 });
   }
 
   // ── Locale collections ────────────────────────────────────────────────────

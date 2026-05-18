@@ -68,19 +68,23 @@ const IC = {
 // ── Nav config ────────────────────────────────────────────────────────────────
 const IC_ANALYTICS = <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>;
 
+const IC_LANDING = <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h7"/><circle cx="18" cy="18" r="3" strokeWidth="2"/></svg>;
+
 const NAV = [
-  { key: 'dashboard',    label: 'Дашборд',    icon: IC.dashboard    },
-  { key: 'analytics',    label: 'Аналитика',  icon: IC_ANALYTICS    },
-  { key: 'portfolio',    label: 'Портфолио',  icon: IC.portfolio    },
-  { key: 'testimonials', label: 'Отзывы',     icon: IC.testimonials },
-  { key: 'clients',      label: 'Клиенты',    icon: IC.clients      },
-  { key: 'faq',          label: 'FAQ',         icon: IC.faq          },
-  { key: 'services',     label: 'Услуги',     icon: IC.services     },
-  { key: 'settings',     label: 'Инструкция', icon: IC.settings     },
+  { key: 'dashboard',       label: 'Дашборд',           icon: IC.dashboard    },
+  { key: 'analytics',       label: 'Аналитика',         icon: IC_ANALYTICS    },
+  { key: 'landingSettings', label: 'Настройки сайта',   icon: IC_LANDING      },
+  { key: 'portfolio',       label: 'Портфолио',         icon: IC.portfolio    },
+  { key: 'testimonials',    label: 'Отзывы',            icon: IC.testimonials },
+  { key: 'clients',         label: 'Клиенты',           icon: IC.clients      },
+  { key: 'faq',             label: 'FAQ',               icon: IC.faq          },
+  { key: 'services',        label: 'Услуги',            icon: IC.services     },
+  { key: 'settings',        label: 'Инструкция',        icon: IC.settings     },
 ];
 
 const SECTION_TITLES = {
   dashboard: 'Дашборд', analytics: 'Аналитика посетителей',
+  landingSettings: 'Настройки главной страницы',
   portfolio: 'Портфолио', testimonials: 'Отзывы клиентов',
   clients: 'Клиенты', faq: 'FAQ — Частые вопросы', services: 'Тексты услуг',
   settings: 'Инструкция и настройки',
@@ -1079,6 +1083,259 @@ function SettingsPage() {
   );
 }
 
+// ── LandingSettingsManager ───────────────────────────────────────────────────
+function LandingSettingsManager({ toast }) {
+  const [data, setData] = useState(null);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    apiFetch('settings').then((d) => setData(d || {})).catch(() => {});
+  }, []);
+
+  const update = (path, value) => {
+    setData((prev) => {
+      const next = structuredClone(prev || {});
+      const keys = path.split('.');
+      let cur = next;
+      for (let i = 0; i < keys.length - 1; i++) {
+        cur[keys[i]] = cur[keys[i]] || {};
+        cur = cur[keys[i]];
+      }
+      cur[keys[keys.length - 1]] = value;
+      return next;
+    });
+  };
+
+  const updateArr = (path, idx, field, value) => {
+    setData((prev) => {
+      const next = structuredClone(prev || {});
+      const arr = path.split('.').reduce((o, k) => (o[k] = o[k] || []), next);
+      arr[idx] = { ...arr[idx], [field]: value };
+      return next;
+    });
+  };
+
+  const addArrItem = (path, item) => {
+    setData((prev) => {
+      const next = structuredClone(prev || {});
+      const keys = path.split('.');
+      let cur = next;
+      for (let i = 0; i < keys.length - 1; i++) { cur[keys[i]] = cur[keys[i]] || {}; cur = cur[keys[i]]; }
+      cur[keys[keys.length - 1]] = [...(cur[keys[keys.length - 1]] || []), item];
+      return next;
+    });
+  };
+
+  const removeArrItem = (path, idx) => {
+    setData((prev) => {
+      const next = structuredClone(prev || {});
+      const keys = path.split('.');
+      let cur = next;
+      for (let i = 0; i < keys.length - 1; i++) { cur = cur[keys[i]] = cur[keys[i]] || {}; }
+      const arr = cur[keys[keys.length - 1]] || [];
+      cur[keys[keys.length - 1]] = arr.filter((_, i) => i !== idx);
+      return next;
+    });
+  };
+
+  const save = async () => {
+    setSaving(true);
+    try {
+      await apiFetch('settings', { method: 'POST', body: JSON.stringify({ action: 'save', item: data }) });
+      toast('Настройки сохранены');
+    } catch {
+      toast('Ошибка сохранения', 'error');
+    } finally { setSaving(false); }
+  };
+
+  if (!data) return <div className="text-white/40 text-sm">Загрузка…</div>;
+
+  const inputCls = 'w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-white text-sm focus:outline-none focus:border-[#D4A843] transition-colors';
+  const labelCls = 'block text-[11px] text-white/40 mb-1.5 font-semibold uppercase tracking-[0.15em]';
+  const cardCls  = 'bg-[#141929] border border-white/10 rounded-2xl p-6 space-y-4';
+  const sectCls  = 'space-y-4';
+
+  return (
+    <div className="max-w-4xl space-y-6 pb-24">
+      <div className="bg-[#1B2236] border border-[#D4A843]/20 rounded-xl px-5 py-4 text-sm text-white/70">
+        Эти настройки управляют контентом главной страницы сайта (Hero, статистика, marquee, контакты, футер).
+        Поля FAQ, Услуги, Портфолио и Клиенты редактируются в отдельных разделах слева.
+      </div>
+
+      {/* HERO */}
+      <div className={cardCls}>
+        <h3 className="text-white font-bold text-sm uppercase tracking-wider">Hero — главный экран</h3>
+        <div className={sectCls}>
+          <div><label className={labelCls}>Заголовок (строка 1)</label>
+            <input className={inputCls} value={data.hero?.titleLine1 || ''} onChange={(e) => update('hero.titleLine1', e.target.value)} /></div>
+          <div><label className={labelCls}>Заголовок (строка 2 — акцент)</label>
+            <input className={inputCls} value={data.hero?.titleLine2 || ''} onChange={(e) => update('hero.titleLine2', e.target.value)} /></div>
+          <div className="grid grid-cols-2 gap-4">
+            <div><label className={labelCls}>Кнопка CTA (главная)</label>
+              <input className={inputCls} value={data.hero?.ctaPrimary || ''} onChange={(e) => update('hero.ctaPrimary', e.target.value)} /></div>
+            <div><label className={labelCls}>Кнопка CTA (вторая)</label>
+              <input className={inputCls} value={data.hero?.ctaSecondary || ''} onChange={(e) => update('hero.ctaSecondary', e.target.value)} /></div>
+          </div>
+        </div>
+      </div>
+
+      {/* ABOUT */}
+      <div className={cardCls}>
+        <h3 className="text-white font-bold text-sm uppercase tracking-wider">Блок «Кто мы»</h3>
+        <div className={sectCls}>
+          <div><label className={labelCls}>Подпись (eyebrow)</label>
+            <input className={inputCls} value={data.about?.eyebrow || ''} onChange={(e) => update('about.eyebrow', e.target.value)} /></div>
+          <div><label className={labelCls}>Заголовок (можно использовать \n)</label>
+            <textarea rows={2} className={inputCls} value={data.about?.title || ''} onChange={(e) => update('about.title', e.target.value)} /></div>
+          <div><label className={labelCls}>Текст (поддерживает &lt;strong&gt;...&lt;/strong&gt;)</label>
+            <textarea rows={4} className={inputCls} value={data.about?.lead || ''} onChange={(e) => update('about.lead', e.target.value)} /></div>
+        </div>
+      </div>
+
+      {/* COUNTERS */}
+      <div className={cardCls}>
+        <div className="flex items-center justify-between">
+          <h3 className="text-white font-bold text-sm uppercase tracking-wider">Статистика (счётчики)</h3>
+          <button onClick={() => addArrItem('counters', { target: 0, suffix: '+', label: '' })}
+            className="text-[11px] tracking-wider uppercase text-[#D4A843] hover:text-[#E8C06E] font-semibold flex items-center gap-1">
+            {IC.plus} Добавить
+          </button>
+        </div>
+        <div className={sectCls}>
+          {(data.counters || []).map((c, i) => (
+            <div key={i} className="grid grid-cols-12 gap-3 items-end">
+              <div className="col-span-3"><label className={labelCls}>Число</label>
+                <input type="number" className={inputCls} value={c.target ?? 0} onChange={(e) => updateArr('counters', i, 'target', Number(e.target.value))} /></div>
+              <div className="col-span-2"><label className={labelCls}>Суффикс</label>
+                <input className={inputCls} value={c.suffix || ''} onChange={(e) => updateArr('counters', i, 'suffix', e.target.value)} /></div>
+              <div className="col-span-6"><label className={labelCls}>Подпись</label>
+                <input className={inputCls} value={c.label || ''} onChange={(e) => updateArr('counters', i, 'label', e.target.value)} /></div>
+              <button onClick={() => removeArrItem('counters', i)}
+                className="col-span-1 h-[42px] flex items-center justify-center text-white/30 hover:text-red-400 transition-colors">
+                {IC.trash}
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* MARQUEE */}
+      <div className={cardCls}>
+        <div className="flex items-center justify-between">
+          <h3 className="text-white font-bold text-sm uppercase tracking-wider">Бегущая строка</h3>
+          <button onClick={() => addArrItem('marquee', '')}
+            className="text-[11px] tracking-wider uppercase text-[#D4A843] hover:text-[#E8C06E] font-semibold flex items-center gap-1">
+            {IC.plus} Добавить
+          </button>
+        </div>
+        <div className={sectCls}>
+          {(data.marquee || []).map((t, i) => (
+            <div key={i} className="flex gap-3 items-center">
+              <input className={inputCls} value={t} onChange={(e) => {
+                setData((prev) => {
+                  const next = structuredClone(prev);
+                  next.marquee[i] = e.target.value;
+                  return next;
+                });
+              }} />
+              <button onClick={() => removeArrItem('marquee', i)}
+                className="text-white/30 hover:text-red-400 transition-colors p-2">{IC.trash}</button>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* PROCESS */}
+      <div className={cardCls}>
+        <h3 className="text-white font-bold text-sm uppercase tracking-wider">Блок «Процесс»</h3>
+        <div className={sectCls}>
+          <div><label className={labelCls}>Подпись (eyebrow)</label>
+            <input className={inputCls} value={data.process?.eyebrow || ''} onChange={(e) => update('process.eyebrow', e.target.value)} /></div>
+          <div><label className={labelCls}>Заголовок</label>
+            <input className={inputCls} value={data.process?.title || ''} onChange={(e) => update('process.title', e.target.value)} /></div>
+          <div><label className={labelCls}>Подпись индикатора (например «Шаг»)</label>
+            <input className={inputCls} value={data.process?.stepLabel || ''} onChange={(e) => update('process.stepLabel', e.target.value)} /></div>
+        </div>
+      </div>
+
+      {/* CLIENTS HEADER */}
+      <div className={cardCls}>
+        <h3 className="text-white font-bold text-sm uppercase tracking-wider">Шапка блока «Клиенты»</h3>
+        <div className={sectCls}>
+          <div><label className={labelCls}>Подпись (eyebrow)</label>
+            <input className={inputCls} value={data.clients?.eyebrow || ''} onChange={(e) => update('clients.eyebrow', e.target.value)} /></div>
+          <div><label className={labelCls}>Заголовок</label>
+            <input className={inputCls} value={data.clients?.title || ''} onChange={(e) => update('clients.title', e.target.value)} /></div>
+          <div className="grid grid-cols-2 gap-4">
+            <div><label className={labelCls}>Большое число</label>
+              <input className={inputCls} value={data.clients?.bigNumber || ''} onChange={(e) => update('clients.bigNumber', e.target.value)} /></div>
+            <div><label className={labelCls}>Суффикс</label>
+              <input className={inputCls} value={data.clients?.bigSuffix || ''} onChange={(e) => update('clients.bigSuffix', e.target.value)} /></div>
+          </div>
+          <div><label className={labelCls}>Подпись под числом</label>
+            <input className={inputCls} value={data.clients?.caption || ''} onChange={(e) => update('clients.caption', e.target.value)} /></div>
+        </div>
+      </div>
+
+      {/* CONTACT */}
+      <div className={cardCls}>
+        <h3 className="text-white font-bold text-sm uppercase tracking-wider">Контакты</h3>
+        <div className={sectCls}>
+          <div className="grid grid-cols-2 gap-4">
+            <div><label className={labelCls}>Телефон (отображение)</label>
+              <input className={inputCls} value={data.contact?.phone || ''} onChange={(e) => update('contact.phone', e.target.value)} /></div>
+            <div><label className={labelCls}>Телефон (для tel:)</label>
+              <input className={inputCls} value={data.contact?.phoneRaw || ''} onChange={(e) => update('contact.phoneRaw', e.target.value)} placeholder="+998977111711" /></div>
+          </div>
+          <div><label className={labelCls}>Email</label>
+            <input className={inputCls} value={data.contact?.email || ''} onChange={(e) => update('contact.email', e.target.value)} /></div>
+          <div><label className={labelCls}>Адрес</label>
+            <input className={inputCls} value={data.contact?.address || ''} onChange={(e) => update('contact.address', e.target.value)} /></div>
+          <div><label className={labelCls}>Часы работы</label>
+            <input className={inputCls} value={data.contact?.hours || ''} onChange={(e) => update('contact.hours', e.target.value)} /></div>
+          <div className="grid grid-cols-3 gap-4">
+            <div><label className={labelCls}>Instagram</label>
+              <input className={inputCls} value={data.contact?.instagram || ''} onChange={(e) => update('contact.instagram', e.target.value)} /></div>
+            <div><label className={labelCls}>Telegram</label>
+              <input className={inputCls} value={data.contact?.telegram || ''} onChange={(e) => update('contact.telegram', e.target.value)} /></div>
+            <div><label className={labelCls}>Behance</label>
+              <input className={inputCls} value={data.contact?.behance || ''} onChange={(e) => update('contact.behance', e.target.value)} /></div>
+          </div>
+        </div>
+      </div>
+
+      {/* FOOTER */}
+      <div className={cardCls}>
+        <h3 className="text-white font-bold text-sm uppercase tracking-wider">Футер</h3>
+        <div className={sectCls}>
+          <div><label className={labelCls}>Большой callout (поддерживает &lt;span class=&apos;accent&apos;&gt;...&lt;/span&gt;)</label>
+            <textarea rows={2} className={inputCls} value={data.footer?.callout || ''} onChange={(e) => update('footer.callout', e.target.value)} /></div>
+          <div><label className={labelCls}>Текст кнопки в callout</label>
+            <input className={inputCls} value={data.footer?.calloutCta || ''} onChange={(e) => update('footer.calloutCta', e.target.value)} /></div>
+          <div><label className={labelCls}>Описание под логотипом</label>
+            <textarea rows={3} className={inputCls} value={data.footer?.brandLead || ''} onChange={(e) => update('footer.brandLead', e.target.value)} /></div>
+          <div><label className={labelCls}>Копирайт</label>
+            <input className={inputCls} value={data.footer?.rights || ''} onChange={(e) => update('footer.rights', e.target.value)} /></div>
+          <div><label className={labelCls}>Авторы (credits)</label>
+            <input className={inputCls} value={data.footer?.credits || ''} onChange={(e) => update('footer.credits', e.target.value)} /></div>
+        </div>
+      </div>
+
+      {/* Save bar */}
+      <div className="fixed bottom-0 left-0 right-0 lg:left-60 bg-[#0d1220] border-t border-white/10 px-4 sm:px-6 py-4 flex justify-end gap-3 z-30">
+        <button
+          onClick={save}
+          disabled={saving}
+          className="px-6 py-3 bg-[#D4A843] hover:bg-[#E8C06E] text-[#0A0F1E] font-bold text-sm rounded-xl transition-colors disabled:opacity-60 flex items-center gap-2"
+        >
+          {saving ? 'Сохраняем…' : 'Сохранить настройки'}
+          {!saving && IC.check}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 // ── Sidebar ───────────────────────────────────────────────────────────────────
 function Sidebar({ section, onNavigate, onLogout, open, onClose }) {
   return (
@@ -1145,6 +1402,7 @@ export default function AdminPage() {
         <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-x-hidden">
           {section === 'dashboard'    && <Dashboard onNavigate={navigate} />}
           {section === 'analytics'    && <AnalyticsPage />}
+          {section === 'landingSettings' && <LandingSettingsManager toast={toast} />}
           {section === 'portfolio'    && <CollectionManager key="portfolio"    collection="portfolio"    toast={toast} />}
           {section === 'testimonials' && <CollectionManager key="testimonials" collection="testimonials" toast={toast} />}
           {section === 'clients'      && <CollectionManager key="clients"      collection="clients"      toast={toast} />}
