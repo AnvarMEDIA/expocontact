@@ -54,30 +54,32 @@ export default function HeroLogo3D() {
         height: '100%',
       });
 
-      // Lights — warm orange rim setup (matches the standalone).
-      scene.add(new THREE.AmbientLight(0xffffff, 0.25));
-      const key = new THREE.DirectionalLight(0xffaa55, 3.2);
+      // Lights — bright warm setup so the brand orange reads cleanly.
+      scene.add(new THREE.AmbientLight(0xffffff, 0.55));
+      const key = new THREE.DirectionalLight(0xffd9a0, 3.0);
       key.position.set(160, 120, 220);
       scene.add(key);
-      const rim = new THREE.DirectionalLight(0xff5a14, 4.0);
+      const rim = new THREE.DirectionalLight(0xeb6414, 2.6);
       rim.position.set(-180, 60, -120);
       scene.add(rim);
-      const fill = new THREE.PointLight(0xff8a30, 2.5, 800);
+      const fill = new THREE.PointLight(0xffb070, 2.0, 800);
       fill.position.set(0, 0, 300);
       scene.add(fill);
-      const back = new THREE.PointLight(0xffd9a0, 1.5, 600);
+      const back = new THREE.PointLight(0xffe8c8, 1.4, 600);
       back.position.set(0, 200, -200);
       scene.add(back);
 
       const group = new THREE.Group();
       scene.add(group);
 
+      // Brand orange #EB6414 — lower metalness lets the surface colour read,
+      // emissive at the same hue keeps the logo glowing in dark sections.
       const mat = new THREE.MeshStandardMaterial({
-        color: 0xe8651c,
-        metalness: 0.95,
-        roughness: 0.22,
-        emissive: 0x451004,
-        emissiveIntensity: 0.35,
+        color: 0xeb6414,
+        metalness: 0.35,
+        roughness: 0.45,
+        emissive: 0xeb6414,
+        emissiveIntensity: 0.55,
       });
 
       const meshes = [];
