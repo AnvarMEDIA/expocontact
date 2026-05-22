@@ -1023,6 +1023,10 @@ button{ font:inherit; color:inherit; background:none; border:0; cursor:none; }
    ───────────────────────────────────────────────────────────── */
 .section.cta{
   padding:clamp(96px, 12vw, 200px) 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 .cta{
   background:var(--bg-elevated);
@@ -1031,9 +1035,7 @@ button{ font:inherit; color:inherit; background:none; border:0; cursor:none; }
 /* Standalone centered container for the contact section */
 .cta__container{
   width: 100%;
-  max-width: 1360px;       /* 1200px content + ~80px padding each side */
-  margin-left: auto;
-  margin-right: auto;
+  max-width: 1360px;
   padding-left: clamp(20px, 4vw, 80px);
   padding-right: clamp(20px, 4vw, 80px);
   box-sizing: border-box;
