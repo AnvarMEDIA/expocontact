@@ -76,6 +76,8 @@ const IC_SEO = <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBo
 
 const IC_MEDIA = <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>;
 
+const IC_BACKUP = <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>;
+
 const NAV = [
   { key: 'dashboard',       label: 'Дашборд',           icon: IC.dashboard    },
   { key: 'leads',           label: 'Заявки',            icon: IC_LEADS        },
@@ -88,6 +90,7 @@ const NAV = [
   { key: 'clients',         label: 'Клиенты',           icon: IC.clients      },
   { key: 'faq',             label: 'FAQ',               icon: IC.faq          },
   { key: 'services',        label: 'Услуги',            icon: IC.services     },
+  { key: 'backup',          label: 'Бэкап',             icon: IC_BACKUP       },
   { key: 'settings',        label: 'Инструкция',        icon: IC.settings     },
 ];
 
@@ -98,6 +101,7 @@ const SECTION_TITLES = {
   media: 'Медиа-библиотека',
   portfolio: 'Портфолио', testimonials: 'Отзывы клиентов',
   clients: 'Клиенты', faq: 'FAQ — Частые вопросы', services: 'Тексты услуг',
+  backup: 'Бэкап и восстановление',
   settings: 'Инструкция и настройки',
 };
 
@@ -1521,6 +1525,143 @@ function Dashboard({ onNavigate }) {
   );
 }
 
+// ── BackupManager ─────────────────────────────────────────────────────────────
+function BackupManager({ toast }) {
+  const [downloading, setDownloading] = useState(false);
+  const [restoring,   setRestoring]   = useState(false);
+  const [lastResult,  setLastResult]  = useState(null);
+  const fileRef = useRef(null);
+
+  const downloadBackup = async () => {
+    setDownloading(true);
+    try {
+      const token = getToken();
+      const res = await fetch('/api/admin/backup', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      const blob = await res.blob();
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href = url;
+      const date = new Date().toISOString().slice(0, 19).replace(/[T:]/g, '-');
+      a.download = `expocontact-backup-${date}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast('Бэкап скачан');
+    } catch (e) {
+      toast(`Ошибка: ${e.message}`, 'error');
+    } finally {
+      setDownloading(false);
+    }
+  };
+
+  const restoreFromFile = async (file) => {
+    if (!file) return;
+    const ok = confirm(
+      'Восстановление перезапишет ВЕСЬ контент сайта (портфолио, отзывы, FAQ, услуги, настройки, SEO и заявки) данными из этого файла.\n\n' +
+      'Текущее состояние будет утеряно. Продолжить?'
+    );
+    if (!ok) { if (fileRef.current) fileRef.current.value = ''; return; }
+
+    setRestoring(true);
+    setLastResult(null);
+    try {
+      const text  = await file.text();
+      const token = getToken();
+      const res = await fetch('/api/admin/backup', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body:    text,
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+      setLastResult(data);
+      if (data.failed?.length) {
+        toast(`Восстановлено ${data.restored.length}, с ошибками ${data.failed.length}`, 'error');
+      } else {
+        toast(`Восстановлено ${data.restored.length} коллекций`);
+      }
+    } catch (e) {
+      toast(`Ошибка: ${e.message}`, 'error');
+    } finally {
+      setRestoring(false);
+      if (fileRef.current) fileRef.current.value = '';
+    }
+  };
+
+  return (
+    <div className="space-y-5 max-w-3xl">
+      <div className="bg-[#141929] border border-white/10 rounded-xl p-5">
+        <h3 className="text-white font-bold mb-2 text-base flex items-center gap-2">⬇ Скачать бэкап</h3>
+        <p className="text-white/50 text-sm mb-4 leading-relaxed">
+          В одном JSON-файле сохраняются все коллекции: портфолио, отзывы, клиенты, FAQ,
+          услуги, настройки лендинга, SEO, заявки. Можно отправить файл на резервный носитель
+          или хранить его в репозитории.
+        </p>
+        <button onClick={downloadBackup} disabled={downloading}
+          className="flex items-center gap-2 px-5 py-2.5 bg-[#D4A843] text-[#0A0F1E] font-bold rounded-xl hover:bg-[#E8C06E] transition-colors text-sm disabled:opacity-50">
+          {downloading ? 'Готовим...' : '⬇ Скачать JSON'}
+        </button>
+      </div>
+
+      <div className="bg-[#141929] border border-red-500/20 rounded-xl p-5">
+        <h3 className="text-red-300 font-bold mb-2 text-base flex items-center gap-2">↥ Восстановить из бэкапа</h3>
+        <p className="text-white/50 text-sm mb-2 leading-relaxed">
+          Загрузите ранее скачанный JSON. Файл должен иметь поле <code className="text-white/70">version: 1</code>.
+        </p>
+        <p className="text-red-300/80 text-xs mb-4 leading-relaxed">
+          ⚠ Перезаписывает текущий контент. Сначала скачайте свежий бэкап.
+        </p>
+        <input ref={fileRef} type="file" accept=".json,application/json"
+          onChange={e => restoreFromFile(e.target.files?.[0])}
+          className="block text-sm text-white/70 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-bold file:bg-red-500/15 file:text-red-300 hover:file:bg-red-500/25 file:cursor-pointer" />
+        {restoring && <p className="text-white/60 text-xs mt-3">Восстанавливаем...</p>}
+      </div>
+
+      {lastResult && (
+        <div className="bg-[#0d1220] border border-white/10 rounded-xl p-5 text-sm">
+          <h4 className="text-white font-bold mb-3">Результат последнего восстановления</h4>
+          {lastResult.restored?.length > 0 && (
+            <>
+              <p className="text-emerald-300 text-xs uppercase tracking-wider mb-2">Успешно ({lastResult.restored.length})</p>
+              <div className="flex flex-wrap gap-1.5 mb-4">
+                {lastResult.restored.map(name => (
+                  <span key={name} className="px-2 py-1 bg-emerald-500/10 text-emerald-300 rounded text-xs">{name}</span>
+                ))}
+              </div>
+            </>
+          )}
+          {lastResult.failed?.length > 0 && (
+            <>
+              <p className="text-red-300 text-xs uppercase tracking-wider mb-2">Ошибки ({lastResult.failed.length})</p>
+              <div className="space-y-1">
+                {lastResult.failed.map(({ label, error }, i) => (
+                  <div key={i} className="text-xs">
+                    <span className="text-red-300 font-mono">{label}</span>
+                    <span className="text-white/40 ml-2">— {error}</span>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+      )}
+
+      <div className="bg-[#0d1220] border border-[#D4A843]/20 rounded-xl p-5 text-xs text-white/50 leading-relaxed">
+        <p className="text-[#D4A843] font-semibold mb-2 text-sm">Рекомендации</p>
+        <ul className="space-y-1 list-disc list-inside">
+          <li>Делайте бэкап перед массовыми изменениями (импорт, восстановление).</li>
+          <li>Храните последний бэкап в надёжном месте: облако, почта, локальный диск.</li>
+          <li>Заявки хранятся в Vercel KV — восстановление перезапишет KV-ключ leads:all.</li>
+          <li>Текстовый контент (portfolio/settings/seo и т.д.) при работе на Vercel хранится в файловой системе сборки. Восстановление в production-runtime может не сохраниться между деплоями — используйте бэкап в основном для миграции и резерва.</li>
+        </ul>
+      </div>
+    </div>
+  );
+}
+
 // ── SettingsPage ──────────────────────────────────────────────────────────────
 function SettingsPage() {
   return (
@@ -2202,6 +2343,7 @@ export default function AdminPage() {
           {section === 'landingSettings' && <LandingSettingsManager toast={toast} />}
           {section === 'seo'          && <SeoManager toast={toast} />}
           {section === 'media'        && <MediaLibrary toast={toast} />}
+          {section === 'backup'       && <BackupManager toast={toast} />}
           {section === 'portfolio'    && <CollectionManager key="portfolio"    collection="portfolio"    toast={toast} />}
           {section === 'testimonials' && <CollectionManager key="testimonials" collection="testimonials" toast={toast} />}
           {section === 'clients'      && <CollectionManager key="clients"      collection="clients"      toast={toast} />}
