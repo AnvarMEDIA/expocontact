@@ -565,9 +565,6 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
                 <h1 className="hero__title">
                   {HERO_SLIDES[heroSlide].headline}
                 </h1>
-                <p className="hero__lead" style={{ marginTop: 14 }}>
-                  {HERO_SLIDES[heroSlide].sub}
-                </p>
               </motion.div>
             </AnimatePresence>
           </div>

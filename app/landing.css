@@ -361,7 +361,7 @@ button{ font:inherit; color:inherit; background:none; border:0; cursor:none; }
 .hero__logo3d{
   position:absolute;
   top:0; right:0;
-  width:62%;
+  width:70%;
   height:100%;
   z-index:1;
   cursor:grab;
