@@ -547,8 +547,8 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
         {/* 3D rotating logo — stays untouched */}
         <div className="hero__logo3d" id="logo3d">
           <HeroLogo3D />
-          <span className="hero__logo3d-hint">Drag · 360°</span>
         </div>
+        <span className="hero__logo3d-hint">Drag · 360°</span>
 
         <div className="hero__content">
 
