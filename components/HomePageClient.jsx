@@ -54,16 +54,7 @@ function richText(s) {
     .replace(/<span class=['"]accent['"]>([\s\S]*?)<\/span>/g, '<span class="accent">$1</span>');
 }
 
-const PROC_STEPS = [
-  { n: '01', l: 'Бриф',         t: 'Встреча и бриф',        d: 'Слушаем задачу, выставку, бюджет и KPI. Не продаём — задаём правильные вопросы. На выходе — техзадание на двух страницах.', dur: '1–2 дня',
-    svg: 'M30 30h120v160H30zM50 70h80M50 90h80M50 110h60M50 130h70', accentBox: { x: 30, y: 30, w: 120, h: 160 }, dot: { cx: 150, cy: 40, r: 14 } },
-  { n: '02', l: '3D-концепция', t: '3D-концепция',          d: 'Эскизы → 3D-модель → фотореалистичный рендер. Вы видите стенд под разными ракурсами до того, как будет куплен первый лист МДФ.', dur: '3–5 дней' },
-  { n: '03', l: 'Согласование', t: 'Согласование',          d: 'С вашей маркетинг-командой и организатором выставки. Чертежи КМ/КМД, паспорта безопасности, нагрузки на пол.', dur: '2–4 дня' },
-  { n: '04', l: 'Производство', t: 'Производство',          d: 'Собственный цех 1200 м² в Ташкенте. ЧПУ, покраска, печать, металл. Каждый этап — фото в чат.', dur: '7–14 дней' },
-  { n: '05', l: 'Доставка',     t: 'Логистика',             d: 'Транспортная команда возит по Узбекистану, Казахстану и в международные хабы. Страховка, температурный режим, такелаж.', dur: '1–3 дня' },
-  { n: '06', l: 'Монтаж',       t: 'Монтаж под ключ',       d: 'Бригады с допусками к UzExpoCentre, Atakent, CAEx, DWTC. Сборка 24–72 часа, AV-настройка, тестовый прогон.', dur: '1–3 дня' },
-  { n: '07', l: 'Демонтаж',     t: 'Демонтаж и хранение',   d: 'Разбираем за ночь, упаковываем, отвозим на хранение. Многоразовые элементы вернутся на следующую выставку.', dur: '1 ночь' },
-];
+// PROC_STEPS replaced by tProcess.raw('steps') inside component
 
 const PROC_SVGS = [
   // 01
@@ -82,14 +73,14 @@ const PROC_SVGS = [
   (<svg viewBox="0 0 200 200" key="07"><path d="M30 100 H170" className="accent"/><path d="M50 100 L50 60 L150 60 L150 100" strokeDasharray="4 4"/><rect x="40" y="120" width="120" height="40"/></svg>),
 ];
 
-// Service includes — supplemental data not present in admin's `services` shape.
-const SERVICE_EXTRAS = {
-  design:       { inc: ['Концепт-эскизы', '3D-модель + рендеры', 'Чертежи КМ/КМД', 'Согласование с площадкой'],   img: 'https://picsum.photos/seed/svc1/520/340' },
-  production:   { inc: ['МДФ, металл, акрил', 'Широкоформатная печать', 'Подсветка, AV-техника', 'Контроль на всех этапах'], img: 'https://picsum.photos/seed/svc2/520/340' },
-  mounting:     { inc: ['UzExpoCentre · CAEx', 'Аtakent · Almaty Expo', 'Логистика и страховка', 'Хранение между выставками'], img: 'https://picsum.photos/seed/svc3/520/340' },
-  branding:     { inc: ['Вывески, баннеры', 'Брендирование транспорта', 'POSM, мерч', 'Roll-up, press-wall'], img: 'https://picsum.photos/seed/svc4/520/340' },
-  logistics:    { inc: ['Транспортировка', 'Страховка груза', 'Хранение в Ташкенте', 'Международные хабы'], img: 'https://picsum.photos/seed/svc5/520/340' },
-  support:      { inc: ['24/7 на площадке', 'Запас расходников', 'AV-инженер', 'Ежедневный reporting'], img: 'https://picsum.photos/seed/svc6/520/340' },
+// Service images — placeholder picsum URLs (SERVICE_EXTRAS replaced by tServices.raw('extras') inside component)
+const SVC_IMGS = {
+  design:     'https://picsum.photos/seed/svc1/520/340',
+  production: 'https://picsum.photos/seed/svc2/520/340',
+  mounting:   'https://picsum.photos/seed/svc3/520/340',
+  branding:   'https://picsum.photos/seed/svc4/520/340',
+  logistics:  'https://picsum.photos/seed/svc5/520/340',
+  support:    'https://picsum.photos/seed/svc6/520/340',
 };
 
 const CLIENT_LIST_FALLBACK_A = [
@@ -103,33 +94,7 @@ const CLIENT_LIST_FALLBACK_B = [
   { n: 'Air Samarkand', m: 'dot' }, { n: 'Kapital Bank', m: '' },
 ];
 
-const HERO_SLIDES = [
-  {
-    headline: 'Выставочные стенды, которые работают на вас',
-    sub:      'Проектируем, строим, монтируем — вы просто приходите на выставку',
-    cta:      'Обсудить проект',
-  },
-  {
-    headline: 'Вы занимаетесь бизнесом — мы занимаемся событием',
-    sub:      'Полный цикл организации: выставочные стенды, ивенты, корпоративные встречи под ключ',
-    cta:      'Получить консультацию',
-  },
-  {
-    headline: 'Ваше мероприятие в надёжных руках',
-    sub:      'Профессиональная организация выставок, бизнес-мероприятий и корпоративных событий в Узбекистане',
-    cta:      'Рассчитать стоимость',
-  },
-  {
-    headline: 'Создаём события, о которых говорят',
-    sub:      'От выставочного стенда до корпоративного форума — делаем каждую деталь идеальной',
-    cta:      'Начать планирование',
-  },
-  {
-    headline: 'Готовы воплотить ваше мероприятие в жизнь',
-    sub:      'Оставьте заявку — свяжемся в течение 30 минут и предложим решение под ваш бюджет',
-    cta:      'Оставить заявку',
-  },
-];
+// HERO_SLIDES replaced by tHero.raw('slides') inside component
 const HERO_INTERVAL = 5000;
 
 const heroSlideVariants = {
@@ -142,12 +107,24 @@ const heroSlideVariants = {
 //   MAIN
 // ════════════════════════════════════════════════════════════════════════════
 export default function HomePageClient({ locale, projects = [], clients = [], settings }) {
-  const tServices = useTranslations('services');
-  const tFAQ = useTranslations('faq');
-  const tContact = useTranslations('contact');
+  const tServices  = useTranslations('services');
+  const tFAQ       = useTranslations('faq');
+  const tContact   = useTranslations('contact');
+  const tHero      = useTranslations('hero');
+  const tNav       = useTranslations('nav');
+  const tAbout     = useTranslations('about');
+  const tPortfolio = useTranslations('portfolio');
+  const tProcess   = useTranslations('process');
+  const tCommon    = useTranslations('common');
+  const tMarquee   = useTranslations('marquee');
 
   const services = tServices.raw('items') || [];
   const faqItems = tFAQ.raw('items') || [];
+
+  // Translation-driven data (replaces module-level constants)
+  const heroSlides = tHero.raw('slides') || [];
+  const procSteps  = tProcess.raw('steps') || [];
+  const serviceExtras = tServices.raw('extras') || {};
 
   // Fall back to bundled defaults if /api/admin hasn't populated settings yet.
   const s = settings || {};
@@ -317,9 +294,10 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
       const total = pin.offsetHeight - window.innerHeight;
       const scrolled = Math.min(Math.max(-r.top, 0), total);
       const k = total > 0 ? scrolled / total : 0;
-      const distance = (PROC_STEPS.length - 1) * window.innerWidth;
+      const stepsLen = procSteps.length || 7;
+      const distance = (stepsLen - 1) * window.innerWidth;
       track.style.transform = `translateX(${-k * distance}px)`;
-      const idx = Math.min(PROC_STEPS.length - 1, Math.floor(k * PROC_STEPS.length));
+      const idx = Math.min(stepsLen - 1, Math.floor(k * stepsLen));
       setProcIdx(idx);
       setProcPct(Math.round(k * 100));
     };
@@ -363,9 +341,10 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
   const heroStartRef = useRef(performance.now());
   const heroRafRef   = useRef(null);
 
+  const heroSlidesLen = heroSlides.length || 5;
   const goToSlide  = useCallback((i) => setHeroSlide(i), []);
-  const nextSlide  = useCallback(() => setHeroSlide(c => (c + 1) % HERO_SLIDES.length), []);
-  const prevSlide  = useCallback(() => setHeroSlide(c => (c - 1 + HERO_SLIDES.length) % HERO_SLIDES.length), []);
+  const nextSlide  = useCallback(() => setHeroSlide(c => (c + 1) % heroSlidesLen), [heroSlidesLen]);
+  const prevSlide  = useCallback(() => setHeroSlide(c => (c - 1 + heroSlidesLen) % heroSlidesLen), [heroSlidesLen]);
 
   useEffect(() => {
     heroStartRef.current = performance.now();
@@ -385,18 +364,18 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
 
   useEffect(() => {
     if (heroPaused) return;
-    const id = setTimeout(() => setHeroSlide(c => (c + 1) % HERO_SLIDES.length), HERO_INTERVAL);
+    const id = setTimeout(() => setHeroSlide(c => (c + 1) % heroSlidesLen), HERO_INTERVAL);
     return () => clearTimeout(id);
-  }, [heroSlide, heroPaused]);
+  }, [heroSlide, heroPaused, heroSlidesLen]);
 
   // ── 9. Filters ────────────────────────────────────────────────────────────
   const [filter, setFilter] = useState('all');
   const filterLabels = [
-    { k: 'all', label: 'Все' },
-    { k: 'large', label: 'Крупные' },
-    { k: 'modular', label: 'Модульные' },
-    { k: 'conf', label: 'Конференции' },
-    { k: 'intl', label: 'Международные' },
+    { k: 'all',     label: tPortfolio('filterAll') },
+    { k: 'large',   label: tPortfolio('filterLarge') },
+    { k: 'modular', label: tPortfolio('filterModular') },
+    { k: 'conf',    label: tPortfolio('filterConference') },
+    { k: 'intl',    label: tPortfolio('filterInternational') },
   ];
 
   // ── 9. Lead form submit ───────────────────────────────────────────────────
@@ -461,9 +440,7 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
   }, []);
 
   // ── Marquee items HTML — duplicated for seamless loop ────────────────────
-  const marqueeRow = (sMarquee.length ? sMarquee : [
-    '20+ лет на рынке', '5000+ проектов', '3 страны', '500+ клиентов',
-  ]);
+  const marqueeRow = (sMarquee.length ? sMarquee : [...(tMarquee.raw('items') || [])]);
 
   // Bento — apply size palette by index
   const bento = projects.slice(0, 9).map((p, i) => ({
@@ -497,11 +474,11 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
         </a>
         <div className="nav__menu">
           {[
-            { href: '#about', id: 'about', label: 'О нас' },
-            { href: '#services', id: 'services', label: 'Услуги' },
-            { href: '#folio', id: 'folio', label: 'Работы' },
-            { href: '#process', id: 'process', label: 'Процесс' },
-            { href: '#contact', id: 'contact', label: 'Контакты' },
+            { href: '#about',    id: 'about',    label: tNav('about')    },
+            { href: '#services', id: 'services', label: tNav('services') },
+            { href: '#folio',    id: 'folio',    label: tNav('portfolio') },
+            { href: '#process',  id: 'process',  label: tNav('process')  },
+            { href: '#contact',  id: 'contact',  label: tNav('contacts') },
           ].map((l) => (
             <a key={l.id} href={l.href} className={activeSec === l.id ? 'is-active' : ''}>
               {l.label}
@@ -528,7 +505,7 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
           </div>
           <a href="#" className="btn-cta magnetic" data-hover onClick={openModal}>
             <span className="btn-cta__dot" />
-            <span>Обсудить проект</span>
+            <span>{tNav('cta')}</span>
           </a>
         </div>
       </nav>
@@ -548,7 +525,7 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
         <div className="hero__logo3d" id="logo3d">
           <HeroLogo3D />
         </div>
-        <span className="hero__logo3d-hint">Drag · 360°</span>
+        <span className="hero__logo3d-hint">{tCommon('dragHint')}</span>
 
         <div className="hero__content">
 
@@ -563,7 +540,7 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
                 exit="exit"
               >
                 <h1 className="hero__title">
-                  {HERO_SLIDES[heroSlide].headline}
+                  {heroSlides[heroSlide]?.headline}
                 </h1>
               </motion.div>
             </AnimatePresence>
@@ -572,14 +549,14 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
           {/* CTA row */}
           <div className="hero__cta">
             <a href="#" className="cta cta--primary magnetic" data-hover onClick={openModal}>
-              <span className="cta__label">{HERO_SLIDES[heroSlide].cta}</span>
+              <span className="cta__label">{heroSlides[heroSlide]?.cta}</span>
               <span className="cta__circle" aria-hidden>
                 <svg className="a1" viewBox="0 0 22 12" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 6 H20 M15 1 L20 6 L15 11" /></svg>
                 <svg className="a2" viewBox="0 0 22 12" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 6 H20 M15 1 L20 6 L15 11" /></svg>
               </span>
             </a>
             <a href="#folio" className="cta cta--ghost magnetic" data-hover>
-              <span className="cta__label">Работы</span>
+              <span className="cta__label">{tHero('ctaSecondary')}</span>
               <span className="cta__circle" aria-hidden>
                 <svg className="a1" viewBox="0 0 22 12" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 6 H20 M15 1 L20 6 L15 11" /></svg>
                 <svg className="a2" viewBox="0 0 22 12" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 6 H20 M15 1 L20 6 L15 11" /></svg>
@@ -597,13 +574,13 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
 
           {/* Prev · dots · next */}
           <div className="hero__nav">
-            <button className="hero__arrow" onClick={prevSlide} aria-label="Предыдущий слайд">
+            <button className="hero__arrow" onClick={prevSlide} aria-label={tCommon('prevSlide')}>
               <svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
               </svg>
             </button>
             <div className="hero__dots">
-              {HERO_SLIDES.map((_, i) => (
+              {heroSlides.map((_, i) => (
                 <button
                   key={i}
                   className={`hero__dot${i === heroSlide ? ' is-active' : ''}`}
@@ -613,7 +590,7 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
                 />
               ))}
             </div>
-            <button className="hero__arrow" onClick={nextSlide} aria-label="Следующий слайд">
+            <button className="hero__arrow" onClick={nextSlide} aria-label={tCommon('nextSlide')}>
               <svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
               </svg>
@@ -643,16 +620,16 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
         <div className="wrap">
           <div className="about__grid">
             <div>
-              <span className="eyebrow">{sAbout.eyebrow || '/02 — Кто мы'}</span>
+              <span className="eyebrow">{sAbout.eyebrow || tAbout('eyebrow')}</span>
               <h2
                 className="section-title"
                 style={{ marginTop: 24 }}
-                dangerouslySetInnerHTML={{ __html: richText(sAbout.title || 'Мы строим то,\nчто нельзя забыть.') }}
+                dangerouslySetInnerHTML={{ __html: richText(sAbout.title || tAbout('title')) }}
               />
             </div>
             <p
               style={{ color: 'var(--text-muted)', maxWidth: '46ch', fontSize: 18, lineHeight: 1.55 }}
-              dangerouslySetInnerHTML={{ __html: richText(sAbout.lead || '') }}
+              dangerouslySetInnerHTML={{ __html: richText(sAbout.lead || tAbout('lead')) }}
             />
           </div>
 
@@ -677,13 +654,13 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
         <div className="wrap">
           <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 24, flexWrap: 'wrap' }}>
             <div>
-              <span className="eyebrow">/03 — Что мы делаем</span>
-              <h2 className="section-title" style={{ marginTop: 24 }}>
-                Полный цикл.<br />Один подрядчик.
-              </h2>
+              <span className="eyebrow">{tServices('eyebrow')}</span>
+              <h2 className="section-title" style={{ marginTop: 24 }}
+                dangerouslySetInnerHTML={{ __html: richText(tServices('heading')) }}
+              />
             </div>
             <p className="mono" style={{ maxWidth: '32ch' }}>
-              От первой линии в эскизе до полной разборки — отвечает одна команда.
+              {tServices('mono')}
             </p>
           </div>
 
@@ -694,8 +671,8 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
                 idx={i}
                 title={sv.title}
                 desc={sv.full || sv.short}
-                includes={SERVICE_EXTRAS[sv.id]?.inc || []}
-                img={SERVICE_EXTRAS[sv.id]?.img || `https://picsum.photos/seed/svc${i + 1}/520/340`}
+                includes={serviceExtras[sv.id]?.includes || []}
+                img={SVC_IMGS[sv.id] || `https://picsum.photos/seed/svc${i + 1}/520/340`}
               />
             ))}
           </div>
@@ -708,12 +685,12 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
         <div className="wrap">
           <div className="folio__head">
             <div>
-              <span className="eyebrow">/04 — Портфолио</span>
-              <h2 className="section-title" style={{ marginTop: 24 }}>
-                Работы,<br />которые работают.
-              </h2>
+              <span className="eyebrow">{tPortfolio('eyebrow')}</span>
+              <h2 className="section-title" style={{ marginTop: 24 }}
+                dangerouslySetInnerHTML={{ __html: richText(tPortfolio('heading')) }}
+              />
             </div>
-            <span className="mono">/ Выборка {bento.length} из 5000+</span>
+            <span className="mono">/ {tPortfolio('countLabel').replace('{count}', bento.length)}</span>
           </div>
 
           <div className="filters">
@@ -752,7 +729,7 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
           </div>
 
           <div className="folio__more">
-            <a href="#contact" className="btn-ghost magnetic" data-hover>Все проекты (5000+) →</a>
+            <a href="#contact" className="btn-ghost magnetic" data-hover>{tPortfolio('ctaAll')}</a>
           </div>
         </div>
       </section>
@@ -764,23 +741,23 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
           <div className="process__sticky">
             <div className="process__head">
               <div>
-                <span className="eyebrow">{sProcess.eyebrow || '/05 — Процесс'}</span>
-                <h2 style={{ marginTop: 14 }}>{sProcess.title || 'Семь шагов от брифа до демонтажа.'}</h2>
+                <span className="eyebrow">{sProcess.eyebrow || tProcess('eyebrow')}</span>
+                <h2 style={{ marginTop: 14 }}>{sProcess.title || ''}</h2>
               </div>
               <span className="mono">
-                {(sProcess.stepLabel || 'Шаг')} {String(procIdx + 1).padStart(2, '0')} / {String(PROC_STEPS.length).padStart(2, '0')}
+                {tProcess('stepLabel')} {String(procIdx + 1).padStart(2, '0')} / {String(procSteps.length || 7).padStart(2, '0')}
               </span>
             </div>
             <div className="process__viewport">
               <div className="process__track" ref={procTrackRef}>
-                {PROC_STEPS.map((s, i) => (
-                  <article className="proc-step" key={s.n}>
-                    <div className="proc-step__num" aria-hidden>{s.n}</div>
+                {procSteps.map((s, i) => (
+                  <article className="proc-step" key={s.number || i}>
+                    <div className="proc-step__num" aria-hidden>{s.number}</div>
                     <div className="proc-step__body">
-                      <div className="proc-step__label">/{s.n} — {s.l}</div>
-                      <h3 className="proc-step__title">{s.t}</h3>
-                      <p className="proc-step__desc">{s.d}</p>
-                      <div className="proc-step__dur">{s.dur}</div>
+                      <div className="proc-step__label">/{s.number} — {s.label}</div>
+                      <h3 className="proc-step__title">{s.title}</h3>
+                      <p className="proc-step__desc">{s.desc}</p>
+                      <div className="proc-step__dur">{s.duration}</div>
                     </div>
                     <div className="proc-step__icon">{PROC_SVGS[i]}</div>
                   </article>
@@ -788,7 +765,7 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
               </div>
             </div>
             <div className="process__bar">
-              <span>Прогресс</span>
+              <span>{tProcess('progressLabel')}</span>
               <div className="process__bar-track"><div className="process__bar-fill" style={{ width: (10 + (procPct / 100) * 86) + '%' }} /></div>
               <span className="mono--bright">{procPct}%</span>
             </div>
@@ -820,13 +797,13 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
         <div className="wrap">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'end', gap: 24, flexWrap: 'wrap' }}>
             <div>
-              <span className="eyebrow">/08 — Часто спрашивают</span>
-              <h2 className="section-title" style={{ marginTop: 24 }}>
-                Без воды.<br />По существу.
-              </h2>
+              <span className="eyebrow">{tFAQ('eyebrow')}</span>
+              <h2 className="section-title" style={{ marginTop: 24 }}
+                dangerouslySetInnerHTML={{ __html: richText(tFAQ('heading')) }}
+              />
             </div>
             <span className="mono">
-              Не нашли свой вопрос? <a href="#contact" style={{ color: 'var(--accent-primary)' }}>— Напишите.</a>
+              {tFAQ('askCta')} <a href="#contact" style={{ color: 'var(--accent-primary)' }}>— Напишите.</a>
             </span>
           </div>
           <FAQList items={faqItems} />
@@ -839,10 +816,10 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
         <div className="wrap">
           <div className="cta__grid">
             <div>
-              <span className="eyebrow">/08 — Свяжитесь</span>
-              <h2 className="section-title" style={{ marginTop: 24 }}>
-                Готовы<br />начать?
-              </h2>
+              <span className="eyebrow">{tContact('eyebrow')}</span>
+              <h2 className="section-title" style={{ marginTop: 24 }}
+                dangerouslySetInnerHTML={{ __html: richText(tContact('heading')) }}
+              />
               <div className="cta__contacts">
                 <div className="contact-block">
                   <span className="contact-block__label">Телефон / WhatsApp</span>
@@ -869,8 +846,8 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
 
             <form className={`form ${leadSent ? 'is-sent' : ''}`} ref={formRef} onSubmit={submitLead} noValidate>
               <div className="form__head">
-                <div className="form__head-title">Заявка на проект</div>
-                <div className="form__head-meta">Ответим за 30 минут</div>
+                <div className="form__head-title">{tContact('modalTitle')}</div>
+                <div className="form__head-meta">{tContact('modalSubtitle')}</div>
               </div>
 
               <div className="form__row">
@@ -1013,7 +990,7 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
       <button
         className={`to-top ${showTop ? 'is-visible' : ''}`}
         type="button"
-        aria-label="Наверх"
+        aria-label={tCommon('backToTop')}
         data-hover
         onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
       >
@@ -1027,7 +1004,7 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
       <div className={`modal ${modalOpen ? 'is-open' : ''} ${modalSent ? 'is-sent' : ''}`} role="dialog" aria-modal="true" aria-hidden={!modalOpen}>
         <div className="modal__backdrop" onClick={closeModal} />
         <div className="modal__card">
-          <button className="modal__close" type="button" aria-label="Закрыть" onClick={closeModal}>
+          <button className="modal__close" type="button" aria-label={tCommon('close')} onClick={closeModal}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 6 L18 18 M18 6 L6 18" /></svg>
           </button>
           <span className="modal__eyebrow">Заявка · 30 секунд</span>

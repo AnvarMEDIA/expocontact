@@ -16,7 +16,20 @@
     "badge":       "20 yil · 5000+ loyiha · Markaziy Osiyo",
     "mini1":       "yil tajriba",
     "mini2":       "loyiha",
-    "mini3":       "davlat"
+    "mini3":       "davlat",
+    "ctaSecondary": "Ishlar",
+    "slides": [
+      { "headline": "Siz uchun ishlaydigan ko'rgazma stendlari", "cta": "Loyihani muhokama qilish" },
+      { "headline": "Siz biznes bilan — biz tadbir bilan shug'ullanamiz", "cta": "Maslahat olish" },
+      { "headline": "Tadbiringiz ishonchli qo'llarda", "cta": "Narxni hisoblash" },
+      { "headline": "Haqida gapiriladigan tadbirlar yaratamiz", "cta": "Rejalashtirish boshlash" },
+      { "headline": "Tadbiringizni hayotga tatbiq etishga tayyormiz", "cta": "Ariza qoldirish" }
+    ]
+  },
+  "about": {
+    "eyebrow": "/02 — Biz haqimizda",
+    "title": "Unutib bo'lmaydigan\nnarsalar quramiz.",
+    "lead": "ExpoContact — O'zbekistondagi yetakchi ko'rgazma qurilish operatori. Bozorda <strong>20 yil</strong>, <strong>5000+</strong> amalga oshirilgan stend, 80+ mutaxassisdan iborat jamoa."
   },
   "stats": {
     "title": "ExpoContact raqamlarda",
@@ -32,6 +45,17 @@
     "subtitle": "To'liq sikl — g'oyadan demontajgacha",
     "label":    "Nima qilamiz",
     "ctaLink":  "Loyihangizni muhokama qilish",
+    "eyebrow":  "/03 — Nima qilamiz",
+    "heading":  "To'liq sikl.\nBitta pudratchi.",
+    "mono":     "Eskiz birinchi qatoridan to'liq demontajgacha — bitta jamoa javob beradi.",
+    "extras": {
+      "design":     { "includes": ["Konsept eskizlar", "3D model + renderlar", "KM/KMD chizmalari", "Maydon bilan muvofiqlashtirish"] },
+      "production": { "includes": ["MDF, metall, akril", "Keng formatli chop etish", "Yoritish, AV texnika", "Bosqichma-bosqich nazorat"] },
+      "mounting":   { "includes": ["UzExpoCentre · CAEx", "Atakent · Almaty Expo", "Logistika va sug'urta", "Ko'rgazmalar orasida saqlash"] },
+      "branding":   { "includes": ["Belgiler, bannerlar", "Transport brendingi", "POSM, merch", "Roll-up, press-wall"] },
+      "logistics":  { "includes": ["Tashish", "Yuk sug'urtasi", "Toshkentda saqlash", "Xalqaro hablar"] },
+      "support":    { "includes": ["Maydonda 24/7", "Ehtiyot materiallar", "AV muhandis", "Kunlik hisobot"] }
+    },
     "items": [
       {
         "id":    "design",
@@ -89,47 +113,69 @@
     "viewProject":  "Loyihani ko'rish",
     "close":        "Yopish",
     "clientLabel":  "Mijoz",
-    "noProjects":   "Bu kategoriyada loyihalar yo'q"
+    "noProjects":   "Bu kategoriyada loyihalar yo'q",
+    "eyebrow":      "/04 — Portfolio",
+    "heading":      "Ishlaydigan\nishlar.",
+    "countLabel":   "{count} ta 5000+ dan",
+    "ctaAll":       "Barcha loyihalar (5000+) →"
   },
   "process": {
     "title":    "Qanday ishlashamiz",
     "subtitle": "Birinchi qo'ng'iroqdan oxirgi vintegacha — shaffof jarayon",
     "label":    "Jarayonimiz",
+    "eyebrow":  "/05 — Qanday ishlashamiz",
+    "stepLabel": "Qadam",
+    "progressLabel": "Jarayon",
+    "durLabel": "Muddat",
     "steps": [
       {
         "number": "01",
         "title":  "Brifing",
-        "desc":   "Ishtirok etish maqsadlari, stend maydoni, byudjet va dizayn istaklari muhokama qilinadi. Brendingiz va raqobatchilaringiz bilan tanishamiz."
+        "desc":   "Ishtirok etish maqsadlari, stend maydoni, byudjet va dizayn istaklari muhokama qilinadi. Brendingiz va raqobatchilaringiz bilan tanishamiz.",
+        "label":  "Brifing",
+        "duration": "1–2 kun"
       },
       {
         "number": "02",
         "title":  "3D kontseptsiya",
-        "desc":   "Dizaynerlar batafsil 3D vizualizatsiyalar va rejalash bilan 2–3 ta kontseptsiya varianti yaratadi."
+        "desc":   "Dizaynerlar batafsil 3D vizualizatsiyalar va rejalash bilan 2–3 ta kontseptsiya varianti yaratadi.",
+        "label":  "3D kontseptsiya",
+        "duration": "3–5 kun"
       },
       {
         "number": "03",
         "title":  "Kelishuv",
-        "desc":   "Tuzatishlar kiritamiz, yakuniy dizayn va smeta tasdiqlaydi. Shartnoma imzolaydi va ishlab chiqarish boshlanadi."
+        "desc":   "Tuzatishlar kiritamiz, yakuniy dizayn va smeta tasdiqlaydi. Shartnoma imzolaydi va ishlab chiqarish boshlanadi.",
+        "label":  "Kelishuv",
+        "duration": "2–4 kun"
       },
       {
         "number": "04",
         "title":  "Ishlab chiqarish",
-        "desc":   "Barcha konstruktiv elementlarni o'z ishlab chiqarishimizda tayyorlaymiz. Har bosqichda foto hisobot."
+        "desc":   "Barcha konstruktiv elementlarni o'z ishlab chiqarishimizda tayyorlaymiz. Har bosqichda foto hisobot.",
+        "label":  "Ishlab chiqarish",
+        "duration": "7–14 kun"
       },
       {
         "number": "05",
         "title":  "Yetkazib berish",
-        "desc":   "Stendni kelishilgan muddatlarda ko'rgazma maydoniga qadoqlaymiz va yetkazib beramiz."
+        "desc":   "Stendni kelishilgan muddatlarda ko'rgazma maydoniga qadoqlaymiz va yetkazib beramiz.",
+        "label":  "Yetkazib berish",
+        "duration": "1–3 kun"
       },
       {
         "number": "06",
         "title":  "Montaj",
-        "desc":   "Professional brigada stendni yig'adi. Ko'rgazma ochilishidan oldin barcha elementlarni yakuniy tekshirish."
+        "desc":   "Professional brigada stendni yig'adi. Ko'rgazma ochilishidan oldin barcha elementlarni yakuniy tekshirish.",
+        "label":  "Montaj",
+        "duration": "1–3 kun"
       },
       {
         "number": "07",
         "title":  "Demontaj",
-        "desc":   "Ko'rgazma tugagach, konstruksiyalarni parchalab olib ketamiz. Keyingi tadbirgacha saqlashni taklif qilamiz."
+        "desc":   "Ko'rgazma tugagach, konstruksiyalarni parchalab olib ketamiz. Keyingi tadbirgacha saqlashni taklif qilamiz.",
+        "label":  "Demontaj",
+        "duration": "1 kecha"
       }
     ]
   },
@@ -183,6 +229,9 @@
   "faq": {
     "title":    "Ko'p so'raladigan savollar",
     "subtitle": "Ishimiz haqidagi eng mashhur savollarga javoblar",
+    "eyebrow":  "/07 — FAQ",
+    "heading":  "Suvlanmasdan.\nMohiyatida.",
+    "askCta":   "Savolingizni topmadingizmi?",
     "items": [
       {
         "q": "Ko'rgazma stendi qancha turadi?",
@@ -236,7 +285,11 @@
     "labelHours":       "Ish vaqti",
     "labelMessenger":   "Messenger",
     "placeholderName":  "Alisher Karimov",
-    "placeholderCompany": "Kompaniya nomi"
+    "placeholderCompany": "Kompaniya nomi",
+    "eyebrow":      "/08 — Aloqa",
+    "heading":      "Boshlashga\ntayyormisiz?",
+    "modalTitle":   "Loyiha uchun ariza",
+    "modalSubtitle": "30 daqiqa ichida javob beramiz"
   },
   "footer": {
     "tagline":       "Markaziy Osiyoda premium ko'rgazma stendlari",
@@ -244,5 +297,15 @@
     "madeWith":      "Toshkentda ❤️ bilan yaratilgan",
     "navTitle":      "Navigatsiya",
     "contactsTitle": "Aloqa"
+  },
+  "common": {
+    "close":     "Yopish",
+    "backToTop": "Yuqoriga",
+    "dragHint":  "Drag · 360°",
+    "prevSlide": "Oldingi",
+    "nextSlide": "Keyingi"
+  },
+  "marquee": {
+    "items": ["Bozorda 20+ yil", "5000+ loyiha", "3 davlat", "500+ mijoz"]
   }
 }
