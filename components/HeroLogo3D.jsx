@@ -54,38 +54,40 @@ export default function HeroLogo3D() {
         height: '100%',
       });
 
-      // Lights — bright warm setup so the brand orange reads cleanly.
-      scene.add(new THREE.AmbientLight(0xffffff, 0.55));
-      const key = new THREE.DirectionalLight(0xffd9a0, 3.0);
+      // Lights — balanced setup for two-colour logo (blue + orange).
+      scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+      const key = new THREE.DirectionalLight(0xffffff, 2.8);
       key.position.set(160, 120, 220);
       scene.add(key);
-      const rim = new THREE.DirectionalLight(0xd7550a, 2.6);
+      const rim = new THREE.DirectionalLight(0xf55a00, 2.0);
       rim.position.set(-180, 60, -120);
       scene.add(rim);
-      const fill = new THREE.PointLight(0xffb070, 2.0, 800);
-      fill.position.set(0, 0, 300);
+      const fill = new THREE.PointLight(0xaabfff, 1.6, 900);
+      fill.position.set(-100, 0, 300);
       scene.add(fill);
-      const back = new THREE.PointLight(0xffe8c8, 1.4, 600);
+      const back = new THREE.PointLight(0xffffff, 1.2, 600);
       back.position.set(0, 200, -200);
       scene.add(back);
 
       const group = new THREE.Group();
       scene.add(group);
 
-      // Brand orange #D7550A — lower metalness lets the surface colour read,
-      // emissive at the same hue keeps the logo glowing in dark sections.
-      const mat = new THREE.MeshStandardMaterial({
-        color: 0xd7550a,
-        metalness: 0.35,
-        roughness: 0.45,
-        emissive: 0xd7550a,
-        emissiveIntensity: 0.55,
+      // fil0 = Blue #003CA0 (path indices 0,1,4), fil1 = Orange #F55A00 (indices 2,3)
+      const makeMat = (hex) => new THREE.MeshStandardMaterial({
+        color: hex,
+        metalness: 0.25,
+        roughness: 0.40,
+        emissive: hex,
+        emissiveIntensity: 0.18,
       });
+      const matBlue   = makeMat(0x003ca0);
+      const matOrange = makeMat(0xf55a00);
+      const ORANGE_IDX = new Set([2, 3]);
 
       const meshes = [];
       const fitSize = () => {
         const target = Math.min(w(), h()) * 0.5;
-        const s = target / 297.67 * 0.7;
+        const s = target / 297.67 * 0.84;
         group.scale.setScalar(s);
       };
 
@@ -96,7 +98,8 @@ export default function HeroLogo3D() {
         const data = loader.parse(text);
 
         const all = new THREE.Group();
-        data.paths.forEach((path) => {
+        data.paths.forEach((path, pathIdx) => {
+          const mat = ORANGE_IDX.has(pathIdx) ? matOrange : matBlue;
           const shapes = SVGLoader.createShapes
             ? SVGLoader.createShapes(path)
             : (typeof path.toShapes === 'function' ? path.toShapes(true) : []);
@@ -209,7 +212,8 @@ export default function HeroLogo3D() {
       cleanups.push(() => {
         cancelAnimationFrame(raf);
         meshes.forEach(({ geom }) => geom.dispose());
-        mat.dispose();
+        matBlue.dispose();
+        matOrange.dispose();
         renderer.dispose();
         if (renderer.domElement.parentNode === mount) {
           mount.removeChild(renderer.domElement);
