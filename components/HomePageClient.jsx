@@ -336,6 +336,33 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
     return () => document.removeEventListener('keydown', onKey);
   }, [modalOpen, closeModal]);
 
+  // ── Project lightbox (gallery viewer) ────────────────────────────────────
+  const [lightboxProject, setLightboxProject] = useState(null);
+  const [lightboxIdx,     setLightboxIdx]     = useState(0);
+  const lightboxImages = lightboxProject
+    ? [lightboxProject.mainImage, ...(Array.isArray(lightboxProject.gallery) ? lightboxProject.gallery : [])].filter(Boolean)
+    : [];
+  const closeLightbox = useCallback(() => { setLightboxProject(null); setLightboxIdx(0); }, []);
+  const openLightbox  = useCallback((p) => { setLightboxProject(p); setLightboxIdx(0); }, []);
+  const lightboxPrev  = useCallback(() => setLightboxIdx(i => (i - 1 + lightboxImages.length) % Math.max(lightboxImages.length, 1)), [lightboxImages.length]);
+  const lightboxNext  = useCallback(() => setLightboxIdx(i => (i + 1) % Math.max(lightboxImages.length, 1)), [lightboxImages.length]);
+
+  useEffect(() => {
+    document.body.style.overflow = (modalOpen || lightboxProject) ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [modalOpen, lightboxProject]);
+
+  useEffect(() => {
+    if (!lightboxProject) return;
+    const onKey = (e) => {
+      if (e.key === 'Escape')     closeLightbox();
+      if (e.key === 'ArrowLeft')  lightboxPrev();
+      if (e.key === 'ArrowRight') lightboxNext();
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [lightboxProject, closeLightbox, lightboxPrev, lightboxNext]);
+
   // ── 8. Hero slider ───────────────────────────────────────────────────────
   const [heroSlide,    setHeroSlide]    = useState(0);
   const [heroPaused,   setHeroPaused]   = useState(false);
@@ -720,16 +747,32 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
           <div className="bento" id="bento">
             {bento.map((p, i) => {
               const visible = filter === 'all' || (p._cls || '').split(' ').includes(filter);
+              const galleryCount = Array.isArray(p.gallery) ? p.gallery.filter(Boolean).length : 0;
               return (
                 <article
                   key={p.id || i}
-                  className={`card ${p._size}`}
+                  className={`card ${p._size} card--clickable`}
                   data-cls={p._cls}
                   style={{ display: visible ? '' : 'none' }}
+                  onClick={() => openLightbox(p)}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openLightbox(p); } }}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`${p.title} — открыть галерею`}
                 >
                   <div className="card__img" style={{ backgroundImage: `url('${p._img}')` }} />
                   <div className="card__shade" />
                   <span className="card__sub">/{String(i + 1).padStart(2, '0')} · {p.exhibition || p.client}</span>
+                  {galleryCount > 0 && (
+                    <span className="card__gallery-badge" aria-label={`${galleryCount + 1} фото`}>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2" />
+                        <circle cx="8.5" cy="8.5" r="1.5" />
+                        <path d="M21 15l-5-5L5 21" />
+                      </svg>
+                      {galleryCount + 1}
+                    </span>
+                  )}
                   <div className="card__rule" />
                   <div className="card__meta">
                     <h3 className="card__title">{p.title}</h3>
@@ -1011,6 +1054,60 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
           <path d="M12 19 V5 M5 12 L12 5 L19 12" />
         </svg>
       </button>
+
+      {/* ── PROJECT LIGHTBOX ───────────────────────────────────────────── */}
+      {lightboxProject && (
+        <div className="lightbox is-open" role="dialog" aria-modal="true" aria-label={lightboxProject.title}>
+          <div className="lightbox__backdrop" onClick={closeLightbox} />
+          <button className="lightbox__close" type="button" aria-label={tCommon('close')} onClick={closeLightbox}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 6 L18 18 M18 6 L6 18" /></svg>
+          </button>
+
+          <div className="lightbox__stage">
+            {lightboxImages.length > 1 && (
+              <button className="lightbox__nav lightbox__nav--prev" type="button" aria-label="Предыдущее" onClick={lightboxPrev}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 6 L9 12 L15 18" /></svg>
+              </button>
+            )}
+            <div className="lightbox__image-wrap">
+              {lightboxImages[lightboxIdx] && (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img className="lightbox__image" src={lightboxImages[lightboxIdx]} alt={lightboxProject.title} />
+              )}
+              {lightboxImages.length > 1 && (
+                <span className="lightbox__counter">{lightboxIdx + 1} / {lightboxImages.length}</span>
+              )}
+            </div>
+            {lightboxImages.length > 1 && (
+              <button className="lightbox__nav lightbox__nav--next" type="button" aria-label="Следующее" onClick={lightboxNext}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 6 L15 12 L9 18" /></svg>
+              </button>
+            )}
+          </div>
+
+          <div className="lightbox__info">
+            <div className="lightbox__meta">
+              <span className="lightbox__sub">{lightboxProject.exhibition || lightboxProject.client}{lightboxProject.year ? ` · ${lightboxProject.year}` : ''}{lightboxProject.area ? ` · ${lightboxProject.area} м²` : ''}</span>
+              <h3 className="lightbox__title">{lightboxProject.title}</h3>
+              {lightboxProject.description && <p className="lightbox__desc">{lightboxProject.description}</p>}
+            </div>
+            {lightboxImages.length > 1 && (
+              <div className="lightbox__thumbs">
+                {lightboxImages.map((src, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    className={`lightbox__thumb ${i === lightboxIdx ? 'is-active' : ''}`}
+                    onClick={() => setLightboxIdx(i)}
+                    aria-label={`Фото ${i + 1}`}
+                    style={{ backgroundImage: `url('${src}')` }}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* ── MODAL ───────────────────────────────────────────────────── */}
       <div className={`modal ${modalOpen ? 'is-open' : ''} ${modalSent ? 'is-sent' : ''}`} role="dialog" aria-modal="true" aria-hidden={!modalOpen}>

@@ -174,7 +174,8 @@ const SCHEMAS = {
     { key: 'category',    label: 'Категория',    type: 'select',   required: true,
       options: ['large', 'modular', 'conference', 'international'] },
     { key: 'description', label: 'Описание',     type: 'textarea', required: false },
-    { key: 'mainImage',   label: 'Фото (URL)',   type: 'image',    required: false, maxW: 1200, maxH: 900  },
+    { key: 'mainImage',   label: 'Главное фото (обложка)',   type: 'image',    required: false, maxW: 1600, maxH: 1200  },
+    { key: 'gallery',     label: 'Галерея — дополнительные фото', type: 'gallery', required: false, maxW: 1600, maxH: 1200 },
     { key: 'featured',    label: 'Показывать на главной (избранное)', type: 'checkbox', required: false },
     { key: 'sortOrder',   label: 'Порядок (меньше = выше)', type: 'number', required: false },
   ],
@@ -464,12 +465,72 @@ function StarInput({ value, onChange }) {
 }
 
 // ── ItemForm ──────────────────────────────────────────────────────────────────
+// ── GalleryField — multiple image upload with reorder + remove ───────────────
+function GalleryField({ value, onChange, label, maxW = 1600, maxH = 1200 }) {
+  const items = Array.isArray(value) ? value : [];
+
+  const updateAt = (i, v) => onChange(items.map((x, j) => (j === i ? v : x)).filter(Boolean));
+  const removeAt = (i)   => onChange(items.filter((_, j) => j !== i));
+  const moveUp   = (i)   => i > 0 && onChange([...items.slice(0, i - 1), items[i], items[i - 1], ...items.slice(i + 1)]);
+  const moveDown = (i)   => i < items.length - 1 && onChange([...items.slice(0, i), items[i + 1], items[i], ...items.slice(i + 2)]);
+  const addSlot  = ()    => onChange([...items, '']);
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-2">
+        <label className="block text-xs text-white/50 font-semibold uppercase tracking-wider">
+          {label} <span className="text-white/30 normal-case">({items.filter(Boolean).length} фото)</span>
+        </label>
+        <button type="button" onClick={addSlot}
+          className="text-xs px-2.5 py-1 bg-[#D4A843]/15 text-[#D4A843] rounded-lg hover:bg-[#D4A843]/25 transition-colors font-bold">
+          + Добавить фото
+        </button>
+      </div>
+
+      {items.length === 0 ? (
+        <div className="bg-white/[0.02] border border-dashed border-white/10 rounded-xl p-6 text-center text-white/30 text-sm">
+          Пока пусто. Нажмите «+ Добавить фото» — можно загрузить несколько.
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {items.map((url, i) => (
+            <div key={i} className="bg-white/[0.03] border border-white/5 rounded-xl p-3 flex items-start gap-3">
+              <span className="text-white/40 text-xs font-mono w-8 text-center flex-shrink-0 pt-1.5">{String(i + 1).padStart(2, '0')}</span>
+              <div className="flex-1 min-w-0">
+                <ImageField value={url} onChange={v => updateAt(i, v)} label="" maxW={maxW} maxH={maxH} />
+              </div>
+              <div className="flex flex-col gap-1 flex-shrink-0">
+                <button type="button" onClick={() => moveUp(i)} disabled={i === 0}
+                  title="Выше"
+                  className="p-1.5 bg-white/5 text-white/60 rounded-lg hover:bg-white/10 hover:text-white transition-colors disabled:opacity-20 disabled:cursor-not-allowed">
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 15l7-7 7 7"/></svg>
+                </button>
+                <button type="button" onClick={() => moveDown(i)} disabled={i === items.length - 1}
+                  title="Ниже"
+                  className="p-1.5 bg-white/5 text-white/60 rounded-lg hover:bg-white/10 hover:text-white transition-colors disabled:opacity-20 disabled:cursor-not-allowed">
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7"/></svg>
+                </button>
+                <button type="button" onClick={() => removeAt(i)}
+                  title="Удалить"
+                  className="p-1.5 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500/20 transition-colors">
+                  {IC.trash}
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function ItemForm({ schema, initial = {}, onSave, onCancel }) {
   const [form, setForm] = useState(() => {
     const d = {};
     schema.forEach(({ key, type }) => {
       if (type === 'checkbox') d[key] = !!initial[key];
       else if (type === 'stars')   d[key] = initial[key] ?? 5;
+      else if (type === 'gallery') d[key] = Array.isArray(initial[key]) ? initial[key] : [];
       else if (type === 'number')  d[key] = initial[key] ?? '';
       else                         d[key] = initial[key] ?? '';
     });
@@ -481,11 +542,13 @@ function ItemForm({ schema, initial = {}, onSave, onCancel }) {
     <div className="bg-[#0d1220] border border-white/10 rounded-xl p-5 space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {schema.map(({ key, label, type, options, required, maxW, maxH }) => {
-          const wide = type === 'textarea' || type === 'image';
+          const wide = type === 'textarea' || type === 'image' || type === 'gallery';
           return (
             <div key={key} className={wide ? 'md:col-span-2' : ''}>
               {type === 'image' ? (
                 <ImageField value={form[key]} onChange={v => set(key, v)} label={label + (required ? ' *' : '')} maxW={maxW} maxH={maxH} />
+              ) : type === 'gallery' ? (
+                <GalleryField value={form[key]} onChange={v => set(key, v)} label={label} maxW={maxW} maxH={maxH} />
               ) : type === 'checkbox' ? (
                 <label className="flex items-center gap-3 cursor-pointer select-none py-2">
                   <input type="checkbox" checked={!!form[key]} onChange={e => set(key, e.target.checked)}
