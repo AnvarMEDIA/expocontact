@@ -360,7 +360,7 @@ button{ font:inherit; color:inherit; background:none; border:0; cursor:none; }
 /* 3D logo canvas — fills right side */
 .hero__logo3d{
   position:absolute;
-  top:0; right:0;
+  top:0; right:-100px;
   width:70%;
   height:100%;
   z-index:1;
