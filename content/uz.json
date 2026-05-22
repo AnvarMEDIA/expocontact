@@ -180,8 +180,13 @@
     ]
   },
   "clients": {
-    "title":    "Bozor liderlarimizga ishonishadi",
-    "subtitle": "Butun Markaziy Osiyoda 500 dan ortiq kompaniya"
+    "title":     "Bozor liderlarimizga ishonishadi",
+    "subtitle":  "Butun Markaziy Osiyoda 500 dan ortiq kompaniya",
+    "eyebrow":   "/06 — Mijozlar",
+    "heading":   "Brendingizning birinchi taassuroti bizga ishonilgan.",
+    "bigNumber": "500",
+    "bigSuffix": "+",
+    "caption":   "kompaniya 2004 yildan"
   },
   "testimonials": {
     "title":      "Mijozlar nima deydi",
@@ -232,6 +237,7 @@
     "eyebrow":  "/07 — FAQ",
     "heading":  "Suvlanmasdan.\nMohiyatida.",
     "askCta":   "Savolingizni topmadingizmi?",
+    "askLink":  "Yozing.",
     "items": [
       {
         "q": "Ko'rgazma stendi qancha turadi?",
@@ -289,21 +295,53 @@
     "eyebrow":      "/08 — Aloqa",
     "heading":      "Boshlashga\ntayyormisiz?",
     "modalTitle":   "Loyiha uchun ariza",
-    "modalSubtitle": "30 daqiqa ichida javob beramiz"
+    "modalSubtitle": "30 daqiqa ichida javob beramiz",
+    "labelPhone":   "Telefon / WhatsApp",
+    "labelAddress": "Manzil",
+    "labelHours":   "Ish vaqti",
+    "labelEmail":   "Email",
+    "defaultAddress": "Toshkent sh., Amir Temur ko'chasi, 107B",
+    "defaultHours":   "Du–Shan · 09:00–19:00",
+    "formNameLabel":    "Ism",
+    "formCompanyLabel": "Kompaniya",
+    "formPhoneLabel":   "Telefon",
+    "formExpoLabel":    "Ko'rgazma / Sana",
+    "formMessageLabel": "Xabar",
+    "formNamePlaceholder":    "Ismingizni kiriting",
+    "formCompanyPlaceholder": "Kompaniya nomini kiriting",
+    "formPhonePlaceholder":   "Telefon raqamingizni kiriting",
+    "formExpoPlaceholder":    "Nomi va sanasini kiriting",
+    "formMessagePlaceholder": "Loyiha haqida yozing",
+    "formPrivacy":     "Shaklni yuborish orqali siz rozilik bildirasiz",
+    "formPrivacyLink": "ma'lumotlarni qayta ishlash siyosati",
+    "formSent":        "Ariza yuborildi",
+    "modalEyebrow":  "Ariza · 30 soniya",
+    "modalHeading":  "Loyihangizni muhokama qilaylik",
+    "modalCallUs":   "Ish vaqtida 30 daqiqa ichida qayta qo'ng'iroq qilamiz."
   },
   "footer": {
     "tagline":       "Markaziy Osiyoda premium ko'rgazma stendlari",
     "copyright":     "© 2024 ExpoContact. Barcha huquqlar himoyalangan.",
     "madeWith":      "Toshkentda ❤️ bilan yaratilgan",
     "navTitle":      "Navigatsiya",
-    "contactsTitle": "Aloqa"
+    "contactsTitle": "Aloqa",
+    "callout":       "Esda qoladigan\nstend <span class='accent'>qurishga tayyormisiz?</span>",
+    "calloutCta":    "Ariza qoldirish",
+    "brandLead":     "Markaziy Osiyoda ko'rgazma arxitekturasi studiyasi. To'liq sikl, bitta pudratchi, vositachilar yo'q.",
+    "labelPhone":    "Telefon",
+    "labelEmail":    "Email",
+    "labelAddress":  "Manzil",
+    "social":        "Ijtimoiy tarmoqlar",
+    "rights":        "© 2026 ExpoContact. Barcha huquqlar himoyalangan.",
+    "credits":       "MAZE"
   },
   "common": {
-    "close":     "Yopish",
-    "backToTop": "Yuqoriga",
-    "dragHint":  "Drag · 360°",
-    "prevSlide": "Oldingi",
-    "nextSlide": "Keyingi"
+    "close":      "Yopish",
+    "backToTop":  "Yuqoriga",
+    "dragHint":   "Drag · 360°",
+    "prevSlide":  "Oldingi",
+    "nextSlide":  "Keyingi",
+    "slideLabel": "Slayd"
   },
   "marquee": {
     "items": ["Bozorda 20+ yil", "5000+ loyiha", "3 davlat", "500+ mijoz"]

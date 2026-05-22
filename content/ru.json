@@ -180,8 +180,13 @@
     ]
   },
   "clients": {
-    "title":    "Нам доверяют лидеры рынка",
-    "subtitle": "Более 500 компаний по всей Центральной Азии"
+    "title":     "Нам доверяют лидеры рынка",
+    "subtitle":  "Более 500 компаний по всей Центральной Азии",
+    "eyebrow":   "/06 — Клиенты",
+    "heading":   "Нам доверяют первое впечатление о бренде.",
+    "bigNumber": "500",
+    "bigSuffix": "+",
+    "caption":   "компаний с 2004"
   },
   "testimonials": {
     "title":     "Что говорят клиенты",
@@ -232,6 +237,7 @@
     "eyebrow":  "/07 — FAQ",
     "heading":  "Без воды.\nПо существу.",
     "askCta":   "Не нашли свой вопрос?",
+    "askLink":  "Напишите.",
     "items": [
       {
         "q": "Сколько стоит выставочный стенд?",
@@ -289,21 +295,53 @@
     "eyebrow":      "/08 — Свяжитесь",
     "heading":      "Готовы\nначать?",
     "modalTitle":   "Заявка на проект",
-    "modalSubtitle": "Ответим за 30 минут"
+    "modalSubtitle": "Ответим за 30 минут",
+    "labelPhone":   "Телефон / WhatsApp",
+    "labelAddress": "Адрес",
+    "labelHours":   "Часы работы",
+    "labelEmail":   "Email",
+    "defaultAddress": "г. Ташкент, ул. Амира Темура, 107Б",
+    "defaultHours":   "Пн–Сб · 09:00 — 19:00",
+    "formNameLabel":    "Имя",
+    "formCompanyLabel": "Компания",
+    "formPhoneLabel":   "Телефон",
+    "formExpoLabel":    "Выставка / Дата",
+    "formMessageLabel": "Сообщение",
+    "formNamePlaceholder":    "Напишите имя",
+    "formCompanyPlaceholder": "Напишите название",
+    "formPhonePlaceholder":   "Напишите номер",
+    "formExpoPlaceholder":    "Напишите название и дату",
+    "formMessagePlaceholder": "Напишите о проекте",
+    "formPrivacy":     "Отправляя форму вы соглашаетесь с",
+    "formPrivacyLink": "политикой обработки данных",
+    "formSent":        "Заявка отправлена",
+    "modalEyebrow":  "Заявка · 30 секунд",
+    "modalHeading":  "Обсудим проект",
+    "modalCallUs":   "Перезвоним в течение 30 минут в рабочее время."
   },
   "footer": {
     "tagline":       "Выставочные стенды премиум-класса в Центральной Азии",
     "copyright":     "© 2024 ExpoContact. Все права защищены.",
     "madeWith":      "Разработано с ❤️ в Ташкенте",
     "navTitle":      "Навигация",
-    "contactsTitle": "Контакты"
+    "contactsTitle": "Контакты",
+    "callout":       "Готовы построить\nстенд, <span class='accent'>который запомнят?</span>",
+    "calloutCta":    "Оставить заявку",
+    "brandLead":     "Студия выставочной архитектуры в Центральной Азии. Полный цикл, один подрядчик, никаких посредников.",
+    "labelPhone":    "Телефон",
+    "labelEmail":    "Email",
+    "labelAddress":  "Адрес",
+    "social":        "Соцсети",
+    "rights":        "© 2026 ExpoContact. Все права защищены.",
+    "credits":       "MAZE"
   },
   "common": {
-    "close":     "Закрыть",
-    "backToTop": "Наверх",
-    "dragHint":  "Drag · 360°",
-    "prevSlide": "Предыдущий",
-    "nextSlide": "Следующий"
+    "close":      "Закрыть",
+    "backToTop":  "Наверх",
+    "dragHint":   "Drag · 360°",
+    "prevSlide":  "Предыдущий",
+    "nextSlide":  "Следующий",
+    "slideLabel": "Слайд"
   },
   "marquee": {
     "items": ["20+ лет на рынке", "5000+ проектов", "3 страны", "500+ клиентов"]

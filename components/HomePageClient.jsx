@@ -117,6 +117,8 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
   const tProcess   = useTranslations('process');
   const tCommon    = useTranslations('common');
   const tMarquee   = useTranslations('marquee');
+  const tClients   = useTranslations('clients');
+  const tFooter    = useTranslations('footer');
 
   const services = tServices.raw('items') || [];
   const faqItems = tFAQ.raw('items') || [];
@@ -586,7 +588,7 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
                   className={`hero__dot${i === heroSlide ? ' is-active' : ''}`}
                   style={{ width: i === heroSlide ? 24 : 8 }}
                   onClick={() => goToSlide(i)}
-                  aria-label={`Слайд ${i + 1}`}
+                  aria-label={`${tCommon('slideLabel')} ${i + 1}`}
                 />
               ))}
             </div>
@@ -777,14 +779,14 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
       <section className="clients" id="clients">
         <div className="clients__head">
           <div>
-            <span className="eyebrow">{sClients.eyebrow || '/06 — Клиенты'}</span>
-            <h3 style={{ marginTop: 18 }}>{sClients.title || 'Нам доверяют первое впечатление о бренде.'}</h3>
+            <span className="eyebrow">{sClients.eyebrow || tClients('eyebrow')}</span>
+            <h3 style={{ marginTop: 18 }}>{sClients.title || tClients('heading')}</h3>
           </div>
           <div style={{ textAlign: 'right' }}>
             <div style={{ fontFamily: 'var(--f-display)', fontWeight: 700, fontSize: 80, lineHeight: 1, letterSpacing: '-.04em', color: 'var(--accent-primary)' }}>
-              {sClients.bigNumber || '500'}<sup style={{ fontSize: '.4em' }}>{sClients.bigSuffix || '+'}</sup>
+              {sClients.bigNumber || tClients('bigNumber')}<sup style={{ fontSize: '.4em' }}>{sClients.bigSuffix || tClients('bigSuffix')}</sup>
             </div>
-            <div className="mono">{sClients.caption || 'компаний с 2004'}</div>
+            <div className="mono">{sClients.caption || tClients('caption')}</div>
           </div>
         </div>
         <ClientRow items={clients.length >= 6 ? clientsToRow(clients) : CLIENT_LIST_FALLBACK_A} />
@@ -803,7 +805,7 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
               />
             </div>
             <span className="mono">
-              {tFAQ('askCta')} <a href="#contact" style={{ color: 'var(--accent-primary)' }}>— Напишите.</a>
+              {tFAQ('askCta')} <a href="#contact" style={{ color: 'var(--accent-primary)' }}>— {tFAQ('askLink')}</a>
             </span>
           </div>
           <FAQList items={faqItems} />
@@ -822,21 +824,21 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
               />
               <div className="cta__contacts">
                 <div className="contact-block">
-                  <span className="contact-block__label">Телефон / WhatsApp</span>
+                  <span className="contact-block__label">{tContact('labelPhone')}</span>
                   <a className="contact-block__val magnetic" data-hover href={`tel:${sContact.phoneRaw || '+998977111711'}`}>
                     {sContact.phone || '+998 97 711-17-11'}
                   </a>
                 </div>
                 <div className="contact-block">
-                  <span className="contact-block__label">Адрес</span>
-                  <span className="contact-block__val">{sContact.address || 'Ташкент, ул. Амира Темура, 107Б'}</span>
+                  <span className="contact-block__label">{tContact('labelAddress')}</span>
+                  <span className="contact-block__val">{sContact.address || tContact('defaultAddress')}</span>
                 </div>
                 <div className="contact-block">
-                  <span className="contact-block__label">Часы работы</span>
-                  <span className="contact-block__val">{sContact.hours || 'Пн–Сб · 09:00 — 19:00'}</span>
+                  <span className="contact-block__label">{tContact('labelHours')}</span>
+                  <span className="contact-block__val">{sContact.hours || tContact('defaultHours')}</span>
                 </div>
                 <div className="contact-block">
-                  <span className="contact-block__label">Email</span>
+                  <span className="contact-block__label">{tContact('labelEmail')}</span>
                   <a className="contact-block__val magnetic" data-hover href={`mailto:${sContact.email || 'hello@expocontact.uz'}`}>
                     {sContact.email || 'hello@expocontact.uz'}
                   </a>
@@ -852,39 +854,39 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
 
               <div className="form__row">
                 <div className="field">
-                  <label>Имя <span className="req">*</span></label>
-                  <input type="text" name="name" required placeholder="Напишите имя" />
+                  <label>{tContact('formNameLabel')} <span className="req">*</span></label>
+                  <input type="text" name="name" required placeholder={tContact('formNamePlaceholder')} />
                 </div>
                 <div className="field">
-                  <label>Компания</label>
-                  <input type="text" name="company" placeholder="Напишите название" />
+                  <label>{tContact('formCompanyLabel')}</label>
+                  <input type="text" name="company" placeholder={tContact('formCompanyPlaceholder')} />
                 </div>
               </div>
 
               <div className="form__row">
                 <div className="field">
-                  <label>Телефон <span className="req">*</span></label>
-                  <input type="tel" name="phone" required placeholder="Напишите номер" />
+                  <label>{tContact('formPhoneLabel')} <span className="req">*</span></label>
+                  <input type="tel" name="phone" required placeholder={tContact('formPhonePlaceholder')} />
                 </div>
                 <div className="field">
-                  <label>Выставка / Дата</label>
-                  <input type="text" name="event" placeholder="Напишите название и дату" />
+                  <label>{tContact('formExpoLabel')}</label>
+                  <input type="text" name="event" placeholder={tContact('formExpoPlaceholder')} />
                 </div>
               </div>
 
               <div className="form__row">
                 <div className="field field--span">
-                  <label>Сообщение</label>
-                  <textarea name="message" placeholder="Напишите о проекте" />
+                  <label>{tContact('formMessageLabel')}</label>
+                  <textarea name="message" placeholder={tContact('formMessagePlaceholder')} />
                 </div>
               </div>
 
               <div className="form__footer">
                 <p className="form__legal">
-                  Отправляя форму вы соглашаетесь с <a href="#">политикой обработки данных</a>
+                  {tContact('formPrivacy')} <a href="#">{tContact('formPrivacyLink')}</a>
                 </p>
                 <button type="submit" className={`btn-submit magnetic ${leadSent ? 'is-sent' : ''}`} data-hover>
-                  <span className="btn-submit__label">{leadSent ? 'Заявка отправлена' : 'Отправить заявку'}</span>
+                  <span className="btn-submit__label">{leadSent ? tContact('formSent') : tContact('formSubmit')}</span>
                   <span className="btn-submit__circle" aria-hidden>
                     <svg className="a1" viewBox="0 0 22 12" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 6 H20 M15 1 L20 6 L15 11" /></svg>
                     <svg className="a2" viewBox="0 0 22 12" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 6 H20 M15 1 L20 6 L15 11" /></svg>
@@ -902,10 +904,10 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
           <div className="footer__callout">
             <h2
               className="footer__callout-title"
-              dangerouslySetInnerHTML={{ __html: richText(sFooter.callout || 'Готовы построить\nстенд, <span class=\'accent\'>который запомнят?</span>') }}
+              dangerouslySetInnerHTML={{ __html: richText(sFooter.callout || tFooter('callout')) }}
             />
             <a href="#" className="footer__callout-cta magnetic" data-hover onClick={openModal}>
-              <span>{sFooter.calloutCta || 'Оставить заявку'}</span>
+              <span>{sFooter.calloutCta || tFooter('calloutCta')}</span>
               <span className="footer__callout-cta__circle" aria-hidden>
                 <svg viewBox="0 0 22 12" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 6 H20 M15 1 L20 6 L15 11" /></svg>
               </span>
@@ -917,46 +919,46 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
               <div className="footer__brand-logo" aria-label="ExpoContact">
                 <BrandLogo />
               </div>
-              <p>{sFooter.brandLead || 'Студия выставочной архитектуры в Центральной Азии. Полный цикл, один подрядчик, никаких посредников.'}</p>
+              <p>{sFooter.brandLead || tFooter('brandLead')}</p>
             </div>
 
             <div className="footer__col">
-              <h4>Навигация</h4>
+              <h4>{sFooter.navTitle || tFooter('navTitle')}</h4>
               <ul>
-                <li><a href="#about">О нас</a></li>
-                <li><a href="#services">Услуги</a></li>
-                <li><a href="#folio">Работы</a></li>
-                <li><a href="#process">Процесс</a></li>
+                <li><a href="#about">{tNav('about')}</a></li>
+                <li><a href="#services">{tNav('services')}</a></li>
+                <li><a href="#folio">{tNav('portfolio')}</a></li>
+                <li><a href="#process">{tNav('process')}</a></li>
                 <li><a href="#faq">FAQ</a></li>
               </ul>
             </div>
 
             <div className="footer__col">
-              <h4>Контакты</h4>
+              <h4>{sFooter.contactsTitle || tFooter('contactsTitle')}</h4>
               <ul>
                 <li>
                   <div className="footer__contact-item">
-                    <span className="lbl">Телефон</span>
+                    <span className="lbl">{tFooter('labelPhone')}</span>
                     <a className="val" href={`tel:${sContact.phoneRaw || '+998977111711'}`}>{sContact.phone || '+998 97 711-17-11'}</a>
                   </div>
                 </li>
                 <li>
                   <div className="footer__contact-item">
-                    <span className="lbl">Email</span>
+                    <span className="lbl">{tFooter('labelEmail')}</span>
                     <a className="val" href={`mailto:${sContact.email || 'hello@expocontact.uz'}`}>{sContact.email || 'hello@expocontact.uz'}</a>
                   </div>
                 </li>
                 <li>
                   <div className="footer__contact-item">
-                    <span className="lbl">Адрес</span>
-                    <span className="val">{sContact.address || 'Ташкент, ул. Амира Темура, 107Б'}</span>
+                    <span className="lbl">{tFooter('labelAddress')}</span>
+                    <span className="val">{sContact.address || tContact('defaultAddress')}</span>
                   </div>
                 </li>
               </ul>
             </div>
 
             <div className="footer__col footer__col--social">
-              <h4>Соцсети</h4>
+              <h4>{tFooter('social')}</h4>
               <div className="footer__social">
                 <a href={sContact.instagram || '#'} data-hover target="_blank" rel="noopener noreferrer">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r="1" fill="currentColor" /></svg>
@@ -975,11 +977,11 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
           </div>
 
           <div className="footer__bottom">
-            <span>{sFooter.rights || '© 2026 ExpoContact. Все права защищены.'}</span>
+            <span>{sFooter.rights || tFooter('rights')}</span>
             <span>
               Made with <span style={{ color: 'var(--accent-primary)' }}>♥</span> by{' '}
               <a className="footer__maze" href="https://www.maze.uz" target="_blank" rel="noopener noreferrer" data-hover>
-                {sFooter.credits || 'MAZE'}
+                {sFooter.credits || tFooter('credits')}
               </a>
             </span>
           </div>
@@ -1007,25 +1009,25 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
           <button className="modal__close" type="button" aria-label={tCommon('close')} onClick={closeModal}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 6 L18 18 M18 6 L6 18" /></svg>
           </button>
-          <span className="modal__eyebrow">Заявка · 30 секунд</span>
-          <h3 className="modal__title">Обсудим проект</h3>
-          <p className="modal__sub">Перезвоним в течение 30 минут в рабочее время.</p>
+          <span className="modal__eyebrow">{tContact('modalEyebrow')}</span>
+          <h3 className="modal__title">{tContact('modalHeading')}</h3>
+          <p className="modal__sub">{tContact('modalCallUs')}</p>
 
           <form className="modal__form" onSubmit={submitModal} noValidate>
             <div className="field">
-              <label>Имя <span className="req">*</span></label>
-              <input type="text" name="name" required placeholder="Напишите имя" />
+              <label>{tContact('formNameLabel')} <span className="req">*</span></label>
+              <input type="text" name="name" required placeholder={tContact('formNamePlaceholder')} />
             </div>
             <div className="field">
-              <label>Компания</label>
-              <input type="text" name="company" placeholder="Напишите название" />
+              <label>{tContact('formCompanyLabel')}</label>
+              <input type="text" name="company" placeholder={tContact('formCompanyPlaceholder')} />
             </div>
             <div className="field">
-              <label>Телефон <span className="req">*</span></label>
-              <input type="tel" name="phone" required placeholder="Напишите номер" />
+              <label>{tContact('formPhoneLabel')} <span className="req">*</span></label>
+              <input type="tel" name="phone" required placeholder={tContact('formPhonePlaceholder')} />
             </div>
             <button type="submit" className={`btn-submit magnetic ${modalSent ? 'is-sent' : ''}`} data-hover>
-              <span className="btn-submit__label">{modalSent ? 'Заявка отправлена' : 'Отправить заявку'}</span>
+              <span className="btn-submit__label">{modalSent ? tContact('formSent') : tContact('formSubmit')}</span>
               <span className="btn-submit__circle" aria-hidden>
                 <svg className="a1" viewBox="0 0 22 12" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 6 H20 M15 1 L20 6 L15 11" /></svg>
                 <svg className="a2" viewBox="0 0 22 12" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 6 H20 M15 1 L20 6 L15 11" /></svg>

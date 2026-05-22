@@ -180,8 +180,13 @@
     ]
   },
   "clients": {
-    "title":    "Trusted by Market Leaders",
-    "subtitle": "Over 500 companies across Central Asia"
+    "title":     "Trusted by Market Leaders",
+    "subtitle":  "Over 500 companies across Central Asia",
+    "eyebrow":   "/06 — Clients",
+    "heading":   "Trusted with your brand's first impression.",
+    "bigNumber": "500",
+    "bigSuffix": "+",
+    "caption":   "companies since 2004"
   },
   "testimonials": {
     "title":      "What Clients Say",
@@ -232,6 +237,7 @@
     "eyebrow":  "/07 — FAQ",
     "heading":  "No fluff.\nJust answers.",
     "askCta":   "Didn't find your question?",
+    "askLink":  "Write to us.",
     "items": [
       {
         "q": "How much does an exhibition stand cost?",
@@ -289,21 +295,53 @@
     "eyebrow":      "/08 — Contact",
     "heading":      "Ready\nto start?",
     "modalTitle":   "Project Request",
-    "modalSubtitle": "We'll respond within 30 minutes"
+    "modalSubtitle": "We'll respond within 30 minutes",
+    "labelPhone":   "Phone / WhatsApp",
+    "labelAddress": "Address",
+    "labelHours":   "Working Hours",
+    "labelEmail":   "Email",
+    "defaultAddress": "Tashkent, 107B Amir Temur Street",
+    "defaultHours":   "Mon–Sat · 09:00–19:00",
+    "formNameLabel":    "Name",
+    "formCompanyLabel": "Company",
+    "formPhoneLabel":   "Phone",
+    "formExpoLabel":    "Exhibition / Date",
+    "formMessageLabel": "Message",
+    "formNamePlaceholder":    "Enter your name",
+    "formCompanyPlaceholder": "Enter company name",
+    "formPhonePlaceholder":   "Enter phone number",
+    "formExpoPlaceholder":    "Enter name and date",
+    "formMessagePlaceholder": "Tell us about the project",
+    "formPrivacy":     "By submitting you agree to our",
+    "formPrivacyLink": "data processing policy",
+    "formSent":        "Request sent",
+    "modalEyebrow":  "Request · 30 seconds",
+    "modalHeading":  "Let's discuss your project",
+    "modalCallUs":   "We'll call back within 30 minutes during business hours."
   },
   "footer": {
     "tagline":       "Premium exhibition stands in Central Asia",
     "copyright":     "© 2024 ExpoContact. All rights reserved.",
     "madeWith":      "Made with ❤️ in Tashkent",
     "navTitle":      "Navigation",
-    "contactsTitle": "Contacts"
+    "contactsTitle": "Contacts",
+    "callout":       "Ready to build\na stand <span class='accent'>they'll remember?</span>",
+    "calloutCta":    "Leave a request",
+    "brandLead":     "Exhibition architecture studio in Central Asia. Full cycle, one contractor, no intermediaries.",
+    "labelPhone":    "Phone",
+    "labelEmail":    "Email",
+    "labelAddress":  "Address",
+    "social":        "Social media",
+    "rights":        "© 2026 ExpoContact. All rights reserved.",
+    "credits":       "MAZE"
   },
   "common": {
-    "close":     "Close",
-    "backToTop": "Back to top",
-    "dragHint":  "Drag · 360°",
-    "prevSlide": "Previous",
-    "nextSlide": "Next"
+    "close":      "Close",
+    "backToTop":  "Back to top",
+    "dragHint":   "Drag · 360°",
+    "prevSlide":  "Previous",
+    "nextSlide":  "Next",
+    "slideLabel": "Slide"
   },
   "marquee": {
     "items": ["20+ years on the market", "5000+ projects", "3 countries", "500+ clients"]
