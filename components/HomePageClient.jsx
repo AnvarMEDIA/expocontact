@@ -815,8 +815,7 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
       {/* ── 09 / CTA + FORM ──────────────────────────────────────────── */}
       <section className="section cta" id="contact">
         <div className="section__index">08 / Contact</div>
-        <div className="wrap">
-          <div className="cta__center">
+        <div className="wrap cta__wrap">
           <div className="cta__grid">
             <div className="cta__left">
               <span className="eyebrow">{tContact('eyebrow')}</span>
@@ -895,7 +894,6 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
                 </button>
               </div>
             </form>
-          </div>
           </div>
         </div>
       </section>

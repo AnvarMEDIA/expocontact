@@ -1028,10 +1028,9 @@ button{ font:inherit; color:inherit; background:none; border:0; cursor:none; }
   background:var(--bg-elevated);
   border-top:1px solid var(--line); border-bottom:1px solid var(--line);
 }
-.cta__center{
-  max-width:1200px;
-  margin-left:auto;
-  margin-right:auto;
+/* Contact wrap: narrower than the global .wrap so content stays centred */
+.cta__wrap{
+  max-width:1200px !important;
 }
 .cta__grid{
   display:grid; grid-template-columns:1fr 1fr; gap:clamp(40px, 5.5vw, 96px);
@@ -1042,11 +1041,10 @@ button{ font:inherit; color:inherit; background:none; border:0; cursor:none; }
 }
 @media (max-width:1200px){ .cta__grid{ gap:clamp(36px, 4.5vw, 64px); } }
 @media (max-width:960px){
-  .cta__center{ max-width:640px; }
   .cta__grid{ grid-template-columns:1fr; gap:48px; }
   .cta__left{ align-items:flex-start; }
 }
-@media (max-width:600px){ .cta__center{ max-width:100%; } .cta__grid{ gap:40px; } }
+@media (max-width:600px){ .cta__grid{ gap:40px; } }
 
 .cta__contacts{ display:flex; flex-direction:column; gap:clamp(20px, 2.5vw, 32px); margin-top:clamp(32px, 4vw, 52px); }
 .contact-block{ display:flex; flex-direction:column; gap:8px; }
