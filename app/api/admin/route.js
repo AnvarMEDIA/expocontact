@@ -163,6 +163,20 @@ export async function POST(request) {
       await writeData(file, data);
       return NextResponse.json({ ok: true });
     }
+    if (action === 'duplicate') {
+      const toLocale = item?.toLocale;
+      if (!LOCALES.includes(toLocale))
+        return NextResponse.json({ error: 'Unknown toLocale' }, { status: 400 });
+      const source = data.find((d) => d.id === id);
+      if (!source)
+        return NextResponse.json({ error: 'Item not found' }, { status: 404 });
+      const targetFile = `${collection}.${toLocale}.json`;
+      const target = await readData(targetFile);
+      const copy = { ...source, id: Date.now().toString() };
+      target.push(copy);
+      await writeData(targetFile, target);
+      return NextResponse.json(copy);
+    }
   }
 
   // ── Global data collections (clients) ─────────────────────────────────────

@@ -160,6 +160,8 @@ const SCHEMAS = {
       options: ['large', 'modular', 'conference', 'international'] },
     { key: 'description', label: 'Описание',     type: 'textarea', required: false },
     { key: 'mainImage',   label: 'Фото (URL)',   type: 'image',    required: false, maxW: 1200, maxH: 900  },
+    { key: 'featured',    label: 'Показывать на главной (избранное)', type: 'checkbox', required: false },
+    { key: 'sortOrder',   label: 'Порядок (меньше = выше)', type: 'number', required: false },
   ],
   testimonials: [
     { key: 'name',     label: 'Имя',          type: 'text',     required: true  },
@@ -451,7 +453,10 @@ function ItemForm({ schema, initial = {}, onSave, onCancel }) {
   const [form, setForm] = useState(() => {
     const d = {};
     schema.forEach(({ key, type }) => {
-      d[key] = initial[key] ?? (type === 'stars' ? 5 : type === 'number' ? '' : '');
+      if (type === 'checkbox') d[key] = !!initial[key];
+      else if (type === 'stars')   d[key] = initial[key] ?? 5;
+      else if (type === 'number')  d[key] = initial[key] ?? '';
+      else                         d[key] = initial[key] ?? '';
     });
     return d;
   });
@@ -466,6 +471,12 @@ function ItemForm({ schema, initial = {}, onSave, onCancel }) {
             <div key={key} className={wide ? 'md:col-span-2' : ''}>
               {type === 'image' ? (
                 <ImageField value={form[key]} onChange={v => set(key, v)} label={label + (required ? ' *' : '')} maxW={maxW} maxH={maxH} />
+              ) : type === 'checkbox' ? (
+                <label className="flex items-center gap-3 cursor-pointer select-none py-2">
+                  <input type="checkbox" checked={!!form[key]} onChange={e => set(key, e.target.checked)}
+                    className="w-4 h-4 rounded border-white/20 bg-white/5 text-[#D4A843] focus:ring-[#D4A843] focus:ring-offset-0" />
+                  <span className="text-white/80 text-sm">{label}</span>
+                </label>
               ) : type === 'stars' ? (
                 <div>
                   <label className="block text-xs text-white/50 mb-2 font-semibold uppercase tracking-wider">{label}{required && <span className="text-[#D4A843]"> *</span>}</label>
@@ -536,6 +547,16 @@ function CollectionManager({ collection, toast }) {
     await apiFetch(collection, { method: 'POST', body: JSON.stringify({ action: 'delete', id }) }, localized ? locale : null);
     toast('Удалено'); load();
   };
+  const handleDuplicate = async (id, toLocale) => {
+    if (toLocale === locale) { toast('Уже в этой локали', 'error'); return; }
+    try {
+      await apiFetch(collection, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'duplicate', id, item: { toLocale } }),
+      }, locale);
+      toast(`Скопировано в ${toLocale.toUpperCase()}`);
+    } catch { toast('Ошибка копирования', 'error'); }
+  };
 
   const cols = schema.slice(0, 3);
 
@@ -590,7 +611,21 @@ function CollectionManager({ collection, toast }) {
                       </td>
                     ))}
                     <td className="px-4 py-3">
-                      <div className="flex items-center gap-1.5 justify-end">
+                      <div className="flex items-center gap-1.5 justify-end flex-wrap">
+                        {item.featured && (
+                          <span className="text-[#D4A843] text-xs font-bold uppercase tracking-wider" title="Избранное">★</span>
+                        )}
+                        {localized && (
+                          <div className="flex items-center gap-1">
+                            {['ru', 'en', 'uz'].filter(l => l !== locale).map(l => (
+                              <button key={l} onClick={() => handleDuplicate(item.id, l)}
+                                className="px-2 py-1 bg-white/5 text-white/40 rounded text-[10px] font-bold uppercase hover:bg-[#D4A843]/15 hover:text-[#D4A843] transition-colors"
+                                title={`Скопировать в ${l.toUpperCase()}`}>
+                                → {l}
+                              </button>
+                            ))}
+                          </div>
+                        )}
                         <button onClick={() => { setEditingId(editingId === item.id ? null : item.id); setCreating(false); }}
                           className="p-2 bg-white/5 text-white/60 rounded-lg hover:bg-white/10 hover:text-white transition-colors">{IC.edit}</button>
                         <button onClick={() => handleDelete(item.id)}
@@ -810,20 +845,40 @@ function AnalyticsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError]     = useState(null);
 
+  const [leadsBuckets, setLeadsBuckets] = useState({ today: 0, week: 0, month: 0, total: 0 });
+
   const load = useCallback(async () => {
     try {
       const token = getToken();
-      const res = await fetch('/api/analytics/metrika', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (res.status === 401) throw new Error('Неверный пароль — попробуйте выйти и войти заново');
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(body.error || `Ошибка сервера (${res.status})`);
+      const [statsRes, leadsRes] = await Promise.all([
+        fetch('/api/analytics/metrika', { headers: { Authorization: `Bearer ${token}` } }),
+        fetch('/api/admin/leads',       { headers: { Authorization: `Bearer ${token}` } }).catch(() => null),
+      ]);
+      if (statsRes.status === 401) throw new Error('Неверный пароль — попробуйте выйти и войти заново');
+      if (!statsRes.ok) {
+        const body = await statsRes.json().catch(() => ({}));
+        throw new Error(body.error || `Ошибка сервера (${statsRes.status})`);
       }
-      const json = await res.json();
+      const json = await statsRes.json();
       setData(json);
       setError(null);
+
+      if (leadsRes?.ok) {
+        const leads = await leadsRes.json();
+        if (Array.isArray(leads)) {
+          const now = Date.now();
+          const startDay   = new Date(); startDay.setHours(0, 0, 0, 0);
+          const startWeek  = new Date(); const dow = startWeek.getDay() || 7; startWeek.setDate(startWeek.getDate() - dow + 1); startWeek.setHours(0, 0, 0, 0);
+          const startMonth = new Date(); startMonth.setDate(1); startMonth.setHours(0, 0, 0, 0);
+          const valid = leads.filter(l => l.status !== 'spam');
+          setLeadsBuckets({
+            today: valid.filter(l => l.createdAt >= startDay.getTime()).length,
+            week:  valid.filter(l => l.createdAt >= startWeek.getTime()).length,
+            month: valid.filter(l => l.createdAt >= startMonth.getTime()).length,
+            total: valid.length,
+          });
+        }
+      }
     } catch (e) {
       setError(e.message);
     } finally {
@@ -889,6 +944,29 @@ function AnalyticsPage() {
         <button onClick={load} className="p-1 text-white/20 hover:text-white/60 transition-colors" title="Обновить">
           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
         </button>
+      </div>
+
+      {/* Conversion: visitors → leads */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        {[
+          { label: 'Конверсия сегодня',  visitors: data.today, leads: leadsBuckets.today  },
+          { label: 'Конверсия за 7 дней', visitors: data.week,  leads: leadsBuckets.week   },
+          { label: 'Конверсия за месяц',  visitors: data.month, leads: leadsBuckets.month  },
+        ].map(({ label, visitors, leads }) => {
+          const pct = visitors > 0 ? ((leads / visitors) * 100) : 0;
+          return (
+            <div key={label} className="bg-[#141929] border border-white/10 rounded-xl p-4">
+              <p className="text-white/40 text-xs uppercase tracking-wider mb-2">{label}</p>
+              <div className="flex items-baseline gap-2">
+                <span className="text-2xl font-black text-[#D4A843]">{pct.toFixed(pct < 10 ? 2 : 1)}%</span>
+                <span className="text-white/40 text-xs">{leads} / {visitors}</span>
+              </div>
+              <div className="mt-2 bg-white/5 rounded-full h-1 overflow-hidden">
+                <div className="h-full bg-[#D4A843] transition-all duration-500" style={{ width: `${Math.min(pct * 5, 100)}%` }} />
+              </div>
+            </div>
+          );
+        })}
       </div>
 
       {/* Stat cards */}

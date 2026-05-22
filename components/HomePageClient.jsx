@@ -444,8 +444,18 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
   // ── Marquee items HTML — duplicated for seamless loop ────────────────────
   const marqueeRow = (sMarquee.length ? sMarquee : [...(tMarquee.raw('items') || [])]);
 
+  // Sort projects: featured first, then by sortOrder (ascending), then keep original order
+  const sortedProjects = [...projects].sort((a, b) => {
+    const af = a.featured ? 1 : 0;
+    const bf = b.featured ? 1 : 0;
+    if (af !== bf) return bf - af;
+    const ao = Number.isFinite(+a.sortOrder) ? +a.sortOrder : 9999;
+    const bo = Number.isFinite(+b.sortOrder) ? +b.sortOrder : 9999;
+    return ao - bo;
+  });
+
   // Bento — apply size palette by index
-  const bento = projects.slice(0, 9).map((p, i) => ({
+  const bento = sortedProjects.slice(0, 9).map((p, i) => ({
     ...p,
     _size: CARD_SIZES[i] || 'card--md',
     _cls: mapCategory(p.category),
