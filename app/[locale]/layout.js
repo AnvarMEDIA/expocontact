@@ -12,16 +12,25 @@ const META = {
     title:       'ExpoContact — Выставочные стенды в Узбекистане и Центральной Азии',
     description: 'Проектирование и строительство выставочных стендов под ключ. 20 лет опыта, 5000+ проектов. Монтаж, брендинг, логистика.',
     locale:      'ru_RU',
+    ldDescription: 'Проектирование и строительство выставочных стендов',
+    ldStreet:    'ул. Амира Темура, 107Б',
+    ldCity:      'Ташкент',
   },
   en: {
     title:       'ExpoContact — Exhibition Stands in Uzbekistan & Central Asia',
     description: 'Design and construction of exhibition stands turnkey. 20 years of experience, 5000+ projects. Installation, branding, logistics.',
     locale:      'en_US',
+    ldDescription: 'Design and construction of exhibition stands',
+    ldStreet:    '107B Amir Temur Street',
+    ldCity:      'Tashkent',
   },
   uz: {
     title:       'ExpoContact — O\'zbekistonda Ko\'rgazma Stendlari',
     description: 'Ko\'rgazma stendlarini loyihalash va qurish. 20 yillik tajriba, 5000+ loyiha. Montaj, brending, logistika.',
     locale:      'uz_UZ',
+    ldDescription: 'Ko\'rgazma stendlarini loyihalash va qurish',
+    ldStreet:    'Amir Temur ko\'chasi, 107B',
+    ldCity:      'Toshkent',
   },
 };
 
@@ -80,6 +89,7 @@ export default async function LocaleLayout({ children, params }) {
     notFound();
   }
 
+  const meta = META[locale] || META.ru;
   const messages = await getMessages();
 
   return (
@@ -108,13 +118,13 @@ export default async function LocaleLayout({ children, params }) {
               '@context': 'https://schema.org',
               '@type':    'LocalBusiness',
               name:       'ExpoContact',
-              description:'Проектирование и строительство выставочных стендов',
+              description: meta.ldDescription,
               url:        'https://expocontact.uz',
               telephone:  '+998977111711',
               address: {
                 '@type':           'PostalAddress',
-                streetAddress:     'ул. Амира Темура, 107Б',
-                addressLocality:   'Ташкент',
+                streetAddress:     meta.ldStreet,
+                addressLocality:   meta.ldCity,
                 addressCountry:    'UZ',
               },
               geo: {

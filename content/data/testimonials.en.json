@@ -1,0 +1,47 @@
+[
+  {
+    "id": "1",
+    "name":     "Alisher Karimov",
+    "position": "Marketing Director",
+    "company":  "UzTechExpo",
+    "avatar":   "",
+    "rating":   5,
+    "quote":    "ExpoContact exceeded all expectations. The stand was ready strictly on time, the quality of execution was impeccable. Our stand was the most eye-catching at the exhibition. We're already ordering the next one!"
+  },
+  {
+    "id": "2",
+    "name":     "Madina Yusupova",
+    "position": "Head of Sales",
+    "company":  "Central Asia Trade",
+    "avatar":   "",
+    "rating":   5,
+    "quote":    "We've worked with ExpoContact for 5 years. In that time, they've built more than 20 stands for us at different venues. A reliable partner with a professional team."
+  },
+  {
+    "id": "3",
+    "name":     "Dmitry Petrenko",
+    "position": "General Director",
+    "company":  "BuildMaster Tashkent",
+    "avatar":   "",
+    "rating":   5,
+    "quote":    "We approached them for the first time for an exhibition in Moscow. The team organized everything turnkey — design, production, delivery and installation. No stress, just results."
+  },
+  {
+    "id": "4",
+    "name":     "Nilufar Rashidova",
+    "position": "Brand Manager",
+    "company":  "Silk Road Pharma",
+    "avatar":   "",
+    "rating":   5,
+    "quote":    "Thanks to ExpoContact, our pharmaceutical stand looked truly premium. The team took into account all our wishes and delivered the work ahead of schedule."
+  },
+  {
+    "id": "5",
+    "name":     "Akbar Ismailov",
+    "position": "Commercial Director",
+    "company":  "AgroUz Export",
+    "avatar":   "",
+    "rating":   4,
+    "quote":    "Fast, professional, within budget. Especially liked the high-quality 3D visualization — we saw the result before production even started."
+  }
+]

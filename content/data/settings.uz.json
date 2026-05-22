@@ -1,0 +1,57 @@
+{
+  "hero": {
+    "titleLine1":  "Ko'rgazma stendlari",
+    "titleLine2":  "kalit ostida",
+    "ctaPrimary":  "Ariza",
+    "ctaSecondary": "Ishlar"
+  },
+  "about": {
+    "eyebrow":     "/02 — Biz haqimizda",
+    "title":       "Unutib bo'lmaydigan\nnarsalar quramiz.",
+    "lead":        "ExpoContact — mustaqil ko'rgazma arxitekturasi studiyasi. Biz <strong>pavilyondagi joy emas, balki sahna</strong> kerak bo'lganlar bilan ishlaymiz — yorug'lik, material va tashrif buyuruvchi harakatining o'ziga xos dramaturgiyasi bilan."
+  },
+  "counters": [
+    { "target": 20,   "suffix": "+", "label": "Yil  /  Bozordagi tajriba" },
+    { "target": 5000, "suffix": "+", "label": "Stend  /  Qurilgan va topshirilgan" },
+    { "target": 3,    "suffix": "",  "label": "Davlat  /  UZ · KZ · International" },
+    { "target": 500,  "suffix": "+", "label": "Mijoz  /  Qaytib keladi" }
+  ],
+  "marquee": [
+    "Bozorda 20+ yil",
+    "5000+ loyiha",
+    "3 davlat",
+    "500+ mijoz",
+    "Central Asia since 2004",
+    "Dizayn × Ishlab chiqarish × Montaj",
+    "Tashkent · Almaty · Dubai"
+  ],
+  "process": {
+    "title":      "Brifdan demontajgacha yetti qadam.",
+    "eyebrow":    "/05 — Jarayon",
+    "stepLabel":  "Qadam"
+  },
+  "clients": {
+    "eyebrow":     "/06 — Mijozlar",
+    "title":       "Brendingizning birinchi taassuroti bizga ishonilgan.",
+    "bigNumber":   "500",
+    "bigSuffix":   "+",
+    "caption":     "kompaniya 2004 yildan"
+  },
+  "contact": {
+    "phone":     "+998 97 711-17-11",
+    "phoneRaw":  "+998977111711",
+    "email":     "hello@expocontact.uz",
+    "address":   "Toshkent sh., Amir Temur ko'chasi, 107B",
+    "hours":     "Du–Sha · 09:00 — 19:00",
+    "instagram": "https://instagram.com/expocontact",
+    "telegram":  "https://t.me/expocontact",
+    "behance":   "#"
+  },
+  "footer": {
+    "callout":     "Esda qoladigan\nstend <span class='accent'>qurishga tayyormisiz?</span>",
+    "calloutCta":  "Ariza qoldirish",
+    "brandLead":   "Markaziy Osiyoda ko'rgazma arxitekturasi studiyasi. To'liq sikl, bitta pudratchi, vositachilar yo'q.",
+    "rights":      "© 2026 ExpoContact. Barcha huquqlar himoyalangan.",
+    "credits":     "MAZE"
+  }
+}

@@ -450,6 +450,8 @@ function ItemForm({ schema, initial = {}, onSave, onCancel }) {
 // ── CollectionManager ─────────────────────────────────────────────────────────
 function CollectionManager({ collection, toast }) {
   const schema = SCHEMAS[collection];
+  const localized = collection === 'portfolio' || collection === 'testimonials';
+  const [locale, setLocale]   = useState('ru');
   const [items, setItems]     = useState([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
@@ -457,23 +459,23 @@ function CollectionManager({ collection, toast }) {
 
   const load = useCallback(async () => {
     setLoading(true);
-    try { setItems((await apiFetch(collection)) || []); }
+    try { setItems((await apiFetch(collection, {}, localized ? locale : null)) || []); }
     finally { setLoading(false); }
-  }, [collection]);
+  }, [collection, locale, localized]);
 
   useEffect(() => { load(); }, [load]);
 
   const handleCreate = async (form) => {
-    await apiFetch(collection, { method: 'POST', body: JSON.stringify({ action: 'create', item: form }) });
+    await apiFetch(collection, { method: 'POST', body: JSON.stringify({ action: 'create', item: form }) }, localized ? locale : null);
     setCreating(false); toast('Запись создана'); load();
   };
   const handleUpdate = async (id, form) => {
-    await apiFetch(collection, { method: 'POST', body: JSON.stringify({ action: 'update', id, item: form }) });
+    await apiFetch(collection, { method: 'POST', body: JSON.stringify({ action: 'update', id, item: form }) }, localized ? locale : null);
     setEditingId(null); toast('Изменения сохранены'); load();
   };
   const handleDelete = async (id) => {
     if (!confirm('Удалить запись?')) return;
-    await apiFetch(collection, { method: 'POST', body: JSON.stringify({ action: 'delete', id }) });
+    await apiFetch(collection, { method: 'POST', body: JSON.stringify({ action: 'delete', id }) }, localized ? locale : null);
     toast('Удалено'); load();
   };
 
@@ -481,8 +483,13 @@ function CollectionManager({ collection, toast }) {
 
   return (
     <div className="space-y-5">
-      <div className="flex items-center justify-between">
-        <p className="text-white/40 text-sm">{loading ? '...' : `${items.length} записей`}</p>
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
+          {localized && (
+            <LocaleTabs active={locale} onChange={l => { setLocale(l); setCreating(false); setEditingId(null); }} />
+          )}
+          <p className="text-white/40 text-sm">{loading ? '...' : `${items.length} записей`}</p>
+        </div>
         {!creating && (
           <button onClick={() => { setCreating(true); setEditingId(null); }}
             className="flex items-center gap-2 px-4 py-2 bg-[#D4A843] text-[#0A0F1E] font-bold rounded-xl hover:bg-[#E8C06E] transition-colors text-sm">
@@ -985,7 +992,7 @@ function Dashboard({ onNavigate }) {
   const [counts, setCounts] = useState({ portfolio: '…', testimonials: '…', clients: '…' });
 
   useEffect(() => {
-    Promise.all([apiFetch('portfolio'), apiFetch('testimonials'), apiFetch('clients')])
+    Promise.all([apiFetch('portfolio', {}, 'ru'), apiFetch('testimonials', {}, 'ru'), apiFetch('clients')])
       .then(([p, t, c]) => setCounts({ portfolio: p?.length ?? 0, testimonials: t?.length ?? 0, clients: c?.length ?? 0 }))
       .catch(() => {});
   }, []);
@@ -1050,7 +1057,7 @@ function SettingsPage() {
         {
           title: 'Структура файлов',
           content: (
-            <pre className="bg-[#0A0F1E] rounded-lg p-4 text-white/50 text-xs overflow-x-auto leading-relaxed">{`content/\n├── ru.json   ← Тексты на русском\n├── en.json   ← Тексты на английском\n├── uz.json   ← Тексты на узбекском\n└── data/\n    ├── portfolio.json\n    ├── testimonials.json\n    └── clients.json`}</pre>
+            <pre className="bg-[#0A0F1E] rounded-lg p-4 text-white/50 text-xs overflow-x-auto leading-relaxed">{`content/\n├── ru.json   ← FAQ, услуги, переводы UI\n├── en.json\n├── uz.json\n└── data/\n    ├── settings.{ru,en,uz}.json\n    ├── portfolio.{ru,en,uz}.json\n    ├── testimonials.{ru,en,uz}.json\n    └── clients.json   ← общий для всех языков`}</pre>
           ),
         },
         {
@@ -1085,12 +1092,14 @@ function SettingsPage() {
 
 // ── LandingSettingsManager ───────────────────────────────────────────────────
 function LandingSettingsManager({ toast }) {
+  const [locale, setLocale] = useState('ru');
   const [data, setData] = useState(null);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    apiFetch('settings').then((d) => setData(d || {})).catch(() => {});
-  }, []);
+    setData(null);
+    apiFetch('settings', {}, locale).then((d) => setData(d || {})).catch(() => {});
+  }, [locale]);
 
   const update = (path, value) => {
     setData((prev) => {
@@ -1141,14 +1150,19 @@ function LandingSettingsManager({ toast }) {
   const save = async () => {
     setSaving(true);
     try {
-      await apiFetch('settings', { method: 'POST', body: JSON.stringify({ action: 'save', item: data }) });
+      await apiFetch('settings', { method: 'POST', body: JSON.stringify({ action: 'save', item: data }) }, locale);
       toast('Настройки сохранены');
     } catch {
       toast('Ошибка сохранения', 'error');
     } finally { setSaving(false); }
   };
 
-  if (!data) return <div className="text-white/40 text-sm">Загрузка…</div>;
+  if (!data) return (
+    <div className="space-y-4">
+      <LocaleTabs active={locale} onChange={setLocale} />
+      <div className="text-white/40 text-sm">Загрузка…</div>
+    </div>
+  );
 
   const inputCls = 'w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-white text-sm focus:outline-none focus:border-[#D4A843] transition-colors';
   const labelCls = 'block text-[11px] text-white/40 mb-1.5 font-semibold uppercase tracking-[0.15em]';
@@ -1157,9 +1171,13 @@ function LandingSettingsManager({ toast }) {
 
   return (
     <div className="max-w-4xl space-y-6 pb-24">
+      <div className="flex items-center gap-3 flex-wrap">
+        <LocaleTabs active={locale} onChange={setLocale} />
+        <span className="text-white/40 text-xs">Редактируется язык: <span className="text-white/80 font-bold uppercase">{locale}</span></span>
+      </div>
       <div className="bg-[#1B2236] border border-[#D4A843]/20 rounded-xl px-5 py-4 text-sm text-white/70">
         Эти настройки управляют контентом главной страницы сайта (Hero, статистика, marquee, контакты, футер).
-        Поля FAQ, Услуги, Портфолио и Клиенты редактируются в отдельных разделах слева.
+        Каждый язык редактируется отдельно. Поля FAQ, Услуги, Портфолио и Клиенты — в отдельных разделах слева.
       </div>
 
       {/* HERO */}
@@ -1378,7 +1396,7 @@ export default function AdminPage() {
 
   useEffect(() => {
     const token = sessionStorage.getItem('cms_token');
-    if (token) apiFetch('portfolio').then(() => setAuthed(true)).catch(() => {});
+    if (token) apiFetch('portfolio', {}, 'ru').then(() => setAuthed(true)).catch(() => {});
   }, []);
 
   const navigate = (s) => { setSection(s); setSidebarOpen(false); };

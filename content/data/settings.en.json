@@ -1,0 +1,57 @@
+{
+  "hero": {
+    "titleLine1":  "Exhibition stands",
+    "titleLine2":  "turnkey",
+    "ctaPrimary":  "Request",
+    "ctaSecondary": "Our Work"
+  },
+  "about": {
+    "eyebrow":     "/02 — Who we are",
+    "title":       "We build what\ncannot be forgotten.",
+    "lead":        "ExpoContact is an independent exhibition architecture studio. We work with those who need <strong>not a spot in the hall, but a stage</strong> — with its own dramaturgy of light, materials, and visitor flow."
+  },
+  "counters": [
+    { "target": 20,   "suffix": "+", "label": "Years  /  in the market" },
+    { "target": 5000, "suffix": "+", "label": "Stands  /  Built and delivered" },
+    { "target": 3,    "suffix": "",  "label": "Countries  /  UZ · KZ · International" },
+    { "target": 500,  "suffix": "+", "label": "Clients  /  Return again" }
+  ],
+  "marquee": [
+    "20+ years on the market",
+    "5000+ projects",
+    "3 countries",
+    "500+ clients",
+    "Central Asia since 2004",
+    "Design × Production × Installation",
+    "Tashkent · Almaty · Dubai"
+  ],
+  "process": {
+    "title":      "Seven steps from brief to dismantling.",
+    "eyebrow":    "/05 — Process",
+    "stepLabel":  "Step"
+  },
+  "clients": {
+    "eyebrow":     "/06 — Clients",
+    "title":       "Trusted with your brand's first impression.",
+    "bigNumber":   "500",
+    "bigSuffix":   "+",
+    "caption":     "companies since 2004"
+  },
+  "contact": {
+    "phone":     "+998 97 711-17-11",
+    "phoneRaw":  "+998977111711",
+    "email":     "hello@expocontact.uz",
+    "address":   "Tashkent, 107B Amir Temur Street",
+    "hours":     "Mon–Sat · 09:00 — 19:00",
+    "instagram": "https://instagram.com/expocontact",
+    "telegram":  "https://t.me/expocontact",
+    "behance":   "#"
+  },
+  "footer": {
+    "callout":     "Ready to build\na stand <span class='accent'>they'll remember?</span>",
+    "calloutCta":  "Leave a request",
+    "brandLead":   "Exhibition architecture studio in Central Asia. Full cycle, one contractor, no intermediaries.",
+    "rights":      "© 2026 ExpoContact. All rights reserved.",
+    "credits":     "MAZE"
+  }
+}
