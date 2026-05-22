@@ -610,7 +610,16 @@ function CollectionManager({ collection, toast }) {
 
   const load = useCallback(async () => {
     setLoading(true);
-    try { setItems((await apiFetch(collection, {}, localized ? locale : null)) || []); }
+    try {
+      const raw = (await apiFetch(collection, {}, localized ? locale : null)) || [];
+      // Sort by sortOrder ascending; items without sortOrder go to the end in original order
+      const sorted = [...raw].sort((a, b) => {
+        const ao = Number.isFinite(+a.sortOrder) ? +a.sortOrder : Infinity;
+        const bo = Number.isFinite(+b.sortOrder) ? +b.sortOrder : Infinity;
+        return ao - bo;
+      });
+      setItems(sorted);
+    }
     finally { setLoading(false); }
   }, [collection, locale, localized]);
 
@@ -640,6 +649,61 @@ function CollectionManager({ collection, toast }) {
     } catch { toast('Ошибка копирования', 'error'); }
   };
 
+  // ── Drag-and-drop reorder (portfolio + testimonials) ────────────────────
+  const supportsReorder = collection === 'portfolio' || collection === 'testimonials';
+  const [draggedId, setDraggedId] = useState(null);
+  const [overId,    setOverId]    = useState(null);
+
+  const persistOrder = async (ordered) => {
+    // Only update items whose sortOrder actually changed.
+    const toUpdate = ordered
+      .map((item, i) => ({ item, newOrder: i }))
+      .filter(({ item, newOrder }) => (item.sortOrder ?? -1) !== newOrder);
+
+    try {
+      await Promise.all(toUpdate.map(({ item, newOrder }) =>
+        apiFetch(collection, {
+          method: 'POST',
+          body: JSON.stringify({
+            action: 'update',
+            id:     item.id,
+            item:   { ...item, sortOrder: newOrder },
+          }),
+        }, localized ? locale : null),
+      ));
+      toast('Порядок сохранён');
+    } catch { toast('Ошибка сохранения порядка', 'error'); }
+  };
+
+  const onDragStart = (e, id) => {
+    setDraggedId(id);
+    e.dataTransfer.effectAllowed = 'move';
+    try { e.dataTransfer.setData('text/plain', id); } catch {}
+  };
+  const onDragEnd  = () => { setDraggedId(null); setOverId(null); };
+  const onDragOver = (e, id) => {
+    if (!draggedId || draggedId === id) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    if (overId !== id) setOverId(id);
+  };
+  const onDrop = (e, targetId) => {
+    e.preventDefault();
+    if (!draggedId || draggedId === targetId) return;
+    const fromIdx = items.findIndex(x => x.id === draggedId);
+    const toIdx   = items.findIndex(x => x.id === targetId);
+    if (fromIdx === -1 || toIdx === -1) return;
+    const next = items.slice();
+    const [moved] = next.splice(fromIdx, 1);
+    next.splice(toIdx, 0, moved);
+    // Optimistic UI: update sortOrder locally too so a re-render is consistent.
+    const updated = next.map((it, i) => ({ ...it, sortOrder: i }));
+    setItems(updated);
+    setDraggedId(null);
+    setOverId(null);
+    persistOrder(updated);
+  };
+
   const cols = schema.slice(0, 3);
 
   return (
@@ -667,9 +731,15 @@ function CollectionManager({ collection, toast }) {
         <p className="text-white/20 text-sm py-12 text-center">Нет записей. Добавьте первую!</p>
       ) : (
         <div className="overflow-x-auto rounded-xl border border-white/10">
+          {supportsReorder && (
+            <p className="px-4 py-2 bg-white/[0.02] text-white/40 text-xs border-b border-white/10">
+              💡 Перетаскивайте строки за иконку слева, чтобы изменить порядок отображения на сайте.
+            </p>
+          )}
           <table className="w-full text-sm min-w-[480px]">
             <thead>
               <tr className="border-b border-white/10 bg-white/[0.03]">
+                {supportsReorder && <th className="w-8 px-2" aria-hidden></th>}
                 {cols.map(({ key, label }) => (
                   <th key={key} className="text-left px-4 py-3 text-white/40 font-semibold text-xs uppercase tracking-wider">{label}</th>
                 ))}
@@ -679,7 +749,27 @@ function CollectionManager({ collection, toast }) {
             <tbody>
               {items.map(item => (
                 <>
-                  <tr key={item.id} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
+                  <tr key={item.id}
+                    draggable={supportsReorder}
+                    onDragStart={supportsReorder ? (e) => onDragStart(e, item.id) : undefined}
+                    onDragEnd={supportsReorder ? onDragEnd : undefined}
+                    onDragOver={supportsReorder ? (e) => onDragOver(e, item.id) : undefined}
+                    onDrop={supportsReorder ? (e) => onDrop(e, item.id) : undefined}
+                    className={`border-b border-white/5 transition-colors ${
+                      draggedId === item.id
+                        ? 'opacity-30'
+                        : overId === item.id
+                          ? 'bg-[#D4A843]/10 outline outline-1 outline-[#D4A843]/40'
+                          : 'hover:bg-white/[0.02]'
+                    }`}>
+                    {supportsReorder && (
+                      <td className="w-8 px-2 text-white/30 hover:text-white/70 cursor-grab active:cursor-grabbing select-none text-center" title="Перетащите для сортировки">
+                        <svg className="w-4 h-4 inline" fill="currentColor" viewBox="0 0 20 20">
+                          <circle cx="6" cy="5" r="1.4" /><circle cx="6" cy="10" r="1.4" /><circle cx="6" cy="15" r="1.4" />
+                          <circle cx="14" cy="5" r="1.4" /><circle cx="14" cy="10" r="1.4" /><circle cx="14" cy="15" r="1.4" />
+                        </svg>
+                      </td>
+                    )}
                     {cols.map(({ key, type }) => (
                       <td key={key} className="px-4 py-3 text-white/70 max-w-[180px]">
                         {type === 'stars' ? (
@@ -717,7 +807,7 @@ function CollectionManager({ collection, toast }) {
                   </tr>
                   {editingId === item.id && (
                     <tr key={`e-${item.id}`}>
-                      <td colSpan={cols.length + 1} className="px-4 py-4 bg-white/[0.02]">
+                      <td colSpan={cols.length + 1 + (supportsReorder ? 1 : 0)} className="px-4 py-4 bg-white/[0.02]">
                         <ItemForm schema={schema} initial={item}
                           onSave={form => handleUpdate(item.id, form)}
                           onCancel={() => setEditingId(null)} />
