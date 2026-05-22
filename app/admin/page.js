@@ -74,12 +74,15 @@ const IC_LEADS = <svg className="w-4 h-4" fill="none" stroke="currentColor" view
 
 const IC_SEO = <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>;
 
+const IC_MEDIA = <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>;
+
 const NAV = [
   { key: 'dashboard',       label: 'Дашборд',           icon: IC.dashboard    },
   { key: 'leads',           label: 'Заявки',            icon: IC_LEADS        },
   { key: 'analytics',       label: 'Аналитика',         icon: IC_ANALYTICS    },
   { key: 'landingSettings', label: 'Настройки сайта',   icon: IC_LANDING      },
   { key: 'seo',             label: 'SEO',               icon: IC_SEO          },
+  { key: 'media',           label: 'Медиа-библиотека',  icon: IC_MEDIA        },
   { key: 'portfolio',       label: 'Портфолио',         icon: IC.portfolio    },
   { key: 'testimonials',    label: 'Отзывы',            icon: IC.testimonials },
   { key: 'clients',         label: 'Клиенты',           icon: IC.clients      },
@@ -92,10 +95,18 @@ const SECTION_TITLES = {
   dashboard: 'Дашборд', leads: 'Заявки с сайта', analytics: 'Аналитика посетителей',
   landingSettings: 'Настройки главной страницы',
   seo: 'SEO — meta-теги и индексация',
+  media: 'Медиа-библиотека',
   portfolio: 'Портфолио', testimonials: 'Отзывы клиентов',
   clients: 'Клиенты', faq: 'FAQ — Частые вопросы', services: 'Тексты услуг',
   settings: 'Инструкция и настройки',
 };
+
+function fmtBytes(b) {
+  if (!b) return '—';
+  if (b < 1024) return `${b} Б`;
+  if (b < 1024 * 1024) return `${(b / 1024).toFixed(1)} КБ`;
+  return `${(b / 1024 / 1024).toFixed(2)} МБ`;
+}
 
 // ── Leads helpers ─────────────────────────────────────────────────────────────
 const LEAD_STATUS = {
@@ -1500,6 +1511,169 @@ function SettingsPage() {
 }
 
 // ── LandingSettingsManager ───────────────────────────────────────────────────
+// ── MediaLibrary ──────────────────────────────────────────────────────────────
+function MediaLibrary({ toast }) {
+  const [blobs,   setBlobs]   = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [note,    setNote]    = useState(null);
+  const [search,  setSearch]  = useState('');
+  const [usage,   setUsage]   = useState(null); // Set of URLs used somewhere
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      const token = getToken();
+      const res = await fetch('/api/admin/media', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const json = await res.json();
+      setBlobs(json.blobs || []);
+      setNote(json.note || null);
+    } catch { toast('Ошибка загрузки', 'error'); }
+    finally { setLoading(false); }
+  }, [toast]);
+
+  // Build a set of all image URLs referenced anywhere (portfolio + testimonials + clients + settings + seo)
+  const loadUsage = useCallback(async () => {
+    const used = new Set();
+    const collect = (val) => {
+      if (typeof val === 'string' && /^https?:\/\//.test(val)) used.add(val);
+      else if (Array.isArray(val)) val.forEach(collect);
+      else if (val && typeof val === 'object') Object.values(val).forEach(collect);
+    };
+    try {
+      const fetches = [
+        ...['ru','en','uz'].flatMap(l => [
+          apiFetch('portfolio',    {}, l).catch(() => []),
+          apiFetch('testimonials', {}, l).catch(() => []),
+          apiFetch('settings',     {}, l).catch(() => ({})),
+          apiFetch('seo',          {}, l).catch(() => ({})),
+        ]),
+        apiFetch('clients').catch(() => []),
+      ];
+      const results = await Promise.all(fetches);
+      results.forEach(collect);
+      setUsage(used);
+    } catch { /* best effort */ }
+  }, []);
+
+  useEffect(() => { load(); loadUsage(); }, [load, loadUsage]);
+
+  const remove = async (url) => {
+    if (usage?.has(url) && !confirm('Этот файл используется на сайте. Точно удалить?')) return;
+    if (!usage?.has(url) && !confirm('Удалить файл?')) return;
+    try {
+      const token = getToken();
+      const res = await fetch(`/api/admin/media?url=${encodeURIComponent(url)}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error('fail');
+      setBlobs(b => b.filter(x => x.url !== url));
+      toast('Удалено');
+    } catch { toast('Ошибка удаления', 'error'); }
+  };
+
+  const copyUrl = (url) => {
+    navigator.clipboard.writeText(url).then(
+      () => toast('URL скопирован'),
+      () => toast('Не удалось скопировать', 'error'),
+    );
+  };
+
+  const visible = blobs.filter(b => !search || b.pathname.toLowerCase().includes(search.toLowerCase()));
+  const totalBytes = blobs.reduce((sum, b) => sum + (b.size || 0), 0);
+  const unusedCount = usage ? blobs.filter(b => !usage.has(b.url)).length : null;
+
+  return (
+    <div className="space-y-5">
+      {note && (
+        <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl px-4 py-3 text-amber-300 text-xs">
+          {note}
+        </div>
+      )}
+
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="bg-[#141929] border border-white/10 rounded-xl p-4">
+          <p className="text-2xl font-black text-white">{blobs.length}</p>
+          <p className="text-white/40 text-xs">Файлов</p>
+        </div>
+        <div className="bg-[#141929] border border-white/10 rounded-xl p-4">
+          <p className="text-2xl font-black text-[#D4A843]">{fmtBytes(totalBytes)}</p>
+          <p className="text-white/40 text-xs">Объём</p>
+        </div>
+        <div className="bg-[#141929] border border-white/10 rounded-xl p-4">
+          <p className="text-2xl font-black text-emerald-400">{usage ? blobs.length - unusedCount : '…'}</p>
+          <p className="text-white/40 text-xs">Используется</p>
+        </div>
+        <div className="bg-[#141929] border border-white/10 rounded-xl p-4">
+          <p className="text-2xl font-black text-red-400">{unusedCount ?? '…'}</p>
+          <p className="text-white/40 text-xs">Не используется</p>
+        </div>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-2">
+        <input type="text" value={search} onChange={e => setSearch(e.target.value)}
+          placeholder="Поиск по имени файла…"
+          className="flex-1 min-w-[200px] bg-[#141929] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#D4A843]/40" />
+        <button onClick={() => { load(); loadUsage(); }}
+          className="px-3 py-2.5 rounded-lg text-xs font-medium bg-white/5 text-white/60 hover:bg-white/10 hover:text-white transition-colors border border-white/10">
+          ↻ Обновить
+        </button>
+      </div>
+
+      {loading && <p className="text-white/40 text-sm py-8 text-center">Загрузка...</p>}
+      {!loading && visible.length === 0 && (
+        <p className="text-white/40 text-sm py-8 text-center">
+          {blobs.length === 0 ? 'Файлов пока нет — загрузите изображения через формы редактирования' : 'Ничего не найдено'}
+        </p>
+      )}
+
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+        {visible.map(b => {
+          const isUsed = usage?.has(b.url);
+          const filename = b.pathname.split('/').pop();
+          return (
+            <div key={b.url} className="group bg-[#141929] border border-white/10 rounded-xl overflow-hidden hover:border-[#D4A843]/30 transition-colors">
+              <div className="aspect-square bg-black/30 relative">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={b.url} alt="" className="w-full h-full object-cover" />
+                {usage && (
+                  <span className={`absolute top-2 left-2 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${
+                    isUsed
+                      ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
+                      : 'bg-red-500/15 text-red-300 border-red-500/30'
+                  }`}>
+                    {isUsed ? '● Используется' : '○ Не используется'}
+                  </span>
+                )}
+              </div>
+              <div className="p-2.5 space-y-1.5">
+                <p className="text-white/70 text-xs truncate font-mono" title={filename}>{filename}</p>
+                <div className="flex items-center justify-between gap-1">
+                  <span className="text-white/30 text-[10px]">{fmtBytes(b.size)}</span>
+                  <div className="flex items-center gap-1">
+                    <button onClick={() => copyUrl(b.url)}
+                      title="Скопировать URL"
+                      className="p-1.5 text-white/40 hover:text-white hover:bg-white/5 rounded transition-colors">
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
+                    </button>
+                    <button onClick={() => remove(b.url)}
+                      title="Удалить"
+                      className="p-1.5 text-white/40 hover:text-red-400 hover:bg-red-500/10 rounded transition-colors">
+                      {IC.trash}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 // ── SeoManager ────────────────────────────────────────────────────────────────
 function SeoManager({ toast }) {
   const [locale, setLocale] = useState('ru');
@@ -1964,6 +2138,7 @@ export default function AdminPage() {
           {section === 'analytics'    && <AnalyticsPage />}
           {section === 'landingSettings' && <LandingSettingsManager toast={toast} />}
           {section === 'seo'          && <SeoManager toast={toast} />}
+          {section === 'media'        && <MediaLibrary toast={toast} />}
           {section === 'portfolio'    && <CollectionManager key="portfolio"    collection="portfolio"    toast={toast} />}
           {section === 'testimonials' && <CollectionManager key="testimonials" collection="testimonials" toast={toast} />}
           {section === 'clients'      && <CollectionManager key="clients"      collection="clients"      toast={toast} />}
