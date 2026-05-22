@@ -28,7 +28,7 @@ const CONTENT_DIR = path.join(process.cwd(), 'content');
 
 const LOCALE_DATA_COLLECTIONS    = ['portfolio', 'testimonials'];
 const GLOBAL_DATA_COLLECTIONS    = ['clients'];
-const LOCALE_SINGLETON_COLLECTIONS = ['settings'];
+const LOCALE_SINGLETON_COLLECTIONS = ['settings', 'seo'];
 const LOCALE_COLLECTIONS         = ['faq', 'services'];
 const LOCALES                    = ['ru', 'en', 'uz'];
 

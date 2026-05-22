@@ -4,9 +4,11 @@ import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import { Analytics } from '@vercel/analytics/next';
 import AnalyticsTracker from '@/components/AnalyticsTracker';
+import { promises as fs } from 'fs';
+import path from 'path';
 import '@/app/globals.css';
 
-// ── SEO metadata per locale ──────────────────────────────────────────────────
+// ── Defaults (used when content/data/seo.{locale}.json is missing fields) ───
 const META = {
   ru: {
     title:       'ExpoContact — Выставочные стенды в Узбекистане и Центральной Азии',
@@ -34,37 +36,56 @@ const META = {
   },
 };
 
+async function readSeo(locale) {
+  try {
+    const raw = await fs.readFile(
+      path.join(process.cwd(), 'content', 'data', `seo.${locale}.json`),
+      'utf8',
+    );
+    return JSON.parse(raw);
+  } catch {
+    return {};
+  }
+}
+
 export async function generateMetadata({ params }) {
   const { locale } = await params;
   const meta = META[locale] || META.ru;
+  const seo  = await readSeo(locale);
+
+  const title       = seo.title       || meta.title;
+  const description = seo.description || meta.description;
+  const ogImage     = seo.ogImage     || '/og-image.jpg';
+  const ogImageAlt  = seo.ogImageAlt  || 'ExpoContact';
 
   return {
     metadataBase: new URL(
       process.env.NEXT_PUBLIC_SITE_URL || 'https://expocontact.uz',
     ),
     title: {
-      default:  meta.title,
+      default:  title,
       template: `%s | ExpoContact`,
     },
-    description: meta.description,
+    description,
+    keywords: seo.keywords || undefined,
     openGraph: {
-      title:       meta.title,
-      description: meta.description,
+      title,
+      description,
       url:         '/',
       siteName:    'ExpoContact',
       locale:      meta.locale,
       type:        'website',
-      images: [{ url: '/og-image.jpg', width: 1200, height: 630, alt: 'ExpoContact' }],
+      images: [{ url: ogImage, width: 1200, height: 630, alt: ogImageAlt }],
     },
     twitter: {
       card:        'summary_large_image',
-      title:       meta.title,
-      description: meta.description,
-      images:      ['/og-image.jpg'],
+      title,
+      description,
+      images:      [ogImage],
     },
     robots: {
-      index:  true,
-      follow: true,
+      index:  seo.robotsIndex  !== false,
+      follow: seo.robotsFollow !== false,
     },
     alternates: {
       canonical: `/${locale}`,

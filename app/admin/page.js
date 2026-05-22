@@ -72,11 +72,14 @@ const IC_LANDING = <svg className="w-4 h-4" fill="none" stroke="currentColor" vi
 
 const IC_LEADS = <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>;
 
+const IC_SEO = <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>;
+
 const NAV = [
   { key: 'dashboard',       label: 'Дашборд',           icon: IC.dashboard    },
   { key: 'leads',           label: 'Заявки',            icon: IC_LEADS        },
   { key: 'analytics',       label: 'Аналитика',         icon: IC_ANALYTICS    },
   { key: 'landingSettings', label: 'Настройки сайта',   icon: IC_LANDING      },
+  { key: 'seo',             label: 'SEO',               icon: IC_SEO          },
   { key: 'portfolio',       label: 'Портфолио',         icon: IC.portfolio    },
   { key: 'testimonials',    label: 'Отзывы',            icon: IC.testimonials },
   { key: 'clients',         label: 'Клиенты',           icon: IC.clients      },
@@ -88,6 +91,7 @@ const NAV = [
 const SECTION_TITLES = {
   dashboard: 'Дашборд', leads: 'Заявки с сайта', analytics: 'Аналитика посетителей',
   landingSettings: 'Настройки главной страницы',
+  seo: 'SEO — meta-теги и индексация',
   portfolio: 'Портфолио', testimonials: 'Отзывы клиентов',
   clients: 'Клиенты', faq: 'FAQ — Частые вопросы', services: 'Тексты услуг',
   settings: 'Инструкция и настройки',
@@ -1496,6 +1500,121 @@ function SettingsPage() {
 }
 
 // ── LandingSettingsManager ───────────────────────────────────────────────────
+// ── SeoManager ────────────────────────────────────────────────────────────────
+function SeoManager({ toast }) {
+  const [locale, setLocale] = useState('ru');
+  const [data, setData]     = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [saving,  setSaving]  = useState(false);
+
+  const load = useCallback(() => {
+    setLoading(true);
+    apiFetch('seo', {}, locale)
+      .then(d => setData(d && typeof d === 'object' ? d : {}))
+      .catch(() => toast('Ошибка загрузки', 'error'))
+      .finally(() => setLoading(false));
+  }, [locale, toast]);
+
+  useEffect(() => { load(); }, [load]);
+
+  const save = async () => {
+    setSaving(true);
+    try {
+      await apiFetch('seo', {
+        method: 'POST',
+        body: JSON.stringify({ action: 'save', item: data }),
+      }, locale);
+      toast('SEO сохранено');
+    } catch { toast('Ошибка сохранения', 'error'); }
+    finally { setSaving(false); }
+  };
+
+  const set = (k, v) => setData(d => ({ ...d, [k]: v }));
+
+  if (loading || !data) return <p className="text-white/30 text-sm py-12 text-center">Загрузка...</p>;
+
+  const titleLen = (data.title || '').length;
+  const descLen  = (data.description || '').length;
+
+  return (
+    <div className="space-y-5 max-w-3xl">
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <LocaleTabs active={locale} onChange={setLocale} />
+        <button onClick={save} disabled={saving}
+          className="flex items-center gap-2 px-5 py-2.5 bg-[#D4A843] text-[#0A0F1E] font-bold rounded-xl hover:bg-[#E8C06E] transition-colors text-sm disabled:opacity-50">
+          {IC.check} {saving ? 'Сохраняем...' : 'Сохранить'}
+        </button>
+      </div>
+
+      <div className="bg-[#141929] border border-white/10 rounded-xl p-5 space-y-4">
+        <div>
+          <div className="flex items-center justify-between mb-1.5">
+            <label className="block text-xs text-white/50 font-semibold uppercase tracking-wider">Title</label>
+            <span className={`text-xs ${titleLen > 60 ? 'text-red-400' : titleLen > 50 ? 'text-amber-400' : 'text-white/30'}`}>{titleLen}/60</span>
+          </div>
+          <input type="text" value={data.title || ''} onChange={e => set('title', e.target.value)}
+            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#D4A843] transition-colors" />
+          <p className="text-white/30 text-xs mt-1.5">Отображается в результатах поиска и во вкладке браузера.</p>
+        </div>
+
+        <div>
+          <div className="flex items-center justify-between mb-1.5">
+            <label className="block text-xs text-white/50 font-semibold uppercase tracking-wider">Description</label>
+            <span className={`text-xs ${descLen > 160 ? 'text-red-400' : descLen > 140 ? 'text-amber-400' : 'text-white/30'}`}>{descLen}/160</span>
+          </div>
+          <textarea value={data.description || ''} onChange={e => set('description', e.target.value)} rows={3}
+            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#D4A843] transition-colors resize-none" />
+          <p className="text-white/30 text-xs mt-1.5">Описание сниппета в Google / Яндексе.</p>
+        </div>
+
+        <div>
+          <label className="block text-xs text-white/50 mb-1.5 font-semibold uppercase tracking-wider">Keywords</label>
+          <input type="text" value={data.keywords || ''} onChange={e => set('keywords', e.target.value)}
+            placeholder="ключевое слово, второе, третье"
+            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#D4A843] transition-colors" />
+          <p className="text-white/30 text-xs mt-1.5">Через запятую. На ранжирование почти не влияет, но видно в HTML.</p>
+        </div>
+
+        <ImageField value={data.ogImage} onChange={v => set('ogImage', v)} label="Open Graph картинка (1200×630)" maxW={1200} maxH={630} />
+
+        <div>
+          <label className="block text-xs text-white/50 mb-1.5 font-semibold uppercase tracking-wider">OG alt-текст</label>
+          <input type="text" value={data.ogImageAlt || ''} onChange={e => set('ogImageAlt', e.target.value)}
+            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#D4A843] transition-colors" />
+        </div>
+
+        <div className="grid grid-cols-2 gap-4 pt-2 border-t border-white/5">
+          <label className="flex items-center gap-3 cursor-pointer select-none py-2">
+            <input type="checkbox" checked={data.robotsIndex !== false} onChange={e => set('robotsIndex', e.target.checked)}
+              className="w-4 h-4 rounded border-white/20 bg-white/5 text-[#D4A843] focus:ring-[#D4A843] focus:ring-offset-0" />
+            <span className="text-white/80 text-sm">Разрешить индексацию (index)</span>
+          </label>
+          <label className="flex items-center gap-3 cursor-pointer select-none py-2">
+            <input type="checkbox" checked={data.robotsFollow !== false} onChange={e => set('robotsFollow', e.target.checked)}
+              className="w-4 h-4 rounded border-white/20 bg-white/5 text-[#D4A843] focus:ring-[#D4A843] focus:ring-offset-0" />
+            <span className="text-white/80 text-sm">Переходить по ссылкам (follow)</span>
+          </label>
+        </div>
+      </div>
+
+      <div className="bg-[#0d1220] border border-white/5 rounded-xl p-4 text-xs text-white/40 leading-relaxed">
+        <strong className="text-white/70">Превью в Google:</strong>
+        <div className="mt-2 bg-white rounded p-3 text-left text-black">
+          <p className="text-[#1a0dab] text-base leading-tight truncate" style={{ fontFamily: 'arial, sans-serif' }}>
+            {data.title || 'Заголовок не задан'}
+          </p>
+          <p className="text-[#006621] text-xs mt-0.5" style={{ fontFamily: 'arial, sans-serif' }}>
+            https://expocontact.uz/{locale}
+          </p>
+          <p className="text-[#545454] text-sm mt-1 line-clamp-2" style={{ fontFamily: 'arial, sans-serif' }}>
+            {data.description || 'Описание не задано'}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function LandingSettingsManager({ toast }) {
   const [locale, setLocale] = useState('ru');
   const [data, setData] = useState(null);
@@ -1844,6 +1963,7 @@ export default function AdminPage() {
           {section === 'leads'        && <LeadsManager toast={toast} />}
           {section === 'analytics'    && <AnalyticsPage />}
           {section === 'landingSettings' && <LandingSettingsManager toast={toast} />}
+          {section === 'seo'          && <SeoManager toast={toast} />}
           {section === 'portfolio'    && <CollectionManager key="portfolio"    collection="portfolio"    toast={toast} />}
           {section === 'testimonials' && <CollectionManager key="testimonials" collection="testimonials" toast={toast} />}
           {section === 'clients'      && <CollectionManager key="clients"      collection="clients"      toast={toast} />}
