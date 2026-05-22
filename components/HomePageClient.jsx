@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import { usePathname, useRouter } from 'next/navigation';
 import BrandLogo from './BrandLogo';
@@ -101,6 +102,41 @@ const CLIENT_LIST_FALLBACK_B = [
   { n: 'Akfa', m: '' }, { n: 'TBC Bank', m: 'circle' }, { n: 'Ipoteka Bank', m: '' }, { n: 'Asaka Bank', m: 'diamond' },
   { n: 'Air Samarkand', m: 'dot' }, { n: 'Kapital Bank', m: '' },
 ];
+
+const HERO_SLIDES = [
+  {
+    headline: 'Выставочные стенды, которые работают на вас',
+    sub:      'Проектируем, строим, монтируем — вы просто приходите на выставку',
+    cta:      'Обсудить проект',
+  },
+  {
+    headline: 'Вы занимаетесь бизнесом — мы занимаемся событием',
+    sub:      'Полный цикл организации: выставочные стенды, ивенты, корпоративные встречи под ключ',
+    cta:      'Получить консультацию',
+  },
+  {
+    headline: 'Ваше мероприятие в надёжных руках',
+    sub:      'Профессиональная организация выставок, бизнес-мероприятий и корпоративных событий в Узбекистане',
+    cta:      'Рассчитать стоимость',
+  },
+  {
+    headline: 'Создаём события, о которых говорят',
+    sub:      'От выставочного стенда до корпоративного форума — делаем каждую деталь идеальной',
+    cta:      'Начать планирование',
+  },
+  {
+    headline: 'Готовы воплотить ваше мероприятие в жизнь',
+    sub:      'Оставьте заявку — свяжемся в течение 30 минут и предложим решение под ваш бюджет',
+    cta:      'Оставить заявку',
+  },
+];
+const HERO_INTERVAL = 5000;
+
+const heroSlideVariants = {
+  enter:  { opacity: 0, y: 28 },
+  center: { opacity: 1, y: 0,   transition: { duration: 0.65, ease: [0.16, 1, 0.3, 1] } },
+  exit:   { opacity: 0, y: -16, transition: { duration: 0.32, ease: [0.7, 0, 0.84, 0] } },
+};
 
 // ════════════════════════════════════════════════════════════════════════════
 //   MAIN
@@ -320,7 +356,40 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
     return () => document.removeEventListener('keydown', onKey);
   }, [modalOpen, closeModal]);
 
-  // ── 8. Filters ────────────────────────────────────────────────────────────
+  // ── 8. Hero slider ───────────────────────────────────────────────────────
+  const [heroSlide,    setHeroSlide]    = useState(0);
+  const [heroPaused,   setHeroPaused]   = useState(false);
+  const [heroProgress, setHeroProgress] = useState(0);
+  const heroStartRef = useRef(performance.now());
+  const heroRafRef   = useRef(null);
+
+  const goToSlide  = useCallback((i) => setHeroSlide(i), []);
+  const nextSlide  = useCallback(() => setHeroSlide(c => (c + 1) % HERO_SLIDES.length), []);
+  const prevSlide  = useCallback(() => setHeroSlide(c => (c - 1 + HERO_SLIDES.length) % HERO_SLIDES.length), []);
+
+  useEffect(() => {
+    heroStartRef.current = performance.now();
+    setHeroProgress(0);
+  }, [heroSlide]);
+
+  useEffect(() => {
+    if (heroPaused) return;
+    const tick = () => {
+      const p = Math.min((performance.now() - heroStartRef.current) / HERO_INTERVAL, 1);
+      setHeroProgress(p);
+      if (p < 1) heroRafRef.current = requestAnimationFrame(tick);
+    };
+    heroRafRef.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(heroRafRef.current);
+  }, [heroSlide, heroPaused]);
+
+  useEffect(() => {
+    if (heroPaused) return;
+    const id = setTimeout(() => setHeroSlide(c => (c + 1) % HERO_SLIDES.length), HERO_INTERVAL);
+    return () => clearTimeout(id);
+  }, [heroSlide, heroPaused]);
+
+  // ── 9. Filters ────────────────────────────────────────────────────────────
   const [filter, setFilter] = useState('all');
   const filterLabels = [
     { k: 'all', label: 'Все' },
@@ -465,37 +534,95 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
       </nav>
 
       {/* ── 01 / HERO ─────────────────────────────────────────────────── */}
-      <header className="hero" id="top">
+      <header
+        className="hero"
+        id="top"
+        onMouseEnter={() => setHeroPaused(true)}
+        onMouseLeave={() => setHeroPaused(false)}
+      >
         <div className="hero__vignette" aria-hidden />
         <div className="hero__glow" aria-hidden />
+        <div className="hero__grid" aria-hidden />
 
+        {/* 3D rotating logo — stays untouched */}
         <div className="hero__logo3d" id="logo3d">
           <HeroLogo3D />
           <span className="hero__logo3d-hint">Drag · 360°</span>
         </div>
 
         <div className="hero__content">
-          <h1 className="hero__title">
-            {sHero.titleLine1 || 'Выставочные стенды'}<br />
-            <span className="accent">{sHero.titleLine2 || 'под ключ'}</span>
-          </h1>
 
+          {/* Animated slide: headline + subheadline */}
+          <div style={{ overflow: 'hidden', minHeight: 'clamp(120px, 18svh, 200px)' }}>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={heroSlide}
+                variants={heroSlideVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+              >
+                <h1 className="hero__title">
+                  {HERO_SLIDES[heroSlide].headline}
+                </h1>
+                <p className="hero__lead" style={{ marginTop: 14 }}>
+                  {HERO_SLIDES[heroSlide].sub}
+                </p>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+
+          {/* CTA row */}
           <div className="hero__cta">
             <a href="#" className="cta cta--primary magnetic" data-hover onClick={openModal}>
-              <span className="cta__label">{sHero.ctaPrimary || 'Заявка'}</span>
+              <span className="cta__label">{HERO_SLIDES[heroSlide].cta}</span>
               <span className="cta__circle" aria-hidden>
                 <svg className="a1" viewBox="0 0 22 12" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 6 H20 M15 1 L20 6 L15 11" /></svg>
                 <svg className="a2" viewBox="0 0 22 12" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 6 H20 M15 1 L20 6 L15 11" /></svg>
               </span>
             </a>
             <a href="#folio" className="cta cta--ghost magnetic" data-hover>
-              <span className="cta__label">{sHero.ctaSecondary || 'Работы'}</span>
+              <span className="cta__label">Работы</span>
               <span className="cta__circle" aria-hidden>
                 <svg className="a1" viewBox="0 0 22 12" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 6 H20 M15 1 L20 6 L15 11" /></svg>
                 <svg className="a2" viewBox="0 0 22 12" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 6 H20 M15 1 L20 6 L15 11" /></svg>
               </span>
             </a>
           </div>
+
+          {/* Progress bar */}
+          <div className="hero__progress">
+            <div
+              className="hero__progress-fill"
+              style={{ width: `${heroProgress * 100}%`, transition: 'none' }}
+            />
+          </div>
+
+          {/* Prev · dots · next */}
+          <div className="hero__nav">
+            <button className="hero__arrow" onClick={prevSlide} aria-label="Предыдущий слайд">
+              <svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <div className="hero__dots">
+              {HERO_SLIDES.map((_, i) => (
+                <button
+                  key={i}
+                  className={`hero__dot${i === heroSlide ? ' is-active' : ''}`}
+                  style={{ width: i === heroSlide ? 24 : 8 }}
+                  onClick={() => goToSlide(i)}
+                  aria-label={`Слайд ${i + 1}`}
+                />
+              ))}
+            </div>
+            <button className="hero__arrow" onClick={nextSlide} aria-label="Следующий слайд">
+              <svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </div>
+
         </div>
       </header>
 
