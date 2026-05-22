@@ -817,7 +817,7 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
         <div className="section__index">08 / Contact</div>
         <div className="wrap">
           <div className="cta__grid">
-            <div>
+            <div className="cta__left">
               <span className="eyebrow">{tContact('eyebrow')}</span>
               <h2 className="section-title" style={{ marginTop: 24 }}
                 dangerouslySetInnerHTML={{ __html: richText(tContact('heading')) }}
