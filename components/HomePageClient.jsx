@@ -392,7 +392,7 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
       await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(Object.fromEntries(fd.entries())),
+        body: JSON.stringify({ ...Object.fromEntries(fd.entries()), source: 'contact', locale }),
       });
     } catch {/* fall through */}
     setLeadSent(true);
@@ -406,7 +406,7 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
       await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(Object.fromEntries(fd.entries())),
+        body: JSON.stringify({ ...Object.fromEntries(fd.entries()), source: 'modal', locale }),
       });
     } catch {/* fall through */}
     setModalSent(true);

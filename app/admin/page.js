@@ -70,8 +70,11 @@ const IC_ANALYTICS = <svg className="w-4 h-4" fill="none" stroke="currentColor" 
 
 const IC_LANDING = <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h7"/><circle cx="18" cy="18" r="3" strokeWidth="2"/></svg>;
 
+const IC_LEADS = <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>;
+
 const NAV = [
   { key: 'dashboard',       label: 'Дашборд',           icon: IC.dashboard    },
+  { key: 'leads',           label: 'Заявки',            icon: IC_LEADS        },
   { key: 'analytics',       label: 'Аналитика',         icon: IC_ANALYTICS    },
   { key: 'landingSettings', label: 'Настройки сайта',   icon: IC_LANDING      },
   { key: 'portfolio',       label: 'Портфолио',         icon: IC.portfolio    },
@@ -83,12 +86,67 @@ const NAV = [
 ];
 
 const SECTION_TITLES = {
-  dashboard: 'Дашборд', analytics: 'Аналитика посетителей',
+  dashboard: 'Дашборд', leads: 'Заявки с сайта', analytics: 'Аналитика посетителей',
   landingSettings: 'Настройки главной страницы',
   portfolio: 'Портфолио', testimonials: 'Отзывы клиентов',
   clients: 'Клиенты', faq: 'FAQ — Частые вопросы', services: 'Тексты услуг',
   settings: 'Инструкция и настройки',
 };
+
+// ── Leads helpers ─────────────────────────────────────────────────────────────
+const LEAD_STATUS = {
+  new:         { label: 'Новая',    color: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30' },
+  in_progress: { label: 'В работе', color: 'bg-amber-500/15 text-amber-300 border-amber-500/30'       },
+  closed:      { label: 'Закрыта',  color: 'bg-blue-500/15 text-blue-300 border-blue-500/30'          },
+  spam:        { label: 'Спам',     color: 'bg-red-500/15 text-red-300 border-red-500/30'             },
+};
+const LEAD_STATUS_ORDER = ['new', 'in_progress', 'closed', 'spam'];
+
+async function leadsFetch(method = 'GET', body = null, query = '') {
+  const token = getToken();
+  const res = await fetch(`/api/admin/leads${query}`, {
+    method,
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  if (res.status === 401) throw new Error('unauthorized');
+  return res.json();
+}
+
+function fmtDate(ts) {
+  const d = new Date(ts);
+  return d.toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' });
+}
+function fmtRelative(ts) {
+  const s = Math.floor((Date.now() - ts) / 1000);
+  if (s < 60)    return 'только что';
+  if (s < 3600)  return `${Math.floor(s / 60)} мин назад`;
+  if (s < 86400) return `${Math.floor(s / 3600)} ч назад`;
+  if (s < 604800) return `${Math.floor(s / 86400)} дн назад`;
+  return fmtDate(ts);
+}
+
+function escapeCsv(v) {
+  if (v == null) return '';
+  const s = String(v);
+  return /[",\n;]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+}
+
+function downloadCsv(leads) {
+  const headers = ['id','createdAt','status','name','company','phone','expo','message','source','locale'];
+  const rows = leads.map(l => headers.map(h => {
+    if (h === 'createdAt') return fmtDate(l.createdAt);
+    return escapeCsv(l[h]);
+  }).join(','));
+  const csv = '﻿' + [headers.join(','), ...rows].join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `leads-${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
 
 // ── Schemas ───────────────────────────────────────────────────────────────────
 const SCHEMAS = {
@@ -988,12 +1046,265 @@ function AnalyticsPage() {
 }
 
 // ── Dashboard ─────────────────────────────────────────────────────────────────
+// ── LeadsManager ──────────────────────────────────────────────────────────────
+function LeadsManager({ toast }) {
+  const [leads,    setLeads]    = useState([]);
+  const [loading,  setLoading]  = useState(true);
+  const [filter,   setFilter]   = useState('all');
+  const [search,   setSearch]   = useState('');
+  const [selected, setSelected] = useState(null);
+  const [note,     setNote]     = useState('');
+
+  const load = useCallback(() => {
+    setLoading(true);
+    leadsFetch('GET')
+      .then(d => Array.isArray(d) ? setLeads(d) : setLeads([]))
+      .catch(() => toast('Ошибка загрузки заявок', 'error'))
+      .finally(() => setLoading(false));
+  }, [toast]);
+
+  useEffect(() => { load(); }, [load]);
+
+  const counts = {
+    all:         leads.length,
+    new:         leads.filter(l => l.status === 'new').length,
+    in_progress: leads.filter(l => l.status === 'in_progress').length,
+    closed:      leads.filter(l => l.status === 'closed').length,
+    spam:        leads.filter(l => l.status === 'spam').length,
+  };
+
+  const visible = leads.filter(l => {
+    if (filter !== 'all' && l.status !== filter) return false;
+    if (search) {
+      const q = search.toLowerCase();
+      const hay = [l.name, l.company, l.phone, l.expo, l.message].filter(Boolean).join(' ').toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+
+  const setStatus = async (id, status) => {
+    try {
+      const upd = await leadsFetch('PATCH', { id, status });
+      if (upd?.id) {
+        setLeads(ls => ls.map(l => l.id === id ? upd : l));
+        if (selected?.id === id) setSelected(upd);
+        toast('Статус обновлён');
+      }
+    } catch { toast('Ошибка обновления', 'error'); }
+  };
+
+  const submitNote = async () => {
+    if (!selected || !note.trim()) return;
+    try {
+      const upd = await leadsFetch('PATCH', { id: selected.id, note: note.trim() });
+      if (upd?.id) {
+        setLeads(ls => ls.map(l => l.id === upd.id ? upd : l));
+        setSelected(upd);
+        setNote('');
+        toast('Комментарий добавлен');
+      }
+    } catch { toast('Ошибка', 'error'); }
+  };
+
+  const remove = async (id) => {
+    if (!confirm('Удалить заявку? Действие необратимо.')) return;
+    try {
+      await leadsFetch('DELETE', null, `?id=${encodeURIComponent(id)}`);
+      setLeads(ls => ls.filter(l => l.id !== id));
+      if (selected?.id === id) setSelected(null);
+      toast('Заявка удалена');
+    } catch { toast('Ошибка удаления', 'error'); }
+  };
+
+  const FilterTab = ({ k, label }) => (
+    <button onClick={() => setFilter(k)}
+      className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors border ${
+        filter === k
+          ? 'bg-[#D4A843]/15 text-[#D4A843] border-[#D4A843]/40'
+          : 'bg-white/5 text-white/50 border-transparent hover:bg-white/10 hover:text-white'
+      }`}>
+      {label} <span className="ml-1 opacity-60">{counts[k]}</span>
+    </button>
+  );
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-[1fr_420px] gap-4">
+      {/* List */}
+      <div className="space-y-3 min-w-0">
+        <div className="flex flex-wrap items-center gap-2">
+          <FilterTab k="all"         label="Все" />
+          <FilterTab k="new"         label="Новые" />
+          <FilterTab k="in_progress" label="В работе" />
+          <FilterTab k="closed"      label="Закрыто" />
+          <FilterTab k="spam"        label="Спам" />
+          <div className="flex-1" />
+          <button onClick={() => downloadCsv(visible)}
+            className="px-3 py-1.5 rounded-lg text-xs font-medium bg-white/5 text-white/60 hover:bg-white/10 hover:text-white transition-colors border border-white/10">
+            ⬇ CSV ({visible.length})
+          </button>
+          <button onClick={load}
+            className="px-3 py-1.5 rounded-lg text-xs font-medium bg-white/5 text-white/60 hover:bg-white/10 hover:text-white transition-colors border border-white/10">
+            ↻ Обновить
+          </button>
+        </div>
+
+        <input type="text" value={search} onChange={e => setSearch(e.target.value)}
+          placeholder="Поиск по имени, телефону, компании, выставке…"
+          className="w-full bg-[#141929] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#D4A843]/40" />
+
+        {loading && <p className="text-white/40 text-sm py-8 text-center">Загрузка…</p>}
+        {!loading && visible.length === 0 && (
+          <p className="text-white/40 text-sm py-8 text-center">
+            {leads.length === 0 ? 'Пока заявок нет' : 'Ничего не найдено'}
+          </p>
+        )}
+
+        <div className="space-y-2">
+          {visible.map(l => {
+            const st = LEAD_STATUS[l.status] || LEAD_STATUS.new;
+            const isSel = selected?.id === l.id;
+            return (
+              <button key={l.id} onClick={() => setSelected(l)}
+                className={`w-full text-left bg-[#141929] border rounded-xl p-4 transition-colors ${
+                  isSel ? 'border-[#D4A843]/40' : 'border-white/10 hover:border-white/20'
+                }`}>
+                <div className="flex items-start justify-between gap-3 mb-2">
+                  <div className="min-w-0">
+                    <p className="font-bold text-white truncate">{l.name || '—'}</p>
+                    {l.company && <p className="text-white/50 text-xs truncate">{l.company}</p>}
+                  </div>
+                  <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${st.color} whitespace-nowrap`}>
+                    {st.label}
+                  </span>
+                </div>
+                <div className="flex items-center gap-3 text-xs text-white/40">
+                  <span>{l.phone}</span>
+                  {l.locale && <span className="uppercase">{l.locale}</span>}
+                  <span className="ml-auto">{fmtRelative(l.createdAt)}</span>
+                </div>
+                {l.message && <p className="text-white/50 text-xs mt-2 line-clamp-2">{l.message}</p>}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Detail panel */}
+      <aside className="lg:sticky lg:top-20 lg:self-start">
+        {!selected ? (
+          <div className="bg-[#141929] border border-white/10 rounded-xl p-6 text-center text-white/40 text-sm">
+            Выберите заявку слева для просмотра деталей
+          </div>
+        ) : (
+          <div className="bg-[#141929] border border-white/10 rounded-xl p-5 space-y-4">
+            <div className="flex items-start justify-between gap-3 pb-3 border-b border-white/5">
+              <div className="min-w-0">
+                <p className="font-bold text-white text-lg truncate">{selected.name}</p>
+                <p className="text-white/40 text-xs mt-0.5">{fmtDate(selected.createdAt)}</p>
+              </div>
+              <button onClick={() => remove(selected.id)}
+                className="p-2 text-white/30 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors">
+                {IC.trash}
+              </button>
+            </div>
+
+            <div className="space-y-2 text-sm">
+              {selected.company && <Field k="Компания" v={selected.company} />}
+              <Field k="Телефон" v={<a href={`tel:${selected.phone}`} className="text-[#D4A843] hover:underline">{selected.phone}</a>} />
+              {selected.expo    && <Field k="Выставка" v={selected.expo} />}
+              {selected.message && <Field k="Сообщение" v={<span className="whitespace-pre-wrap">{selected.message}</span>} />}
+              <Field k="Источник" v={selected.source === 'modal' ? 'попап' : 'форма контактов'} />
+              {selected.locale  && <Field k="Локаль" v={selected.locale.toUpperCase()} />}
+            </div>
+
+            <div>
+              <p className="text-white/40 text-xs uppercase tracking-wider mb-2">Статус</p>
+              <div className="flex flex-wrap gap-1.5">
+                {LEAD_STATUS_ORDER.map(s => {
+                  const st = LEAD_STATUS[s];
+                  const active = selected.status === s;
+                  return (
+                    <button key={s} onClick={() => setStatus(selected.id, s)}
+                      className={`px-2.5 py-1 rounded-lg text-[11px] font-bold uppercase tracking-wider border transition-colors ${
+                        active ? st.color : 'bg-white/5 text-white/40 border-white/5 hover:text-white'
+                      }`}>
+                      {st.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div>
+              <p className="text-white/40 text-xs uppercase tracking-wider mb-2">Комментарии менеджера</p>
+              <div className="space-y-2 mb-2 max-h-48 overflow-y-auto">
+                {(selected.notes || []).length === 0 && <p className="text-white/30 text-xs">Пока нет</p>}
+                {(selected.notes || []).map((n, i) => (
+                  <div key={i} className="bg-white/5 rounded-lg p-2.5">
+                    <p className="text-white text-xs whitespace-pre-wrap">{n.text}</p>
+                    <p className="text-white/30 text-[10px] mt-1">{fmtDate(n.ts)}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="flex gap-2">
+                <input type="text" value={note} onChange={e => setNote(e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter') submitNote(); }}
+                  placeholder="Добавить комментарий…"
+                  className="flex-1 bg-[#0d1220] border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder-white/30 focus:outline-none focus:border-[#D4A843]/40" />
+                <button onClick={submitNote} disabled={!note.trim()}
+                  className="px-3 py-2 rounded-lg text-xs font-bold bg-[#D4A843] text-[#0A0F1E] disabled:opacity-30 disabled:cursor-not-allowed hover:bg-[#E8C06E] transition-colors">
+                  +
+                </button>
+              </div>
+            </div>
+
+            {selected.history?.length > 1 && (
+              <div>
+                <p className="text-white/40 text-xs uppercase tracking-wider mb-2">История статусов</p>
+                <div className="space-y-1">
+                  {selected.history.map((h, i) => (
+                    <div key={i} className="flex items-center justify-between text-xs">
+                      <span className="text-white/50">{LEAD_STATUS[h.status]?.label || h.status}</span>
+                      <span className="text-white/30">{fmtDate(h.ts)}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </aside>
+    </div>
+  );
+}
+
+function Field({ k, v }) {
+  return (
+    <div className="flex gap-3">
+      <span className="text-white/40 text-xs uppercase tracking-wider w-20 flex-shrink-0 pt-0.5">{k}</span>
+      <span className="text-white text-sm min-w-0 flex-1 break-words">{v}</span>
+    </div>
+  );
+}
+
 function Dashboard({ onNavigate }) {
-  const [counts, setCounts] = useState({ portfolio: '…', testimonials: '…', clients: '…' });
+  const [counts, setCounts] = useState({ portfolio: '…', testimonials: '…', clients: '…', leads: '…', newLeads: 0 });
 
   useEffect(() => {
-    Promise.all([apiFetch('portfolio', {}, 'ru'), apiFetch('testimonials', {}, 'ru'), apiFetch('clients')])
-      .then(([p, t, c]) => setCounts({ portfolio: p?.length ?? 0, testimonials: t?.length ?? 0, clients: c?.length ?? 0 }))
+    Promise.all([
+      apiFetch('portfolio', {}, 'ru'),
+      apiFetch('testimonials', {}, 'ru'),
+      apiFetch('clients'),
+      leadsFetch('GET').catch(() => []),
+    ])
+      .then(([p, t, c, l]) => setCounts({
+        portfolio:    p?.length ?? 0,
+        testimonials: t?.length ?? 0,
+        clients:      c?.length ?? 0,
+        leads:        Array.isArray(l) ? l.length : 0,
+        newLeads:     Array.isArray(l) ? l.filter(x => x.status === 'new').length : 0,
+      }))
       .catch(() => {});
   }, []);
 
@@ -1001,14 +1312,30 @@ function Dashboard({ onNavigate }) {
     <div className="space-y-6">
       <p className="text-white/40 text-sm">Добро пожаловать в панель управления ExpoContact CMS</p>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      {counts.newLeads > 0 && (
+        <button onClick={() => onNavigate('leads')}
+          className="w-full bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-4 text-left hover:bg-emerald-500/15 transition-colors flex items-center gap-4">
+          <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-300">
+            {IC_LEADS}
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="font-bold text-emerald-300">{counts.newLeads} новых заявок ждут обработки</p>
+            <p className="text-white/40 text-xs mt-0.5">Кликните, чтобы посмотреть</p>
+          </div>
+          <span className="text-emerald-300">→</span>
+        </button>
+      )}
+
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {[
+          { label: 'Заявок всего',         value: counts.leads,        section: 'leads',        color: 'text-emerald-300', badge: counts.newLeads > 0 ? `+${counts.newLeads}` : null },
           { label: 'Проектов в портфолио', value: counts.portfolio,    section: 'portfolio',    color: 'text-[#D4A843]'  },
           { label: 'Отзывов клиентов',     value: counts.testimonials, section: 'testimonials', color: 'text-blue-400'   },
-          { label: 'Компаний-клиентов',    value: counts.clients,      section: 'clients',      color: 'text-emerald-400'},
-        ].map(({ label, value, section, color }) => (
+          { label: 'Компаний-клиентов',    value: counts.clients,      section: 'clients',      color: 'text-purple-300' },
+        ].map(({ label, value, section, color, badge }) => (
           <button key={section} onClick={() => onNavigate(section)}
-            className="bg-[#141929] border border-white/10 rounded-xl p-5 text-left hover:border-[#D4A843]/30 transition-colors group">
+            className="bg-[#141929] border border-white/10 rounded-xl p-5 text-left hover:border-[#D4A843]/30 transition-colors group relative">
+            {badge && <span className="absolute top-3 right-3 bg-emerald-500 text-[#0A0F1E] text-[10px] font-black px-1.5 py-0.5 rounded">{badge}</span>}
             <p className={`text-3xl font-black mb-1 ${color}`}>{value}</p>
             <p className="text-white/50 text-sm">{label}</p>
             <p className="text-white/20 text-xs mt-2 group-hover:text-[#D4A843] transition-colors">Управлять →</p>
@@ -1019,7 +1346,7 @@ function Dashboard({ onNavigate }) {
       <div className="bg-[#141929] border border-white/10 rounded-xl p-5">
         <h3 className="text-white font-semibold mb-3 text-sm">Быстрые действия</h3>
         <div className="flex flex-wrap gap-2">
-          {[['portfolio','+ Проект'],['testimonials','+ Отзыв'],['clients','+ Клиент'],['faq','+ FAQ']].map(([s,l]) => (
+          {[['leads','📬 Заявки'],['portfolio','+ Проект'],['testimonials','+ Отзыв'],['clients','+ Клиент'],['faq','+ FAQ']].map(([s,l]) => (
             <button key={s} onClick={() => onNavigate(s)}
               className="px-4 py-2 bg-white/5 text-white/60 rounded-xl text-sm hover:bg-white/10 hover:text-white transition-colors">{l}</button>
           ))}
@@ -1355,7 +1682,7 @@ function LandingSettingsManager({ toast }) {
 }
 
 // ── Sidebar ───────────────────────────────────────────────────────────────────
-function Sidebar({ section, onNavigate, onLogout, open, onClose }) {
+function Sidebar({ section, onNavigate, onLogout, open, onClose, newLeads = 0 }) {
   return (
     <>
       {open && <div className="fixed inset-0 bg-black/50 z-30 lg:hidden" onClick={onClose} />}
@@ -1368,7 +1695,11 @@ function Sidebar({ section, onNavigate, onLogout, open, onClose }) {
           {NAV.map(({ key, label, icon }) => (
             <button key={key} onClick={() => onNavigate(key)}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors text-left ${section === key ? 'bg-[#D4A843]/15 text-[#D4A843]' : 'text-white/50 hover:bg-white/5 hover:text-white'}`}>
-              {icon}{label}
+              {icon}
+              <span className="flex-1">{label}</span>
+              {key === 'leads' && newLeads > 0 && (
+                <span className="bg-emerald-500 text-[#0A0F1E] text-[10px] font-black px-1.5 py-0.5 rounded">{newLeads}</span>
+              )}
             </button>
           ))}
         </nav>
@@ -1392,12 +1723,25 @@ export default function AdminPage() {
   const [authed, setAuthed]       = useState(false);
   const [section, setSection]     = useState('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [newLeads, setNewLeads]   = useState(0);
   const { toasts, toast }         = useToast();
 
   useEffect(() => {
     const token = sessionStorage.getItem('cms_token');
     if (token) apiFetch('portfolio', {}, 'ru').then(() => setAuthed(true)).catch(() => {});
   }, []);
+
+  // Poll new-lead count every 60s so badge stays fresh
+  useEffect(() => {
+    if (!authed) return;
+    let alive = true;
+    const refresh = () => leadsFetch('GET')
+      .then(d => alive && setNewLeads(Array.isArray(d) ? d.filter(l => l.status === 'new').length : 0))
+      .catch(() => {});
+    refresh();
+    const t = setInterval(refresh, 60_000);
+    return () => { alive = false; clearInterval(t); };
+  }, [authed, section]);
 
   const navigate = (s) => { setSection(s); setSidebarOpen(false); };
   const logout   = () => { sessionStorage.removeItem('cms_token'); setAuthed(false); };
@@ -1406,7 +1750,7 @@ export default function AdminPage() {
 
   return (
     <div className="min-h-screen bg-[#0A0F1E] text-white flex">
-      <Sidebar section={section} onNavigate={navigate} onLogout={logout} open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <Sidebar section={section} onNavigate={navigate} onLogout={logout} open={sidebarOpen} onClose={() => setSidebarOpen(false)} newLeads={newLeads} />
 
       <div className="flex-1 flex flex-col min-w-0">
         <header className="border-b border-white/5 bg-[#0d1220] px-4 sm:px-6 py-4 flex items-center gap-4 sticky top-0 z-20">
@@ -1419,6 +1763,7 @@ export default function AdminPage() {
 
         <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-x-hidden">
           {section === 'dashboard'    && <Dashboard onNavigate={navigate} />}
+          {section === 'leads'        && <LeadsManager toast={toast} />}
           {section === 'analytics'    && <AnalyticsPage />}
           {section === 'landingSettings' && <LandingSettingsManager toast={toast} />}
           {section === 'portfolio'    && <CollectionManager key="portfolio"    collection="portfolio"    toast={toast} />}
