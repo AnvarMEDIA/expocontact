@@ -1031,6 +1031,7 @@ button{ font:inherit; color:inherit; background:none; border:0; cursor:none; }
 .cta__grid{
   display:grid; grid-template-columns:1fr 1fr; gap:clamp(40px, 5.5vw, 96px);
   align-items:start;
+  max-width:1200px; margin-inline:auto;
 }
 .cta__left{
   display:flex; flex-direction:column;
