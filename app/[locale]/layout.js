@@ -57,6 +57,9 @@ export async function generateMetadata({ params }) {
       index:  true,
       follow: true,
     },
+    verification: {
+      yandex: '714b82733747b78a',
+    },
     alternates: {
       canonical: `/${locale}`,
       languages: {
