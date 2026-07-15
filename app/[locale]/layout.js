@@ -87,6 +87,9 @@ export async function generateMetadata({ params }) {
       index:  seo.robotsIndex  !== false,
       follow: seo.robotsFollow !== false,
     },
+    verification: {
+      yandex: '714b82733747b78a',
+    },
     alternates: {
       canonical: `/${locale}`,
       languages: {
