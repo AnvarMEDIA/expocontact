@@ -20,6 +20,13 @@ the Vercel production build.
   stale design. This has happened once already: the approved site sat on
   `claude/review-project-planning-xqBle`, 31 commits ahead of the default
   branch, and was merged into production only afterwards.
+- Branch inventory as of the merge above. `claude/expocontact-website-vGZXk` is
+  the only live branch — build on it and deploy from it. These are fully
+  contained in it and are dead; do not start work on them or deploy them:
+  `claude/review-project-planning-xqBle`, `claude/project-review-ov8uju`,
+  `claude/dazzling-johnson-t53him`. One branch is NOT merged and is not dead:
+  `claude/analyze-project-status-Gttja` carries a Hero refactor (fullscreen
+  auto-playing 5-slide slider) that production does not have.
 - Before deploying, run `npx next lint` and `npx next build`; both must pass.
 - Never deploy with images or assets that resolve to 404. Verify remote assets
   actually exist first.
