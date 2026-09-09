@@ -6,11 +6,11 @@ import { Analytics } from '@vercel/analytics/next';
 import AnalyticsTracker from '@/components/AnalyticsTracker';
 import '@/app/globals.css';
 
-// Social preview image, served from Blob. NOTE: this still points at the raw
-// PNG original, which is ~8 MB — large enough that some link scrapers skip it.
-// Swap to img/og-image.jpg (1200x630, ~100 KB) once that file is in the store.
+// Social preview image, served from Blob as a compressed 1200x630 JPEG (~100 KB).
+// Link scrapers fetch this directly, without the image optimizer, and several of
+// them skip images over a few megabytes — so keep this one small.
 const OG_IMAGE =
-  'https://kha2ts7q3gkfbsis.public.blob.vercel-storage.com/hf/hf_20260909_121359_935d34bf-c3ed-4ace-9a9d-f72c2eb651fa.png';
+  'https://kha2ts7q3gkfbsis.public.blob.vercel-storage.com/img/og-image.jpg';
 
 // ── SEO metadata per locale ──────────────────────────────────────────────────
 const META = {
