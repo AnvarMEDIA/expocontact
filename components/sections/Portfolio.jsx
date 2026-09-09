@@ -74,7 +74,13 @@ function Lightbox({ project, onClose, t }) {
           {/* Image */}
           <div className="relative aspect-[16/9] sm:aspect-[16/8] bg-navy overflow-hidden sm:rounded-t-2xl">
             {project.mainImage && !project.mainImage.includes('placeholder') ? (
-              <Image src={project.mainImage} alt={project.title} fill className="object-cover" />
+              <Image
+                src={project.mainImage}
+                alt={project.title}
+                fill
+                sizes="(max-width: 1024px) 100vw, 1024px"
+                className="object-cover"
+              />
             ) : (
               <div className={`absolute inset-0 bg-gradient-to-br ${PLACEHOLDER_COLORS[0]} flex items-center justify-center`}>
                 <svg className="w-16 h-16 text-white/10" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
 
 function Stars({ rating }) {
   const t = useTranslations('testimonials');
@@ -27,8 +28,14 @@ function Avatar({ name, avatar }) {
 
   if (avatar) {
     return (
-      // eslint-disable-next-line @next/next/no-img-element
-      <img src={avatar} alt={name} className="w-11 h-11 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-gold/30" />
+      <Image
+        src={avatar}
+        alt={name}
+        width={48}
+        height={48}
+        sizes="48px"
+        className="w-11 h-11 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-gold/30 flex-shrink-0"
+      />
     );
   }
 
