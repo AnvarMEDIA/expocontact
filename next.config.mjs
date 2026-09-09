@@ -4,10 +4,14 @@ const withNextIntl = createNextIntlPlugin('./i18n/request.js');
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Allow next/image to load from any remote source if needed
   images: {
+    // Only allow the hosts we actually serve images from (logos on Tilda CDN,
+    // uploaded/seed images on Vercel Blob). Avoids turning the image optimizer
+    // into an open proxy for arbitrary remote hosts.
     remotePatterns: [
-      { protocol: 'https', hostname: '**' },
+      { protocol: 'https', hostname: '*.public.blob.vercel-storage.com' },
+      { protocol: 'https', hostname: 'static.tildacdn.one' },
+      { protocol: 'https', hostname: 'static.tildacdn.com' },
     ],
   },
 };
