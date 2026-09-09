@@ -4,64 +4,97 @@ import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import { Analytics } from '@vercel/analytics/next';
 import AnalyticsTracker from '@/components/AnalyticsTracker';
+import { promises as fs } from 'fs';
+import path from 'path';
 import '@/app/globals.css';
 
-// Social preview image, served from Blob as a compressed 1200x630 JPEG (~100 KB).
-// Link scrapers fetch this directly, without the image optimizer, and several of
-// them skip images over a few megabytes — so keep this one small.
+// Fallback social preview: a compressed 1200x630 JPEG on Blob (~100 KB). Link
+// scrapers fetch this directly, without the image optimizer, and several of them
+// skip images over a few megabytes — so keep whatever replaces it small too.
 const OG_IMAGE =
   'https://kha2ts7q3gkfbsis.public.blob.vercel-storage.com/img/og-image.jpg';
 
-// ── SEO metadata per locale ──────────────────────────────────────────────────
+// ── Defaults (used when content/data/seo.{locale}.json is missing fields) ───
 const META = {
   ru: {
     title:       'ExpoContact — Выставочные стенды в Узбекистане и Центральной Азии',
     description: 'Проектирование и строительство выставочных стендов под ключ. 20 лет опыта, 5000+ проектов. Монтаж, брендинг, логистика.',
     locale:      'ru_RU',
+    ldDescription: 'Проектирование и строительство выставочных стендов',
+    ldStreet:    'ул. Амира Темура, 107Б',
+    ldCity:      'Ташкент',
   },
   en: {
     title:       'ExpoContact — Exhibition Stands in Uzbekistan & Central Asia',
     description: 'Design and construction of exhibition stands turnkey. 20 years of experience, 5000+ projects. Installation, branding, logistics.',
     locale:      'en_US',
+    ldDescription: 'Design and construction of exhibition stands',
+    ldStreet:    '107B Amir Temur Street',
+    ldCity:      'Tashkent',
   },
   uz: {
     title:       'ExpoContact — O\'zbekistonda Ko\'rgazma Stendlari',
     description: 'Ko\'rgazma stendlarini loyihalash va qurish. 20 yillik tajriba, 5000+ loyiha. Montaj, brending, logistika.',
     locale:      'uz_UZ',
+    ldDescription: 'Ko\'rgazma stendlarini loyihalash va qurish',
+    ldStreet:    'Amir Temur ko\'chasi, 107B',
+    ldCity:      'Toshkent',
   },
 };
+
+async function readSeo(locale) {
+  try {
+    const raw = await fs.readFile(
+      path.join(process.cwd(), 'content', 'data', `seo.${locale}.json`),
+      'utf8',
+    );
+    return JSON.parse(raw);
+  } catch {
+    return {};
+  }
+}
 
 export async function generateMetadata({ params }) {
   const { locale } = await params;
   const meta = META[locale] || META.ru;
+  const seo  = await readSeo(locale);
+
+  const title       = seo.title       || meta.title;
+  const description = seo.description || meta.description;
+  const ogImage     = seo.ogImage     || OG_IMAGE;
+  const ogImageAlt  = seo.ogImageAlt  || 'ExpoContact';
 
   return {
     metadataBase: new URL(
       process.env.NEXT_PUBLIC_SITE_URL || 'https://expocontact.uz',
     ),
     title: {
-      default:  meta.title,
+      default:  title,
       template: `%s | ExpoContact`,
     },
-    description: meta.description,
+    description,
+    keywords: seo.keywords || undefined,
     openGraph: {
-      title:       meta.title,
-      description: meta.description,
+      title,
+      description,
       url:         '/',
       siteName:    'ExpoContact',
       locale:      meta.locale,
       type:        'website',
-      images: [{ url: OG_IMAGE, width: 1200, height: 630, alt: 'ExpoContact' }],
+      images: [{ url: ogImage, width: 1200, height: 630, alt: ogImageAlt }],
     },
     twitter: {
       card:        'summary_large_image',
-      title:       meta.title,
-      description: meta.description,
-      images:      [OG_IMAGE],
+      title,
+      description,
+      images:      [ogImage],
     },
     robots: {
-      index:  true,
-      follow: true,
+      index:  seo.robotsIndex  !== false,
+      follow: seo.robotsFollow !== false,
+    },
+    verification: {
+      yandex: '714b82733747b78a',
     },
     alternates: {
       canonical: `/${locale}`,
@@ -86,6 +119,7 @@ export default async function LocaleLayout({ children, params }) {
     notFound();
   }
 
+  const meta = META[locale] || META.ru;
   const messages = await getMessages();
 
   return (
@@ -114,13 +148,13 @@ export default async function LocaleLayout({ children, params }) {
               '@context': 'https://schema.org',
               '@type':    'LocalBusiness',
               name:       'ExpoContact',
-              description:'Проектирование и строительство выставочных стендов',
+              description: meta.ldDescription,
               url:        'https://expocontact.uz',
               telephone:  '+998977111711',
               address: {
                 '@type':           'PostalAddress',
-                streetAddress:     'ул. Амира Темура, 107Б',
-                addressLocality:   'Ташкент',
+                streetAddress:     meta.ldStreet,
+                addressLocality:   meta.ldCity,
                 addressCountry:    'UZ',
               },
               geo: {

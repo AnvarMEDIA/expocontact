@@ -1,0 +1,47 @@
+[
+  {
+    "id": "1",
+    "name": "Alisher Karimov",
+    "position": "Marketing direktori",
+    "company": "UzTechExpo",
+    "avatar": "https://kha2ts7q3gkfbsis.public.blob.vercel-storage.com/img/avatar-1.webp",
+    "rating": 5,
+    "quote": "ExpoContact barcha kutilganlardan oshib ketdi. Stend belgilangan muddatda tayyor bo'ldi, bajarish sifati benuqson edi. Bizning stendimiz ko'rgazmadagi eng e'tiborli bo'ldi. Keyingisini allaqachon buyurtma berayapmiz!"
+  },
+  {
+    "id": "2",
+    "name": "Madina Yusupova",
+    "position": "Savdo bo'limi rahbari",
+    "company": "Central Asia Trade",
+    "avatar": "https://kha2ts7q3gkfbsis.public.blob.vercel-storage.com/img/avatar-2.webp",
+    "rating": 5,
+    "quote": "ExpoContact bilan 5 yildan beri ishlaymiz. Shu vaqt ichida ular bizga turli maydonchalarda 20 dan ortiq stend qurishdi. Professional jamoasi bilan ishonchli hamkor."
+  },
+  {
+    "id": "3",
+    "name": "Dmitriy Petrenko",
+    "position": "Bosh direktor",
+    "company": "BuildMaster Tashkent",
+    "avatar": "https://kha2ts7q3gkfbsis.public.blob.vercel-storage.com/img/avatar-3.webp",
+    "rating": 5,
+    "quote": "Moskvadagi ko'rgazma uchun birinchi marta murojaat qilgan edik. Jamoa hamma narsani kalit ostida tashkil qildi — dizayn, ishlab chiqarish, yetkazib berish va montaj. Asabsiz, faqat natija."
+  },
+  {
+    "id": "4",
+    "name": "Nilufar Rashidova",
+    "position": "Brend menejeri",
+    "company": "Silk Road Pharma",
+    "avatar": "https://kha2ts7q3gkfbsis.public.blob.vercel-storage.com/img/avatar-4.webp",
+    "rating": 5,
+    "quote": "ExpoContact tufayli farmatsevtik stendimiz chinakam premium ko'rindi. Jamoa barcha istaklarimizni hisobga oldi va ishni belgilangan muddatdan oldin topshirdi."
+  },
+  {
+    "id": "5",
+    "name": "Akbar Ismailov",
+    "position": "Tijorat direktori",
+    "company": "AgroUz Export",
+    "avatar": "https://kha2ts7q3gkfbsis.public.blob.vercel-storage.com/img/avatar-5.webp",
+    "rating": 4,
+    "quote": "Tez, professional, byudjet doirasida. Yuqori sifatli 3D vizualizatsiya ayniqsa yoqdi — ishlab chiqarish boshlanishidan oldin natijani ko'rdik."
+  }
+]

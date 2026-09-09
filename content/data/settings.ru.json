@@ -1,0 +1,57 @@
+{
+  "hero": {
+    "titleLine1":  "Выставочные стенды",
+    "titleLine2":  "под ключ",
+    "ctaPrimary":  "Заявка",
+    "ctaSecondary": "Работы"
+  },
+  "about": {
+    "eyebrow":     "/02 — Кто мы",
+    "title":       "Мы строим то,\nчто нельзя забыть.",
+    "lead":        "ExpoContact — независимая студия выставочной архитектуры. Мы работаем с теми, кому нужно <strong>не место в павильоне, а сцена</strong> — с собственной драматургией света, материала и движения посетителя."
+  },
+  "counters": [
+    { "target": 20,   "suffix": "+", "label": "Лет  /  Опыта на рынке" },
+    { "target": 5000, "suffix": "+", "label": "Стендов  /  Построено и сдано" },
+    { "target": 3,    "suffix": "",  "label": "Страны  /  UZ · KZ · International" },
+    { "target": 500,  "suffix": "+", "label": "Клиентов  /  Возвращаются" }
+  ],
+  "marquee": [
+    "20+ лет на рынке",
+    "5000+ проектов",
+    "3 страны",
+    "500+ клиентов",
+    "Central Asia since 2004",
+    "Дизайн × Производство × Монтаж",
+    "Tashkent · Almaty · Dubai"
+  ],
+  "process": {
+    "title":      "Семь шагов от брифа до демонтажа.",
+    "eyebrow":    "/05 — Процесс",
+    "stepLabel":  "Шаг"
+  },
+  "clients": {
+    "eyebrow":     "/06 — Клиенты",
+    "title":       "Нам доверяют первое впечатление о бренде.",
+    "bigNumber":   "500",
+    "bigSuffix":   "+",
+    "caption":     "компаний с 2004"
+  },
+  "contact": {
+    "phone":     "+998 97 711-17-11",
+    "phoneRaw":  "+998977111711",
+    "email":     "hello@expocontact.uz",
+    "address":   "Ташкент, ул. Амира Темура, 107Б",
+    "hours":     "Пн–Сб · 09:00 — 19:00",
+    "instagram": "https://instagram.com/expocontact",
+    "telegram":  "https://t.me/expocontact",
+    "behance":   "#"
+  },
+  "footer": {
+    "callout":     "Готовы построить\nстенд, <span class='accent'>который запомнят?</span>",
+    "calloutCta":  "Оставить заявку",
+    "brandLead":   "Студия выставочной архитектуры в Центральной Азии. Полный цикл, один подрядчик, никаких посредников.",
+    "rights":      "© 2026 ExpoContact. Все права защищены.",
+    "credits":     "MAZE"
+  }
+}

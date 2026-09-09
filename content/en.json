@@ -16,7 +16,20 @@
     "badge":       "20 years · 5000+ projects · Central Asia",
     "mini1":       "years exp.",
     "mini2":       "projects",
-    "mini3":       "countries"
+    "mini3":       "countries",
+    "ctaSecondary": "Our Work",
+    "slides": [
+      { "headline": "Exhibition stands that work for you", "cta": "Discuss a project" },
+      { "headline": "You run the business — we run the event", "cta": "Get a consultation" },
+      { "headline": "Your event is in good hands", "cta": "Calculate the cost" },
+      { "headline": "We create events people talk about", "cta": "Start planning" },
+      { "headline": "Ready to bring your event to life", "cta": "Leave a request" }
+    ]
+  },
+  "about": {
+    "eyebrow": "/02 — Who We Are",
+    "title": "We build what\ncannot be forgotten.",
+    "lead": "ExpoContact is the leading exhibition construction operator in Uzbekistan. <strong>20 years</strong> on the market, <strong>5000+</strong> completed stands, a team of 80+ specialists."
   },
   "stats": {
     "title": "ExpoContact in Numbers",
@@ -32,6 +45,17 @@
     "subtitle": "Full cycle — from concept to dismantling",
     "label":    "What we do",
     "ctaLink":  "Discuss your project",
+    "eyebrow":  "/03 — What we do",
+    "heading":  "Full cycle.\nOne contractor.",
+    "mono":     "From the first sketch line to complete dismantling — one team is responsible.",
+    "extras": {
+      "design":     { "includes": ["Concept sketches", "3D model + renders", "Engineering drawings", "Venue coordination"] },
+      "production": { "includes": ["MDF, metal, acrylic", "Large-format printing", "Lighting & AV equipment", "Stage-by-stage control"] },
+      "mounting":   { "includes": ["UzExpoCentre · CAEx", "Atakent · Almaty Expo", "Logistics & insurance", "Storage between shows"] },
+      "branding":   { "includes": ["Signs, banners", "Vehicle branding", "POSM, merch", "Roll-up, press-wall"] },
+      "logistics":  { "includes": ["Transportation", "Cargo insurance", "Storage in Tashkent", "International hubs"] },
+      "support":    { "includes": ["24/7 on-site", "Spare materials", "AV engineer", "Daily reporting"] }
+    },
     "items": [
       {
         "id":    "design",
@@ -89,53 +113,80 @@
     "viewProject":  "View Project",
     "close":        "Close",
     "clientLabel":  "Client",
-    "noProjects":   "No projects in this category"
+    "noProjects":   "No projects in this category",
+    "eyebrow":      "/04 — Portfolio",
+    "heading":      "Work\nthat works.",
+    "countLabel":   "Showing {count} of 5000+",
+    "ctaAll":       "All projects (5000+) →"
   },
   "process": {
     "title":    "How We Work",
     "subtitle": "From the first call to the last bolt — a transparent process",
     "label":    "Our process",
+    "eyebrow":  "/05 — How we work",
+    "stepLabel": "Step",
+    "progressLabel": "Progress",
+    "durLabel": "Duration",
     "steps": [
       {
         "number": "01",
         "title":  "Brief",
-        "desc":   "We discuss participation goals, stand area, budget and design preferences. We get to know your brand and competitors."
+        "desc":   "We discuss participation goals, stand area, budget and design preferences. We get to know your brand and competitors.",
+        "label":  "Brief",
+        "duration": "1–2 days"
       },
       {
         "number": "02",
         "title":  "3D Concept",
-        "desc":   "Designers create 2–3 concept options with detailed 3D visualizations and floor plans."
+        "desc":   "Designers create 2–3 concept options with detailed 3D visualizations and floor plans.",
+        "label":  "3D Concept",
+        "duration": "3–5 days"
       },
       {
         "number": "03",
         "title":  "Approval",
-        "desc":   "We make revisions, approve the final design and budget. We sign the contract and begin production."
+        "desc":   "We make revisions, approve the final design and budget. We sign the contract and begin production.",
+        "label":  "Approval",
+        "duration": "2–4 days"
       },
       {
         "number": "04",
         "title":  "Production",
-        "desc":   "We manufacture all structural elements at our own facility. Photo reports at each stage."
+        "desc":   "We manufacture all structural elements at our own facility. Photo reports at each stage.",
+        "label":  "Production",
+        "duration": "7–14 days"
       },
       {
         "number": "05",
         "title":  "Delivery",
-        "desc":   "We package and deliver the stand to the exhibition venue on exactly agreed terms."
+        "desc":   "We package and deliver the stand to the exhibition venue on exactly agreed terms.",
+        "label":  "Delivery",
+        "duration": "1–3 days"
       },
       {
         "number": "06",
         "title":  "Installation",
-        "desc":   "Professional crew assembles the stand. Final check of all elements before the exhibition opens."
+        "desc":   "Professional crew assembles the stand. Final check of all elements before the exhibition opens.",
+        "label":  "Installation",
+        "duration": "1–3 days"
       },
       {
         "number": "07",
         "title":  "Dismantling",
-        "desc":   "After the exhibition ends, we disassemble and remove structures. We offer storage until the next event."
+        "desc":   "After the exhibition ends, we disassemble and remove structures. We offer storage until the next event.",
+        "label":  "Dismantling",
+        "duration": "1 night"
       }
     ]
   },
   "clients": {
-    "title":    "Trusted by Market Leaders",
-    "subtitle": "Over 500 companies across Central Asia"
+    "title":     "Trusted by Market Leaders",
+    "subtitle":  "Over 500 companies across Central Asia",
+    "eyebrow":   "/06 — Clients",
+    "heading":   "Trusted with your brand's first impression.",
+    "bigNumber": "500",
+    "bigSuffix": "+",
+    "caption":   "companies since 2004"
   },
   "testimonials": {
     "title":      "What Clients Say",
@@ -183,6 +234,10 @@
   "faq": {
     "title":    "Frequently Asked Questions",
     "subtitle": "Answers to the most popular questions about our work",
+    "eyebrow":  "/07 — FAQ",
+    "heading":  "No fluff.\nJust answers.",
+    "askCta":   "Didn't find your question?",
+    "askLink":  "Write to us.",
     "items": [
       {
         "q": "How much does an exhibition stand cost?",
@@ -236,13 +291,59 @@
     "labelHours":       "Working Hours",
     "labelMessenger":   "Messenger",
     "placeholderName":  "John Smith",
-    "placeholderCompany": "Acme Corp"
+    "placeholderCompany": "Acme Corp",
+    "eyebrow":      "/08 — Contact",
+    "heading":      "Ready\nto start?",
+    "modalTitle":   "Project Request",
+    "modalSubtitle": "We'll respond within 30 minutes",
+    "labelPhone":   "Phone / WhatsApp",
+    "labelAddress": "Address",
+    "labelHours":   "Working Hours",
+    "labelEmail":   "Email",
+    "defaultAddress": "Tashkent, 107B Amir Temur Street",
+    "defaultHours":   "Mon–Sat · 09:00–19:00",
+    "formNameLabel":    "Name",
+    "formCompanyLabel": "Company",
+    "formPhoneLabel":   "Phone",
+    "formExpoLabel":    "Exhibition / Date",
+    "formMessageLabel": "Message",
+    "formNamePlaceholder":    "Enter your name",
+    "formCompanyPlaceholder": "Enter company name",
+    "formPhonePlaceholder":   "Enter phone number",
+    "formExpoPlaceholder":    "Enter name and date",
+    "formMessagePlaceholder": "Tell us about the project",
+    "formPrivacy":     "By submitting you agree to our",
+    "formPrivacyLink": "data processing policy",
+    "formSent":        "Request sent",
+    "modalEyebrow":  "Request · 30 seconds",
+    "modalHeading":  "Let's discuss your project",
+    "modalCallUs":   "We'll call back within 30 minutes during business hours."
   },
   "footer": {
     "tagline":       "Premium exhibition stands in Central Asia",
     "copyright":     "© 2024 ExpoContact. All rights reserved.",
     "madeWith":      "Made with ❤️ in Tashkent",
     "navTitle":      "Navigation",
-    "contactsTitle": "Contacts"
+    "contactsTitle": "Contacts",
+    "callout":       "Ready to build\na stand <span class='accent'>they'll remember?</span>",
+    "calloutCta":    "Leave a request",
+    "brandLead":     "Exhibition architecture studio in Central Asia. Full cycle, one contractor, no intermediaries.",
+    "labelPhone":    "Phone",
+    "labelEmail":    "Email",
+    "labelAddress":  "Address",
+    "social":        "Social media",
+    "rights":        "© 2026 ExpoContact. All rights reserved.",
+    "credits":       "MAZE"
+  },
+  "common": {
+    "close":      "Close",
+    "backToTop":  "Back to top",
+    "dragHint":   "Drag · 360°",
+    "prevSlide":  "Previous",
+    "nextSlide":  "Next",
+    "slideLabel": "Slide"
+  },
+  "marquee": {
+    "items": ["20+ years on the market", "5000+ projects", "3 countries", "500+ clients"]
   }
 }

@@ -1,0 +1,170 @@
+[
+  {
+    "id": "1",
+    "title": "Silk Road Motors stand at UzAutoShow 2023",
+    "client": "Silk Road Motors",
+    "exhibition": "UzAutoShow 2023",
+    "area": 120,
+    "category": "large",
+    "year": 2023,
+    "description": "Two-story stand with panoramic glazing and an interactive zone. Primary color — matte black with gold accents. Included meeting rooms on the upper level, presentation areas, and an automotive podium.",
+    "mainImage": "https://kha2ts7q3gkfbsis.public.blob.vercel-storage.com/img/project-1.webp",
+    "gallery": [
+      "https://kha2ts7q3gkfbsis.public.blob.vercel-storage.com/img/project-1.webp"
+    ]
+  },
+  {
+    "id": "2",
+    "title": "UzFarm modular stand at AgriExpo",
+    "client": "UzFarm",
+    "exhibition": "AgriExpo Central Asia 2023",
+    "area": 36,
+    "category": "modular",
+    "year": 2023,
+    "description": "Mobile modular stand for participation in multiple exhibitions over the season. Lightweight aluminum profile construction with reconfiguration options.",
+    "mainImage": "https://kha2ts7q3gkfbsis.public.blob.vercel-storage.com/img/project-2.webp",
+    "gallery": [
+      "https://kha2ts7q3gkfbsis.public.blob.vercel-storage.com/img/project-2.webp"
+    ]
+  },
+  {
+    "id": "3",
+    "title": "Conference space at IT Forum 2023",
+    "client": "MadInfo",
+    "exhibition": "Tashkent IT Forum 2023",
+    "area": 200,
+    "category": "conference",
+    "year": 2023,
+    "description": "Full organization of a 150-seat conference hall with branding, navigation, and technical fit-out. Included a stage, media wall, and networking zone.",
+    "mainImage": "https://kha2ts7q3gkfbsis.public.blob.vercel-storage.com/img/project-3.webp",
+    "gallery": [
+      "https://kha2ts7q3gkfbsis.public.blob.vercel-storage.com/img/project-3.webp"
+    ]
+  },
+  {
+    "id": "4",
+    "title": "TashkentMed international stand at Medica",
+    "client": "TashkentMed",
+    "exhibition": "Medica Düsseldorf 2023",
+    "area": 54,
+    "category": "international",
+    "year": 2023,
+    "description": "Stand for participation in the world's largest medical exhibition. Prefabricated stand with full logistics support from Tashkent to Düsseldorf.",
+    "mainImage": "https://kha2ts7q3gkfbsis.public.blob.vercel-storage.com/img/project-4.webp",
+    "gallery": [
+      "https://kha2ts7q3gkfbsis.public.blob.vercel-storage.com/img/project-4.webp"
+    ]
+  },
+  {
+    "id": "5",
+    "title": "Agromir stand at AgroCentral 2022",
+    "client": "Agromir",
+    "exhibition": "AgroCentral 2022",
+    "area": 72,
+    "category": "large",
+    "year": 2022,
+    "description": "Stand with live plants and demonstration zones. Natural materials, eco-friendly concept, open layout for maximum visitor flow.",
+    "mainImage": "https://kha2ts7q3gkfbsis.public.blob.vercel-storage.com/img/project-5.webp",
+    "gallery": [
+      "https://kha2ts7q3gkfbsis.public.blob.vercel-storage.com/img/project-5.webp"
+    ]
+  },
+  {
+    "id": "6",
+    "title": "AlmazPharm stand at PharmExpo",
+    "client": "AlmazPharm",
+    "exhibition": "PharmExpo Almaty 2022",
+    "area": 48,
+    "category": "international",
+    "year": 2022,
+    "description": "Stand with clinical aesthetics: white gloss, lighting, and display cases for pharmaceutical products. Participation in Almaty with full logistics support.",
+    "mainImage": "https://kha2ts7q3gkfbsis.public.blob.vercel-storage.com/img/project-6.webp",
+    "gallery": [
+      "https://kha2ts7q3gkfbsis.public.blob.vercel-storage.com/img/project-6.webp"
+    ]
+  },
+  {
+    "id": "7",
+    "title": "Alif Bank modular stand",
+    "client": "Alif Bank",
+    "exhibition": "FinTech Forum UZ 2023",
+    "area": 24,
+    "category": "modular",
+    "year": 2023,
+    "description": "Fintech bank stand with interactive screens and consultation zone. Corporate brand colors, modern tech-forward look.",
+    "mainImage": "https://kha2ts7q3gkfbsis.public.blob.vercel-storage.com/img/project-7.webp",
+    "gallery": [
+      "https://kha2ts7q3gkfbsis.public.blob.vercel-storage.com/img/project-7.webp"
+    ]
+  },
+  {
+    "id": "8",
+    "title": "BuildUz 2023 congress zone",
+    "client": "BuildUz Organizers",
+    "exhibition": "BuildUz International 2023",
+    "area": 300,
+    "category": "conference",
+    "year": 2023,
+    "description": "Main congress zone organization for the construction exhibition: registration desk, navigation, stage with media backdrop, photo zones, and networking space.",
+    "mainImage": "https://kha2ts7q3gkfbsis.public.blob.vercel-storage.com/img/project-8.webp",
+    "gallery": [
+      "https://kha2ts7q3gkfbsis.public.blob.vercel-storage.com/img/project-8.webp"
+    ]
+  },
+  {
+    "id": "9",
+    "title": "MaxWay stand at FoodExpo",
+    "client": "MaxWay",
+    "exhibition": "FoodExpo Uzbekistan 2022",
+    "area": 90,
+    "category": "large",
+    "year": 2022,
+    "description": "Stand with a tasting zone and open kitchen. Vibrant brand design, high visitor traffic.",
+    "mainImage": "https://kha2ts7q3gkfbsis.public.blob.vercel-storage.com/img/project-9.webp",
+    "gallery": [
+      "https://kha2ts7q3gkfbsis.public.blob.vercel-storage.com/img/project-9.webp"
+    ]
+  },
+  {
+    "id": "10",
+    "title": "UzTextile stand at ITMA Asia",
+    "client": "UzTextile Cluster",
+    "exhibition": "ITMA Asia Shanghai 2022",
+    "area": 60,
+    "category": "international",
+    "year": 2022,
+    "description": "Presentation of the Uzbek textile industry at Asia's largest textile exhibition. National motifs in a contemporary interpretation.",
+    "mainImage": "https://kha2ts7q3gkfbsis.public.blob.vercel-storage.com/img/project-10.webp",
+    "gallery": [
+      "https://kha2ts7q3gkfbsis.public.blob.vercel-storage.com/img/project-10.webp"
+    ]
+  },
+  {
+    "id": "11",
+    "title": "Perfectum transformable stand",
+    "client": "Perfectum Mobile",
+    "exhibition": "UzTelecom 2023",
+    "area": 18,
+    "category": "modular",
+    "year": 2023,
+    "description": "Compact tech-forward stand with touchscreen display cases for showcasing mobile devices and accessories.",
+    "mainImage": "https://kha2ts7q3gkfbsis.public.blob.vercel-storage.com/img/project-11.webp",
+    "gallery": [
+      "https://kha2ts7q3gkfbsis.public.blob.vercel-storage.com/img/project-11.webp"
+    ]
+  },
+  {
+    "id": "12",
+    "title": "Uzbekistan Tourism pavilion at WTM",
+    "client": "Uzbekistan Tourism Committee",
+    "exhibition": "World Travel Market London 2023",
+    "area": 84,
+    "category": "international",
+    "year": 2023,
+    "description": "Uzbekistan's national tourism pavilion at the world's largest travel exhibition. Immersive design with architectural elements of Samarkand and Bukhara.",
+    "mainImage": "https://kha2ts7q3gkfbsis.public.blob.vercel-storage.com/img/project-12.webp",
+    "gallery": [
+      "https://kha2ts7q3gkfbsis.public.blob.vercel-storage.com/img/project-12.webp"
+    ]
+  }
+]

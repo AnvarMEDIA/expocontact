@@ -68,23 +68,104 @@ const IC = {
 // ── Nav config ────────────────────────────────────────────────────────────────
 const IC_ANALYTICS = <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>;
 
+const IC_LANDING = <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h7"/><circle cx="18" cy="18" r="3" strokeWidth="2"/></svg>;
+
+const IC_LEADS = <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>;
+
+const IC_SEO = <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>;
+
+const IC_MEDIA = <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>;
+
+const IC_BACKUP = <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>;
+
 const NAV = [
-  { key: 'dashboard',    label: 'Дашборд',    icon: IC.dashboard    },
-  { key: 'analytics',    label: 'Аналитика',  icon: IC_ANALYTICS    },
-  { key: 'portfolio',    label: 'Портфолио',  icon: IC.portfolio    },
-  { key: 'testimonials', label: 'Отзывы',     icon: IC.testimonials },
-  { key: 'clients',      label: 'Клиенты',    icon: IC.clients      },
-  { key: 'faq',          label: 'FAQ',         icon: IC.faq          },
-  { key: 'services',     label: 'Услуги',     icon: IC.services     },
-  { key: 'settings',     label: 'Инструкция', icon: IC.settings     },
+  { key: 'dashboard',       label: 'Дашборд',           icon: IC.dashboard    },
+  { key: 'leads',           label: 'Заявки',            icon: IC_LEADS        },
+  { key: 'analytics',       label: 'Аналитика',         icon: IC_ANALYTICS    },
+  { key: 'landingSettings', label: 'Настройки сайта',   icon: IC_LANDING      },
+  { key: 'seo',             label: 'SEO',               icon: IC_SEO          },
+  { key: 'media',           label: 'Медиа-библиотека',  icon: IC_MEDIA        },
+  { key: 'portfolio',       label: 'Портфолио',         icon: IC.portfolio    },
+  { key: 'testimonials',    label: 'Отзывы',            icon: IC.testimonials },
+  { key: 'clients',         label: 'Клиенты',           icon: IC.clients      },
+  { key: 'faq',             label: 'FAQ',               icon: IC.faq          },
+  { key: 'services',        label: 'Услуги',            icon: IC.services     },
+  { key: 'backup',          label: 'Бэкап',             icon: IC_BACKUP       },
+  { key: 'settings',        label: 'Инструкция',        icon: IC.settings     },
 ];
 
 const SECTION_TITLES = {
-  dashboard: 'Дашборд', analytics: 'Аналитика посетителей',
+  dashboard: 'Дашборд', leads: 'Заявки с сайта', analytics: 'Аналитика посетителей',
+  landingSettings: 'Настройки главной страницы',
+  seo: 'SEO — meta-теги и индексация',
+  media: 'Медиа-библиотека',
   portfolio: 'Портфолио', testimonials: 'Отзывы клиентов',
   clients: 'Клиенты', faq: 'FAQ — Частые вопросы', services: 'Тексты услуг',
+  backup: 'Бэкап и восстановление',
   settings: 'Инструкция и настройки',
 };
+
+function fmtBytes(b) {
+  if (!b) return '—';
+  if (b < 1024) return `${b} Б`;
+  if (b < 1024 * 1024) return `${(b / 1024).toFixed(1)} КБ`;
+  return `${(b / 1024 / 1024).toFixed(2)} МБ`;
+}
+
+// ── Leads helpers ─────────────────────────────────────────────────────────────
+const LEAD_STATUS = {
+  new:         { label: 'Новая',    color: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30' },
+  in_progress: { label: 'В работе', color: 'bg-amber-500/15 text-amber-300 border-amber-500/30'       },
+  closed:      { label: 'Закрыта',  color: 'bg-blue-500/15 text-blue-300 border-blue-500/30'          },
+  spam:        { label: 'Спам',     color: 'bg-red-500/15 text-red-300 border-red-500/30'             },
+};
+const LEAD_STATUS_ORDER = ['new', 'in_progress', 'closed', 'spam'];
+
+async function leadsFetch(method = 'GET', body = null, query = '') {
+  const token = getToken();
+  const res = await fetch(`/api/admin/leads${query}`, {
+    method,
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  if (res.status === 401) throw new Error('unauthorized');
+  return res.json();
+}
+
+function fmtDate(ts) {
+  const d = new Date(ts);
+  return d.toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' });
+}
+function fmtRelative(ts) {
+  const s = Math.floor((Date.now() - ts) / 1000);
+  if (s < 60)    return 'только что';
+  if (s < 3600)  return `${Math.floor(s / 60)} мин назад`;
+  if (s < 86400) return `${Math.floor(s / 3600)} ч назад`;
+  if (s < 604800) return `${Math.floor(s / 86400)} дн назад`;
+  return fmtDate(ts);
+}
+
+function escapeCsv(v) {
+  if (v == null) return '';
+  const s = String(v);
+  return /[",\n;]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+}
+
+function downloadCsv(leads) {
+  const headers = ['id','createdAt','status','name','company','phone','expo','message','source','locale'];
+  const rows = leads.map(l => headers.map(h => {
+    if (h === 'createdAt') return fmtDate(l.createdAt);
+    return escapeCsv(l[h]);
+  }).join(','));
+  const csv = '﻿' + [headers.join(','), ...rows].join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `leads-${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
 
 // ── Schemas ───────────────────────────────────────────────────────────────────
 const SCHEMAS = {
@@ -97,7 +178,10 @@ const SCHEMAS = {
     { key: 'category',    label: 'Категория',    type: 'select',   required: true,
       options: ['large', 'modular', 'conference', 'international'] },
     { key: 'description', label: 'Описание',     type: 'textarea', required: false },
-    { key: 'mainImage',   label: 'Фото (URL)',   type: 'image',    required: false, maxW: 1200, maxH: 900  },
+    { key: 'mainImage',   label: 'Главное фото (обложка)',   type: 'image',    required: false, maxW: 1600, maxH: 1200  },
+    { key: 'gallery',     label: 'Галерея — дополнительные фото', type: 'gallery', required: false, maxW: 1600, maxH: 1200 },
+    { key: 'featured',    label: 'Показывать на главной (избранное)', type: 'checkbox', required: false },
+    { key: 'sortOrder',   label: 'Порядок (меньше = выше)', type: 'number', required: false },
   ],
   testimonials: [
     { key: 'name',     label: 'Имя',          type: 'text',     required: true  },
@@ -385,11 +469,74 @@ function StarInput({ value, onChange }) {
 }
 
 // ── ItemForm ──────────────────────────────────────────────────────────────────
+// ── GalleryField — multiple image upload with reorder + remove ───────────────
+function GalleryField({ value, onChange, label, maxW = 1600, maxH = 1200 }) {
+  const items = Array.isArray(value) ? value : [];
+
+  const updateAt = (i, v) => onChange(items.map((x, j) => (j === i ? v : x)).filter(Boolean));
+  const removeAt = (i)   => onChange(items.filter((_, j) => j !== i));
+  const moveUp   = (i)   => i > 0 && onChange([...items.slice(0, i - 1), items[i], items[i - 1], ...items.slice(i + 1)]);
+  const moveDown = (i)   => i < items.length - 1 && onChange([...items.slice(0, i), items[i + 1], items[i], ...items.slice(i + 2)]);
+  const addSlot  = ()    => onChange([...items, '']);
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-2">
+        <label className="block text-xs text-white/50 font-semibold uppercase tracking-wider">
+          {label} <span className="text-white/30 normal-case">({items.filter(Boolean).length} фото)</span>
+        </label>
+        <button type="button" onClick={addSlot}
+          className="text-xs px-2.5 py-1 bg-[#D4A843]/15 text-[#D4A843] rounded-lg hover:bg-[#D4A843]/25 transition-colors font-bold">
+          + Добавить фото
+        </button>
+      </div>
+
+      {items.length === 0 ? (
+        <div className="bg-white/[0.02] border border-dashed border-white/10 rounded-xl p-6 text-center text-white/30 text-sm">
+          Пока пусто. Нажмите «+ Добавить фото» — можно загрузить несколько.
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {items.map((url, i) => (
+            <div key={i} className="bg-white/[0.03] border border-white/5 rounded-xl p-3 flex items-start gap-3">
+              <span className="text-white/40 text-xs font-mono w-8 text-center flex-shrink-0 pt-1.5">{String(i + 1).padStart(2, '0')}</span>
+              <div className="flex-1 min-w-0">
+                <ImageField value={url} onChange={v => updateAt(i, v)} label="" maxW={maxW} maxH={maxH} />
+              </div>
+              <div className="flex flex-col gap-1 flex-shrink-0">
+                <button type="button" onClick={() => moveUp(i)} disabled={i === 0}
+                  title="Выше"
+                  className="p-1.5 bg-white/5 text-white/60 rounded-lg hover:bg-white/10 hover:text-white transition-colors disabled:opacity-20 disabled:cursor-not-allowed">
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 15l7-7 7 7"/></svg>
+                </button>
+                <button type="button" onClick={() => moveDown(i)} disabled={i === items.length - 1}
+                  title="Ниже"
+                  className="p-1.5 bg-white/5 text-white/60 rounded-lg hover:bg-white/10 hover:text-white transition-colors disabled:opacity-20 disabled:cursor-not-allowed">
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7"/></svg>
+                </button>
+                <button type="button" onClick={() => removeAt(i)}
+                  title="Удалить"
+                  className="p-1.5 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500/20 transition-colors">
+                  {IC.trash}
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function ItemForm({ schema, initial = {}, onSave, onCancel }) {
   const [form, setForm] = useState(() => {
     const d = {};
     schema.forEach(({ key, type }) => {
-      d[key] = initial[key] ?? (type === 'stars' ? 5 : type === 'number' ? '' : '');
+      if (type === 'checkbox') d[key] = !!initial[key];
+      else if (type === 'stars')   d[key] = initial[key] ?? 5;
+      else if (type === 'gallery') d[key] = Array.isArray(initial[key]) ? initial[key] : [];
+      else if (type === 'number')  d[key] = initial[key] ?? '';
+      else                         d[key] = initial[key] ?? '';
     });
     return d;
   });
@@ -399,11 +546,19 @@ function ItemForm({ schema, initial = {}, onSave, onCancel }) {
     <div className="bg-[#0d1220] border border-white/10 rounded-xl p-5 space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {schema.map(({ key, label, type, options, required, maxW, maxH }) => {
-          const wide = type === 'textarea' || type === 'image';
+          const wide = type === 'textarea' || type === 'image' || type === 'gallery';
           return (
             <div key={key} className={wide ? 'md:col-span-2' : ''}>
               {type === 'image' ? (
                 <ImageField value={form[key]} onChange={v => set(key, v)} label={label + (required ? ' *' : '')} maxW={maxW} maxH={maxH} />
+              ) : type === 'gallery' ? (
+                <GalleryField value={form[key]} onChange={v => set(key, v)} label={label} maxW={maxW} maxH={maxH} />
+              ) : type === 'checkbox' ? (
+                <label className="flex items-center gap-3 cursor-pointer select-none py-2">
+                  <input type="checkbox" checked={!!form[key]} onChange={e => set(key, e.target.checked)}
+                    className="w-4 h-4 rounded border-white/20 bg-white/5 text-[#D4A843] focus:ring-[#D4A843] focus:ring-offset-0" />
+                  <span className="text-white/80 text-sm">{label}</span>
+                </label>
               ) : type === 'stars' ? (
                 <div>
                   <label className="block text-xs text-white/50 mb-2 font-semibold uppercase tracking-wider">{label}{required && <span className="text-[#D4A843]"> *</span>}</label>
@@ -446,6 +601,8 @@ function ItemForm({ schema, initial = {}, onSave, onCancel }) {
 // ── CollectionManager ─────────────────────────────────────────────────────────
 function CollectionManager({ collection, toast }) {
   const schema = SCHEMAS[collection];
+  const localized = collection === 'portfolio' || collection === 'testimonials';
+  const [locale, setLocale]   = useState('ru');
   const [items, setItems]     = useState([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
@@ -453,32 +610,111 @@ function CollectionManager({ collection, toast }) {
 
   const load = useCallback(async () => {
     setLoading(true);
-    try { setItems((await apiFetch(collection)) || []); }
+    try {
+      const raw = (await apiFetch(collection, {}, localized ? locale : null)) || [];
+      // Sort by sortOrder ascending; items without sortOrder go to the end in original order
+      const sorted = [...raw].sort((a, b) => {
+        const ao = Number.isFinite(+a.sortOrder) ? +a.sortOrder : Infinity;
+        const bo = Number.isFinite(+b.sortOrder) ? +b.sortOrder : Infinity;
+        return ao - bo;
+      });
+      setItems(sorted);
+    }
     finally { setLoading(false); }
-  }, [collection]);
+  }, [collection, locale, localized]);
 
   useEffect(() => { load(); }, [load]);
 
   const handleCreate = async (form) => {
-    await apiFetch(collection, { method: 'POST', body: JSON.stringify({ action: 'create', item: form }) });
+    await apiFetch(collection, { method: 'POST', body: JSON.stringify({ action: 'create', item: form }) }, localized ? locale : null);
     setCreating(false); toast('Запись создана'); load();
   };
   const handleUpdate = async (id, form) => {
-    await apiFetch(collection, { method: 'POST', body: JSON.stringify({ action: 'update', id, item: form }) });
+    await apiFetch(collection, { method: 'POST', body: JSON.stringify({ action: 'update', id, item: form }) }, localized ? locale : null);
     setEditingId(null); toast('Изменения сохранены'); load();
   };
   const handleDelete = async (id) => {
     if (!confirm('Удалить запись?')) return;
-    await apiFetch(collection, { method: 'POST', body: JSON.stringify({ action: 'delete', id }) });
+    await apiFetch(collection, { method: 'POST', body: JSON.stringify({ action: 'delete', id }) }, localized ? locale : null);
     toast('Удалено'); load();
+  };
+  const handleDuplicate = async (id, toLocale) => {
+    if (toLocale === locale) { toast('Уже в этой локали', 'error'); return; }
+    try {
+      await apiFetch(collection, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'duplicate', id, item: { toLocale } }),
+      }, locale);
+      toast(`Скопировано в ${toLocale.toUpperCase()}`);
+    } catch { toast('Ошибка копирования', 'error'); }
+  };
+
+  // ── Drag-and-drop reorder (portfolio + testimonials) ────────────────────
+  const supportsReorder = collection === 'portfolio' || collection === 'testimonials';
+  const [draggedId, setDraggedId] = useState(null);
+  const [overId,    setOverId]    = useState(null);
+
+  const persistOrder = async (ordered) => {
+    // Only update items whose sortOrder actually changed.
+    const toUpdate = ordered
+      .map((item, i) => ({ item, newOrder: i }))
+      .filter(({ item, newOrder }) => (item.sortOrder ?? -1) !== newOrder);
+
+    try {
+      await Promise.all(toUpdate.map(({ item, newOrder }) =>
+        apiFetch(collection, {
+          method: 'POST',
+          body: JSON.stringify({
+            action: 'update',
+            id:     item.id,
+            item:   { ...item, sortOrder: newOrder },
+          }),
+        }, localized ? locale : null),
+      ));
+      toast('Порядок сохранён');
+    } catch { toast('Ошибка сохранения порядка', 'error'); }
+  };
+
+  const onDragStart = (e, id) => {
+    setDraggedId(id);
+    e.dataTransfer.effectAllowed = 'move';
+    try { e.dataTransfer.setData('text/plain', id); } catch {}
+  };
+  const onDragEnd  = () => { setDraggedId(null); setOverId(null); };
+  const onDragOver = (e, id) => {
+    if (!draggedId || draggedId === id) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    if (overId !== id) setOverId(id);
+  };
+  const onDrop = (e, targetId) => {
+    e.preventDefault();
+    if (!draggedId || draggedId === targetId) return;
+    const fromIdx = items.findIndex(x => x.id === draggedId);
+    const toIdx   = items.findIndex(x => x.id === targetId);
+    if (fromIdx === -1 || toIdx === -1) return;
+    const next = items.slice();
+    const [moved] = next.splice(fromIdx, 1);
+    next.splice(toIdx, 0, moved);
+    // Optimistic UI: update sortOrder locally too so a re-render is consistent.
+    const updated = next.map((it, i) => ({ ...it, sortOrder: i }));
+    setItems(updated);
+    setDraggedId(null);
+    setOverId(null);
+    persistOrder(updated);
   };
 
   const cols = schema.slice(0, 3);
 
   return (
     <div className="space-y-5">
-      <div className="flex items-center justify-between">
-        <p className="text-white/40 text-sm">{loading ? '...' : `${items.length} записей`}</p>
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
+          {localized && (
+            <LocaleTabs active={locale} onChange={l => { setLocale(l); setCreating(false); setEditingId(null); }} />
+          )}
+          <p className="text-white/40 text-sm">{loading ? '...' : `${items.length} записей`}</p>
+        </div>
         {!creating && (
           <button onClick={() => { setCreating(true); setEditingId(null); }}
             className="flex items-center gap-2 px-4 py-2 bg-[#D4A843] text-[#0A0F1E] font-bold rounded-xl hover:bg-[#E8C06E] transition-colors text-sm">
@@ -495,9 +731,15 @@ function CollectionManager({ collection, toast }) {
         <p className="text-white/20 text-sm py-12 text-center">Нет записей. Добавьте первую!</p>
       ) : (
         <div className="overflow-x-auto rounded-xl border border-white/10">
+          {supportsReorder && (
+            <p className="px-4 py-2 bg-white/[0.02] text-white/40 text-xs border-b border-white/10">
+              💡 Перетаскивайте строки за иконку слева, чтобы изменить порядок отображения на сайте.
+            </p>
+          )}
           <table className="w-full text-sm min-w-[480px]">
             <thead>
               <tr className="border-b border-white/10 bg-white/[0.03]">
+                {supportsReorder && <th className="w-8 px-2" aria-hidden></th>}
                 {cols.map(({ key, label }) => (
                   <th key={key} className="text-left px-4 py-3 text-white/40 font-semibold text-xs uppercase tracking-wider">{label}</th>
                 ))}
@@ -507,7 +749,27 @@ function CollectionManager({ collection, toast }) {
             <tbody>
               {items.map(item => (
                 <>
-                  <tr key={item.id} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
+                  <tr key={item.id}
+                    draggable={supportsReorder}
+                    onDragStart={supportsReorder ? (e) => onDragStart(e, item.id) : undefined}
+                    onDragEnd={supportsReorder ? onDragEnd : undefined}
+                    onDragOver={supportsReorder ? (e) => onDragOver(e, item.id) : undefined}
+                    onDrop={supportsReorder ? (e) => onDrop(e, item.id) : undefined}
+                    className={`border-b border-white/5 transition-colors ${
+                      draggedId === item.id
+                        ? 'opacity-30'
+                        : overId === item.id
+                          ? 'bg-[#D4A843]/10 outline outline-1 outline-[#D4A843]/40'
+                          : 'hover:bg-white/[0.02]'
+                    }`}>
+                    {supportsReorder && (
+                      <td className="w-8 px-2 text-white/30 hover:text-white/70 cursor-grab active:cursor-grabbing select-none text-center" title="Перетащите для сортировки">
+                        <svg className="w-4 h-4 inline" fill="currentColor" viewBox="0 0 20 20">
+                          <circle cx="6" cy="5" r="1.4" /><circle cx="6" cy="10" r="1.4" /><circle cx="6" cy="15" r="1.4" />
+                          <circle cx="14" cy="5" r="1.4" /><circle cx="14" cy="10" r="1.4" /><circle cx="14" cy="15" r="1.4" />
+                        </svg>
+                      </td>
+                    )}
                     {cols.map(({ key, type }) => (
                       <td key={key} className="px-4 py-3 text-white/70 max-w-[180px]">
                         {type === 'stars' ? (
@@ -521,7 +783,21 @@ function CollectionManager({ collection, toast }) {
                       </td>
                     ))}
                     <td className="px-4 py-3">
-                      <div className="flex items-center gap-1.5 justify-end">
+                      <div className="flex items-center gap-1.5 justify-end flex-wrap">
+                        {item.featured && (
+                          <span className="text-[#D4A843] text-xs font-bold uppercase tracking-wider" title="Избранное">★</span>
+                        )}
+                        {localized && (
+                          <div className="flex items-center gap-1">
+                            {['ru', 'en', 'uz'].filter(l => l !== locale).map(l => (
+                              <button key={l} onClick={() => handleDuplicate(item.id, l)}
+                                className="px-2 py-1 bg-white/5 text-white/40 rounded text-[10px] font-bold uppercase hover:bg-[#D4A843]/15 hover:text-[#D4A843] transition-colors"
+                                title={`Скопировать в ${l.toUpperCase()}`}>
+                                → {l}
+                              </button>
+                            ))}
+                          </div>
+                        )}
                         <button onClick={() => { setEditingId(editingId === item.id ? null : item.id); setCreating(false); }}
                           className="p-2 bg-white/5 text-white/60 rounded-lg hover:bg-white/10 hover:text-white transition-colors">{IC.edit}</button>
                         <button onClick={() => handleDelete(item.id)}
@@ -531,7 +807,7 @@ function CollectionManager({ collection, toast }) {
                   </tr>
                   {editingId === item.id && (
                     <tr key={`e-${item.id}`}>
-                      <td colSpan={cols.length + 1} className="px-4 py-4 bg-white/[0.02]">
+                      <td colSpan={cols.length + 1 + (supportsReorder ? 1 : 0)} className="px-4 py-4 bg-white/[0.02]">
                         <ItemForm schema={schema} initial={item}
                           onSave={form => handleUpdate(item.id, form)}
                           onCancel={() => setEditingId(null)} />
@@ -741,20 +1017,40 @@ function AnalyticsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError]     = useState(null);
 
+  const [leadsBuckets, setLeadsBuckets] = useState({ today: 0, week: 0, month: 0, total: 0 });
+
   const load = useCallback(async () => {
     try {
       const token = getToken();
-      const res = await fetch('/api/analytics/metrika', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (res.status === 401) throw new Error('Неверный пароль — попробуйте выйти и войти заново');
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(body.error || `Ошибка сервера (${res.status})`);
+      const [statsRes, leadsRes] = await Promise.all([
+        fetch('/api/analytics/metrika', { headers: { Authorization: `Bearer ${token}` } }),
+        fetch('/api/admin/leads',       { headers: { Authorization: `Bearer ${token}` } }).catch(() => null),
+      ]);
+      if (statsRes.status === 401) throw new Error('Неверный пароль — попробуйте выйти и войти заново');
+      if (!statsRes.ok) {
+        const body = await statsRes.json().catch(() => ({}));
+        throw new Error(body.error || `Ошибка сервера (${statsRes.status})`);
       }
-      const json = await res.json();
+      const json = await statsRes.json();
       setData(json);
       setError(null);
+
+      if (leadsRes?.ok) {
+        const leads = await leadsRes.json();
+        if (Array.isArray(leads)) {
+          const now = Date.now();
+          const startDay   = new Date(); startDay.setHours(0, 0, 0, 0);
+          const startWeek  = new Date(); const dow = startWeek.getDay() || 7; startWeek.setDate(startWeek.getDate() - dow + 1); startWeek.setHours(0, 0, 0, 0);
+          const startMonth = new Date(); startMonth.setDate(1); startMonth.setHours(0, 0, 0, 0);
+          const valid = leads.filter(l => l.status !== 'spam');
+          setLeadsBuckets({
+            today: valid.filter(l => l.createdAt >= startDay.getTime()).length,
+            week:  valid.filter(l => l.createdAt >= startWeek.getTime()).length,
+            month: valid.filter(l => l.createdAt >= startMonth.getTime()).length,
+            total: valid.length,
+          });
+        }
+      }
     } catch (e) {
       setError(e.message);
     } finally {
@@ -820,6 +1116,29 @@ function AnalyticsPage() {
         <button onClick={load} className="p-1 text-white/20 hover:text-white/60 transition-colors" title="Обновить">
           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
         </button>
+      </div>
+
+      {/* Conversion: visitors → leads */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        {[
+          { label: 'Конверсия сегодня',  visitors: data.today, leads: leadsBuckets.today  },
+          { label: 'Конверсия за 7 дней', visitors: data.week,  leads: leadsBuckets.week   },
+          { label: 'Конверсия за месяц',  visitors: data.month, leads: leadsBuckets.month  },
+        ].map(({ label, visitors, leads }) => {
+          const pct = visitors > 0 ? ((leads / visitors) * 100) : 0;
+          return (
+            <div key={label} className="bg-[#141929] border border-white/10 rounded-xl p-4">
+              <p className="text-white/40 text-xs uppercase tracking-wider mb-2">{label}</p>
+              <div className="flex items-baseline gap-2">
+                <span className="text-2xl font-black text-[#D4A843]">{pct.toFixed(pct < 10 ? 2 : 1)}%</span>
+                <span className="text-white/40 text-xs">{leads} / {visitors}</span>
+              </div>
+              <div className="mt-2 bg-white/5 rounded-full h-1 overflow-hidden">
+                <div className="h-full bg-[#D4A843] transition-all duration-500" style={{ width: `${Math.min(pct * 5, 100)}%` }} />
+              </div>
+            </div>
+          );
+        })}
       </div>
 
       {/* Stat cards */}
@@ -977,12 +1296,265 @@ function AnalyticsPage() {
 }
 
 // ── Dashboard ─────────────────────────────────────────────────────────────────
+// ── LeadsManager ──────────────────────────────────────────────────────────────
+function LeadsManager({ toast }) {
+  const [leads,    setLeads]    = useState([]);
+  const [loading,  setLoading]  = useState(true);
+  const [filter,   setFilter]   = useState('all');
+  const [search,   setSearch]   = useState('');
+  const [selected, setSelected] = useState(null);
+  const [note,     setNote]     = useState('');
+
+  const load = useCallback(() => {
+    setLoading(true);
+    leadsFetch('GET')
+      .then(d => Array.isArray(d) ? setLeads(d) : setLeads([]))
+      .catch(() => toast('Ошибка загрузки заявок', 'error'))
+      .finally(() => setLoading(false));
+  }, [toast]);
+
+  useEffect(() => { load(); }, [load]);
+
+  const counts = {
+    all:         leads.length,
+    new:         leads.filter(l => l.status === 'new').length,
+    in_progress: leads.filter(l => l.status === 'in_progress').length,
+    closed:      leads.filter(l => l.status === 'closed').length,
+    spam:        leads.filter(l => l.status === 'spam').length,
+  };
+
+  const visible = leads.filter(l => {
+    if (filter !== 'all' && l.status !== filter) return false;
+    if (search) {
+      const q = search.toLowerCase();
+      const hay = [l.name, l.company, l.phone, l.expo, l.message].filter(Boolean).join(' ').toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+
+  const setStatus = async (id, status) => {
+    try {
+      const upd = await leadsFetch('PATCH', { id, status });
+      if (upd?.id) {
+        setLeads(ls => ls.map(l => l.id === id ? upd : l));
+        if (selected?.id === id) setSelected(upd);
+        toast('Статус обновлён');
+      }
+    } catch { toast('Ошибка обновления', 'error'); }
+  };
+
+  const submitNote = async () => {
+    if (!selected || !note.trim()) return;
+    try {
+      const upd = await leadsFetch('PATCH', { id: selected.id, note: note.trim() });
+      if (upd?.id) {
+        setLeads(ls => ls.map(l => l.id === upd.id ? upd : l));
+        setSelected(upd);
+        setNote('');
+        toast('Комментарий добавлен');
+      }
+    } catch { toast('Ошибка', 'error'); }
+  };
+
+  const remove = async (id) => {
+    if (!confirm('Удалить заявку? Действие необратимо.')) return;
+    try {
+      await leadsFetch('DELETE', null, `?id=${encodeURIComponent(id)}`);
+      setLeads(ls => ls.filter(l => l.id !== id));
+      if (selected?.id === id) setSelected(null);
+      toast('Заявка удалена');
+    } catch { toast('Ошибка удаления', 'error'); }
+  };
+
+  const FilterTab = ({ k, label }) => (
+    <button onClick={() => setFilter(k)}
+      className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors border ${
+        filter === k
+          ? 'bg-[#D4A843]/15 text-[#D4A843] border-[#D4A843]/40'
+          : 'bg-white/5 text-white/50 border-transparent hover:bg-white/10 hover:text-white'
+      }`}>
+      {label} <span className="ml-1 opacity-60">{counts[k]}</span>
+    </button>
+  );
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-[1fr_420px] gap-4">
+      {/* List */}
+      <div className="space-y-3 min-w-0">
+        <div className="flex flex-wrap items-center gap-2">
+          <FilterTab k="all"         label="Все" />
+          <FilterTab k="new"         label="Новые" />
+          <FilterTab k="in_progress" label="В работе" />
+          <FilterTab k="closed"      label="Закрыто" />
+          <FilterTab k="spam"        label="Спам" />
+          <div className="flex-1" />
+          <button onClick={() => downloadCsv(visible)}
+            className="px-3 py-1.5 rounded-lg text-xs font-medium bg-white/5 text-white/60 hover:bg-white/10 hover:text-white transition-colors border border-white/10">
+            ⬇ CSV ({visible.length})
+          </button>
+          <button onClick={load}
+            className="px-3 py-1.5 rounded-lg text-xs font-medium bg-white/5 text-white/60 hover:bg-white/10 hover:text-white transition-colors border border-white/10">
+            ↻ Обновить
+          </button>
+        </div>
+
+        <input type="text" value={search} onChange={e => setSearch(e.target.value)}
+          placeholder="Поиск по имени, телефону, компании, выставке…"
+          className="w-full bg-[#141929] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#D4A843]/40" />
+
+        {loading && <p className="text-white/40 text-sm py-8 text-center">Загрузка…</p>}
+        {!loading && visible.length === 0 && (
+          <p className="text-white/40 text-sm py-8 text-center">
+            {leads.length === 0 ? 'Пока заявок нет' : 'Ничего не найдено'}
+          </p>
+        )}
+
+        <div className="space-y-2">
+          {visible.map(l => {
+            const st = LEAD_STATUS[l.status] || LEAD_STATUS.new;
+            const isSel = selected?.id === l.id;
+            return (
+              <button key={l.id} onClick={() => setSelected(l)}
+                className={`w-full text-left bg-[#141929] border rounded-xl p-4 transition-colors ${
+                  isSel ? 'border-[#D4A843]/40' : 'border-white/10 hover:border-white/20'
+                }`}>
+                <div className="flex items-start justify-between gap-3 mb-2">
+                  <div className="min-w-0">
+                    <p className="font-bold text-white truncate">{l.name || '—'}</p>
+                    {l.company && <p className="text-white/50 text-xs truncate">{l.company}</p>}
+                  </div>
+                  <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${st.color} whitespace-nowrap`}>
+                    {st.label}
+                  </span>
+                </div>
+                <div className="flex items-center gap-3 text-xs text-white/40">
+                  <span>{l.phone}</span>
+                  {l.locale && <span className="uppercase">{l.locale}</span>}
+                  <span className="ml-auto">{fmtRelative(l.createdAt)}</span>
+                </div>
+                {l.message && <p className="text-white/50 text-xs mt-2 line-clamp-2">{l.message}</p>}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Detail panel */}
+      <aside className="lg:sticky lg:top-20 lg:self-start">
+        {!selected ? (
+          <div className="bg-[#141929] border border-white/10 rounded-xl p-6 text-center text-white/40 text-sm">
+            Выберите заявку слева для просмотра деталей
+          </div>
+        ) : (
+          <div className="bg-[#141929] border border-white/10 rounded-xl p-5 space-y-4">
+            <div className="flex items-start justify-between gap-3 pb-3 border-b border-white/5">
+              <div className="min-w-0">
+                <p className="font-bold text-white text-lg truncate">{selected.name}</p>
+                <p className="text-white/40 text-xs mt-0.5">{fmtDate(selected.createdAt)}</p>
+              </div>
+              <button onClick={() => remove(selected.id)}
+                className="p-2 text-white/30 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors">
+                {IC.trash}
+              </button>
+            </div>
+
+            <div className="space-y-2 text-sm">
+              {selected.company && <Field k="Компания" v={selected.company} />}
+              <Field k="Телефон" v={<a href={`tel:${selected.phone}`} className="text-[#D4A843] hover:underline">{selected.phone}</a>} />
+              {selected.expo    && <Field k="Выставка" v={selected.expo} />}
+              {selected.message && <Field k="Сообщение" v={<span className="whitespace-pre-wrap">{selected.message}</span>} />}
+              <Field k="Источник" v={selected.source === 'modal' ? 'попап' : 'форма контактов'} />
+              {selected.locale  && <Field k="Локаль" v={selected.locale.toUpperCase()} />}
+            </div>
+
+            <div>
+              <p className="text-white/40 text-xs uppercase tracking-wider mb-2">Статус</p>
+              <div className="flex flex-wrap gap-1.5">
+                {LEAD_STATUS_ORDER.map(s => {
+                  const st = LEAD_STATUS[s];
+                  const active = selected.status === s;
+                  return (
+                    <button key={s} onClick={() => setStatus(selected.id, s)}
+                      className={`px-2.5 py-1 rounded-lg text-[11px] font-bold uppercase tracking-wider border transition-colors ${
+                        active ? st.color : 'bg-white/5 text-white/40 border-white/5 hover:text-white'
+                      }`}>
+                      {st.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div>
+              <p className="text-white/40 text-xs uppercase tracking-wider mb-2">Комментарии менеджера</p>
+              <div className="space-y-2 mb-2 max-h-48 overflow-y-auto">
+                {(selected.notes || []).length === 0 && <p className="text-white/30 text-xs">Пока нет</p>}
+                {(selected.notes || []).map((n, i) => (
+                  <div key={i} className="bg-white/5 rounded-lg p-2.5">
+                    <p className="text-white text-xs whitespace-pre-wrap">{n.text}</p>
+                    <p className="text-white/30 text-[10px] mt-1">{fmtDate(n.ts)}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="flex gap-2">
+                <input type="text" value={note} onChange={e => setNote(e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter') submitNote(); }}
+                  placeholder="Добавить комментарий…"
+                  className="flex-1 bg-[#0d1220] border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder-white/30 focus:outline-none focus:border-[#D4A843]/40" />
+                <button onClick={submitNote} disabled={!note.trim()}
+                  className="px-3 py-2 rounded-lg text-xs font-bold bg-[#D4A843] text-[#0A0F1E] disabled:opacity-30 disabled:cursor-not-allowed hover:bg-[#E8C06E] transition-colors">
+                  +
+                </button>
+              </div>
+            </div>
+
+            {selected.history?.length > 1 && (
+              <div>
+                <p className="text-white/40 text-xs uppercase tracking-wider mb-2">История статусов</p>
+                <div className="space-y-1">
+                  {selected.history.map((h, i) => (
+                    <div key={i} className="flex items-center justify-between text-xs">
+                      <span className="text-white/50">{LEAD_STATUS[h.status]?.label || h.status}</span>
+                      <span className="text-white/30">{fmtDate(h.ts)}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </aside>
+    </div>
+  );
+}
+
+function Field({ k, v }) {
+  return (
+    <div className="flex gap-3">
+      <span className="text-white/40 text-xs uppercase tracking-wider w-20 flex-shrink-0 pt-0.5">{k}</span>
+      <span className="text-white text-sm min-w-0 flex-1 break-words">{v}</span>
+    </div>
+  );
+}
+
 function Dashboard({ onNavigate }) {
-  const [counts, setCounts] = useState({ portfolio: '…', testimonials: '…', clients: '…' });
+  const [counts, setCounts] = useState({ portfolio: '…', testimonials: '…', clients: '…', leads: '…', newLeads: 0 });
 
   useEffect(() => {
-    Promise.all([apiFetch('portfolio'), apiFetch('testimonials'), apiFetch('clients')])
-      .then(([p, t, c]) => setCounts({ portfolio: p?.length ?? 0, testimonials: t?.length ?? 0, clients: c?.length ?? 0 }))
+    Promise.all([
+      apiFetch('portfolio', {}, 'ru'),
+      apiFetch('testimonials', {}, 'ru'),
+      apiFetch('clients'),
+      leadsFetch('GET').catch(() => []),
+    ])
+      .then(([p, t, c, l]) => setCounts({
+        portfolio:    p?.length ?? 0,
+        testimonials: t?.length ?? 0,
+        clients:      c?.length ?? 0,
+        leads:        Array.isArray(l) ? l.length : 0,
+        newLeads:     Array.isArray(l) ? l.filter(x => x.status === 'new').length : 0,
+      }))
       .catch(() => {});
   }, []);
 
@@ -990,14 +1562,30 @@ function Dashboard({ onNavigate }) {
     <div className="space-y-6">
       <p className="text-white/40 text-sm">Добро пожаловать в панель управления ExpoContact CMS</p>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      {counts.newLeads > 0 && (
+        <button onClick={() => onNavigate('leads')}
+          className="w-full bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-4 text-left hover:bg-emerald-500/15 transition-colors flex items-center gap-4">
+          <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-300">
+            {IC_LEADS}
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="font-bold text-emerald-300">{counts.newLeads} новых заявок ждут обработки</p>
+            <p className="text-white/40 text-xs mt-0.5">Кликните, чтобы посмотреть</p>
+          </div>
+          <span className="text-emerald-300">→</span>
+        </button>
+      )}
+
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {[
+          { label: 'Заявок всего',         value: counts.leads,        section: 'leads',        color: 'text-emerald-300', badge: counts.newLeads > 0 ? `+${counts.newLeads}` : null },
           { label: 'Проектов в портфолио', value: counts.portfolio,    section: 'portfolio',    color: 'text-[#D4A843]'  },
           { label: 'Отзывов клиентов',     value: counts.testimonials, section: 'testimonials', color: 'text-blue-400'   },
-          { label: 'Компаний-клиентов',    value: counts.clients,      section: 'clients',      color: 'text-emerald-400'},
-        ].map(({ label, value, section, color }) => (
+          { label: 'Компаний-клиентов',    value: counts.clients,      section: 'clients',      color: 'text-purple-300' },
+        ].map(({ label, value, section, color, badge }) => (
           <button key={section} onClick={() => onNavigate(section)}
-            className="bg-[#141929] border border-white/10 rounded-xl p-5 text-left hover:border-[#D4A843]/30 transition-colors group">
+            className="bg-[#141929] border border-white/10 rounded-xl p-5 text-left hover:border-[#D4A843]/30 transition-colors group relative">
+            {badge && <span className="absolute top-3 right-3 bg-emerald-500 text-[#0A0F1E] text-[10px] font-black px-1.5 py-0.5 rounded">{badge}</span>}
             <p className={`text-3xl font-black mb-1 ${color}`}>{value}</p>
             <p className="text-white/50 text-sm">{label}</p>
             <p className="text-white/20 text-xs mt-2 group-hover:text-[#D4A843] transition-colors">Управлять →</p>
@@ -1008,7 +1596,7 @@ function Dashboard({ onNavigate }) {
       <div className="bg-[#141929] border border-white/10 rounded-xl p-5">
         <h3 className="text-white font-semibold mb-3 text-sm">Быстрые действия</h3>
         <div className="flex flex-wrap gap-2">
-          {[['portfolio','+ Проект'],['testimonials','+ Отзыв'],['clients','+ Клиент'],['faq','+ FAQ']].map(([s,l]) => (
+          {[['leads','📬 Заявки'],['portfolio','+ Проект'],['testimonials','+ Отзыв'],['clients','+ Клиент'],['faq','+ FAQ']].map(([s,l]) => (
             <button key={s} onClick={() => onNavigate(s)}
               className="px-4 py-2 bg-white/5 text-white/60 rounded-xl text-sm hover:bg-white/10 hover:text-white transition-colors">{l}</button>
           ))}
@@ -1022,6 +1610,143 @@ function Dashboard({ onNavigate }) {
           FAQ и тексты услуг — в <code className="text-white/70">content/ru.json</code>, <code className="text-white/70">en.json</code>, <code className="text-white/70">uz.json</code>.<br />
           Изменения применяются сразу без перезапуска.
         </p>
+      </div>
+    </div>
+  );
+}
+
+// ── BackupManager ─────────────────────────────────────────────────────────────
+function BackupManager({ toast }) {
+  const [downloading, setDownloading] = useState(false);
+  const [restoring,   setRestoring]   = useState(false);
+  const [lastResult,  setLastResult]  = useState(null);
+  const fileRef = useRef(null);
+
+  const downloadBackup = async () => {
+    setDownloading(true);
+    try {
+      const token = getToken();
+      const res = await fetch('/api/admin/backup', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      const blob = await res.blob();
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href = url;
+      const date = new Date().toISOString().slice(0, 19).replace(/[T:]/g, '-');
+      a.download = `expocontact-backup-${date}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast('Бэкап скачан');
+    } catch (e) {
+      toast(`Ошибка: ${e.message}`, 'error');
+    } finally {
+      setDownloading(false);
+    }
+  };
+
+  const restoreFromFile = async (file) => {
+    if (!file) return;
+    const ok = confirm(
+      'Восстановление перезапишет ВЕСЬ контент сайта (портфолио, отзывы, FAQ, услуги, настройки, SEO и заявки) данными из этого файла.\n\n' +
+      'Текущее состояние будет утеряно. Продолжить?'
+    );
+    if (!ok) { if (fileRef.current) fileRef.current.value = ''; return; }
+
+    setRestoring(true);
+    setLastResult(null);
+    try {
+      const text  = await file.text();
+      const token = getToken();
+      const res = await fetch('/api/admin/backup', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body:    text,
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+      setLastResult(data);
+      if (data.failed?.length) {
+        toast(`Восстановлено ${data.restored.length}, с ошибками ${data.failed.length}`, 'error');
+      } else {
+        toast(`Восстановлено ${data.restored.length} коллекций`);
+      }
+    } catch (e) {
+      toast(`Ошибка: ${e.message}`, 'error');
+    } finally {
+      setRestoring(false);
+      if (fileRef.current) fileRef.current.value = '';
+    }
+  };
+
+  return (
+    <div className="space-y-5 max-w-3xl">
+      <div className="bg-[#141929] border border-white/10 rounded-xl p-5">
+        <h3 className="text-white font-bold mb-2 text-base flex items-center gap-2">⬇ Скачать бэкап</h3>
+        <p className="text-white/50 text-sm mb-4 leading-relaxed">
+          В одном JSON-файле сохраняются все коллекции: портфолио, отзывы, клиенты, FAQ,
+          услуги, настройки лендинга, SEO, заявки. Можно отправить файл на резервный носитель
+          или хранить его в репозитории.
+        </p>
+        <button onClick={downloadBackup} disabled={downloading}
+          className="flex items-center gap-2 px-5 py-2.5 bg-[#D4A843] text-[#0A0F1E] font-bold rounded-xl hover:bg-[#E8C06E] transition-colors text-sm disabled:opacity-50">
+          {downloading ? 'Готовим...' : '⬇ Скачать JSON'}
+        </button>
+      </div>
+
+      <div className="bg-[#141929] border border-red-500/20 rounded-xl p-5">
+        <h3 className="text-red-300 font-bold mb-2 text-base flex items-center gap-2">↥ Восстановить из бэкапа</h3>
+        <p className="text-white/50 text-sm mb-2 leading-relaxed">
+          Загрузите ранее скачанный JSON. Файл должен иметь поле <code className="text-white/70">version: 1</code>.
+        </p>
+        <p className="text-red-300/80 text-xs mb-4 leading-relaxed">
+          ⚠ Перезаписывает текущий контент. Сначала скачайте свежий бэкап.
+        </p>
+        <input ref={fileRef} type="file" accept=".json,application/json"
+          onChange={e => restoreFromFile(e.target.files?.[0])}
+          className="block text-sm text-white/70 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-bold file:bg-red-500/15 file:text-red-300 hover:file:bg-red-500/25 file:cursor-pointer" />
+        {restoring && <p className="text-white/60 text-xs mt-3">Восстанавливаем...</p>}
+      </div>
+
+      {lastResult && (
+        <div className="bg-[#0d1220] border border-white/10 rounded-xl p-5 text-sm">
+          <h4 className="text-white font-bold mb-3">Результат последнего восстановления</h4>
+          {lastResult.restored?.length > 0 && (
+            <>
+              <p className="text-emerald-300 text-xs uppercase tracking-wider mb-2">Успешно ({lastResult.restored.length})</p>
+              <div className="flex flex-wrap gap-1.5 mb-4">
+                {lastResult.restored.map(name => (
+                  <span key={name} className="px-2 py-1 bg-emerald-500/10 text-emerald-300 rounded text-xs">{name}</span>
+                ))}
+              </div>
+            </>
+          )}
+          {lastResult.failed?.length > 0 && (
+            <>
+              <p className="text-red-300 text-xs uppercase tracking-wider mb-2">Ошибки ({lastResult.failed.length})</p>
+              <div className="space-y-1">
+                {lastResult.failed.map(({ label, error }, i) => (
+                  <div key={i} className="text-xs">
+                    <span className="text-red-300 font-mono">{label}</span>
+                    <span className="text-white/40 ml-2">— {error}</span>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+      )}
+
+      <div className="bg-[#0d1220] border border-[#D4A843]/20 rounded-xl p-5 text-xs text-white/50 leading-relaxed">
+        <p className="text-[#D4A843] font-semibold mb-2 text-sm">Рекомендации</p>
+        <ul className="space-y-1 list-disc list-inside">
+          <li>Делайте бэкап перед массовыми изменениями (импорт, восстановление).</li>
+          <li>Храните последний бэкап в надёжном месте: облако, почта, локальный диск.</li>
+          <li>Заявки хранятся в Vercel KV — восстановление перезапишет KV-ключ leads:all.</li>
+          <li>Текстовый контент (portfolio/settings/seo и т.д.) при работе на Vercel хранится в файловой системе сборки. Восстановление в production-runtime может не сохраниться между деплоями — используйте бэкап в основном для миграции и резерва.</li>
+        </ul>
       </div>
     </div>
   );
@@ -1046,7 +1771,7 @@ function SettingsPage() {
         {
           title: 'Структура файлов',
           content: (
-            <pre className="bg-[#0A0F1E] rounded-lg p-4 text-white/50 text-xs overflow-x-auto leading-relaxed">{`content/\n├── ru.json   ← Тексты на русском\n├── en.json   ← Тексты на английском\n├── uz.json   ← Тексты на узбекском\n└── data/\n    ├── portfolio.json\n    ├── testimonials.json\n    └── clients.json`}</pre>
+            <pre className="bg-[#0A0F1E] rounded-lg p-4 text-white/50 text-xs overflow-x-auto leading-relaxed">{`content/\n├── ru.json   ← FAQ, услуги, переводы UI\n├── en.json\n├── uz.json\n└── data/\n    ├── settings.{ru,en,uz}.json\n    ├── portfolio.{ru,en,uz}.json\n    ├── testimonials.{ru,en,uz}.json\n    └── clients.json   ← общий для всех языков`}</pre>
           ),
         },
         {
@@ -1079,8 +1804,550 @@ function SettingsPage() {
   );
 }
 
+// ── LandingSettingsManager ───────────────────────────────────────────────────
+// ── MediaLibrary ──────────────────────────────────────────────────────────────
+function MediaLibrary({ toast }) {
+  const [blobs,   setBlobs]   = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [note,    setNote]    = useState(null);
+  const [search,  setSearch]  = useState('');
+  const [usage,   setUsage]   = useState(null); // Set of URLs used somewhere
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      const token = getToken();
+      const res = await fetch('/api/admin/media', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const json = await res.json();
+      setBlobs(json.blobs || []);
+      setNote(json.note || null);
+    } catch { toast('Ошибка загрузки', 'error'); }
+    finally { setLoading(false); }
+  }, [toast]);
+
+  // Build a set of all image URLs referenced anywhere (portfolio + testimonials + clients + settings + seo)
+  const loadUsage = useCallback(async () => {
+    const used = new Set();
+    const collect = (val) => {
+      if (typeof val === 'string' && /^https?:\/\//.test(val)) used.add(val);
+      else if (Array.isArray(val)) val.forEach(collect);
+      else if (val && typeof val === 'object') Object.values(val).forEach(collect);
+    };
+    try {
+      const fetches = [
+        ...['ru','en','uz'].flatMap(l => [
+          apiFetch('portfolio',    {}, l).catch(() => []),
+          apiFetch('testimonials', {}, l).catch(() => []),
+          apiFetch('settings',     {}, l).catch(() => ({})),
+          apiFetch('seo',          {}, l).catch(() => ({})),
+        ]),
+        apiFetch('clients').catch(() => []),
+      ];
+      const results = await Promise.all(fetches);
+      results.forEach(collect);
+      setUsage(used);
+    } catch { /* best effort */ }
+  }, []);
+
+  useEffect(() => { load(); loadUsage(); }, [load, loadUsage]);
+
+  const remove = async (url) => {
+    if (usage?.has(url) && !confirm('Этот файл используется на сайте. Точно удалить?')) return;
+    if (!usage?.has(url) && !confirm('Удалить файл?')) return;
+    try {
+      const token = getToken();
+      const res = await fetch(`/api/admin/media?url=${encodeURIComponent(url)}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error('fail');
+      setBlobs(b => b.filter(x => x.url !== url));
+      toast('Удалено');
+    } catch { toast('Ошибка удаления', 'error'); }
+  };
+
+  const copyUrl = (url) => {
+    navigator.clipboard.writeText(url).then(
+      () => toast('URL скопирован'),
+      () => toast('Не удалось скопировать', 'error'),
+    );
+  };
+
+  const visible = blobs.filter(b => !search || b.pathname.toLowerCase().includes(search.toLowerCase()));
+  const totalBytes = blobs.reduce((sum, b) => sum + (b.size || 0), 0);
+  const unusedCount = usage ? blobs.filter(b => !usage.has(b.url)).length : null;
+
+  return (
+    <div className="space-y-5">
+      {note && (
+        <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl px-4 py-3 text-amber-300 text-xs">
+          {note}
+        </div>
+      )}
+
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="bg-[#141929] border border-white/10 rounded-xl p-4">
+          <p className="text-2xl font-black text-white">{blobs.length}</p>
+          <p className="text-white/40 text-xs">Файлов</p>
+        </div>
+        <div className="bg-[#141929] border border-white/10 rounded-xl p-4">
+          <p className="text-2xl font-black text-[#D4A843]">{fmtBytes(totalBytes)}</p>
+          <p className="text-white/40 text-xs">Объём</p>
+        </div>
+        <div className="bg-[#141929] border border-white/10 rounded-xl p-4">
+          <p className="text-2xl font-black text-emerald-400">{usage ? blobs.length - unusedCount : '…'}</p>
+          <p className="text-white/40 text-xs">Используется</p>
+        </div>
+        <div className="bg-[#141929] border border-white/10 rounded-xl p-4">
+          <p className="text-2xl font-black text-red-400">{unusedCount ?? '…'}</p>
+          <p className="text-white/40 text-xs">Не используется</p>
+        </div>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-2">
+        <input type="text" value={search} onChange={e => setSearch(e.target.value)}
+          placeholder="Поиск по имени файла…"
+          className="flex-1 min-w-[200px] bg-[#141929] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#D4A843]/40" />
+        <button onClick={() => { load(); loadUsage(); }}
+          className="px-3 py-2.5 rounded-lg text-xs font-medium bg-white/5 text-white/60 hover:bg-white/10 hover:text-white transition-colors border border-white/10">
+          ↻ Обновить
+        </button>
+      </div>
+
+      {loading && <p className="text-white/40 text-sm py-8 text-center">Загрузка...</p>}
+      {!loading && visible.length === 0 && (
+        <p className="text-white/40 text-sm py-8 text-center">
+          {blobs.length === 0 ? 'Файлов пока нет — загрузите изображения через формы редактирования' : 'Ничего не найдено'}
+        </p>
+      )}
+
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+        {visible.map(b => {
+          const isUsed = usage?.has(b.url);
+          const filename = b.pathname.split('/').pop();
+          return (
+            <div key={b.url} className="group bg-[#141929] border border-white/10 rounded-xl overflow-hidden hover:border-[#D4A843]/30 transition-colors">
+              <div className="aspect-square bg-black/30 relative">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={b.url} alt="" className="w-full h-full object-cover" />
+                {usage && (
+                  <span className={`absolute top-2 left-2 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${
+                    isUsed
+                      ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
+                      : 'bg-red-500/15 text-red-300 border-red-500/30'
+                  }`}>
+                    {isUsed ? '● Используется' : '○ Не используется'}
+                  </span>
+                )}
+              </div>
+              <div className="p-2.5 space-y-1.5">
+                <p className="text-white/70 text-xs truncate font-mono" title={filename}>{filename}</p>
+                <div className="flex items-center justify-between gap-1">
+                  <span className="text-white/30 text-[10px]">{fmtBytes(b.size)}</span>
+                  <div className="flex items-center gap-1">
+                    <button onClick={() => copyUrl(b.url)}
+                      title="Скопировать URL"
+                      className="p-1.5 text-white/40 hover:text-white hover:bg-white/5 rounded transition-colors">
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
+                    </button>
+                    <button onClick={() => remove(b.url)}
+                      title="Удалить"
+                      className="p-1.5 text-white/40 hover:text-red-400 hover:bg-red-500/10 rounded transition-colors">
+                      {IC.trash}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ── SeoManager ────────────────────────────────────────────────────────────────
+function SeoManager({ toast }) {
+  const [locale, setLocale] = useState('ru');
+  const [data, setData]     = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [saving,  setSaving]  = useState(false);
+
+  const load = useCallback(() => {
+    setLoading(true);
+    apiFetch('seo', {}, locale)
+      .then(d => setData(d && typeof d === 'object' ? d : {}))
+      .catch(() => toast('Ошибка загрузки', 'error'))
+      .finally(() => setLoading(false));
+  }, [locale, toast]);
+
+  useEffect(() => { load(); }, [load]);
+
+  const save = async () => {
+    setSaving(true);
+    try {
+      await apiFetch('seo', {
+        method: 'POST',
+        body: JSON.stringify({ action: 'save', item: data }),
+      }, locale);
+      toast('SEO сохранено');
+    } catch { toast('Ошибка сохранения', 'error'); }
+    finally { setSaving(false); }
+  };
+
+  const set = (k, v) => setData(d => ({ ...d, [k]: v }));
+
+  if (loading || !data) return <p className="text-white/30 text-sm py-12 text-center">Загрузка...</p>;
+
+  const titleLen = (data.title || '').length;
+  const descLen  = (data.description || '').length;
+
+  return (
+    <div className="space-y-5 max-w-3xl">
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <LocaleTabs active={locale} onChange={setLocale} />
+        <button onClick={save} disabled={saving}
+          className="flex items-center gap-2 px-5 py-2.5 bg-[#D4A843] text-[#0A0F1E] font-bold rounded-xl hover:bg-[#E8C06E] transition-colors text-sm disabled:opacity-50">
+          {IC.check} {saving ? 'Сохраняем...' : 'Сохранить'}
+        </button>
+      </div>
+
+      <div className="bg-[#141929] border border-white/10 rounded-xl p-5 space-y-4">
+        <div>
+          <div className="flex items-center justify-between mb-1.5">
+            <label className="block text-xs text-white/50 font-semibold uppercase tracking-wider">Title</label>
+            <span className={`text-xs ${titleLen > 60 ? 'text-red-400' : titleLen > 50 ? 'text-amber-400' : 'text-white/30'}`}>{titleLen}/60</span>
+          </div>
+          <input type="text" value={data.title || ''} onChange={e => set('title', e.target.value)}
+            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#D4A843] transition-colors" />
+          <p className="text-white/30 text-xs mt-1.5">Отображается в результатах поиска и во вкладке браузера.</p>
+        </div>
+
+        <div>
+          <div className="flex items-center justify-between mb-1.5">
+            <label className="block text-xs text-white/50 font-semibold uppercase tracking-wider">Description</label>
+            <span className={`text-xs ${descLen > 160 ? 'text-red-400' : descLen > 140 ? 'text-amber-400' : 'text-white/30'}`}>{descLen}/160</span>
+          </div>
+          <textarea value={data.description || ''} onChange={e => set('description', e.target.value)} rows={3}
+            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#D4A843] transition-colors resize-none" />
+          <p className="text-white/30 text-xs mt-1.5">Описание сниппета в Google / Яндексе.</p>
+        </div>
+
+        <div>
+          <label className="block text-xs text-white/50 mb-1.5 font-semibold uppercase tracking-wider">Keywords</label>
+          <input type="text" value={data.keywords || ''} onChange={e => set('keywords', e.target.value)}
+            placeholder="ключевое слово, второе, третье"
+            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#D4A843] transition-colors" />
+          <p className="text-white/30 text-xs mt-1.5">Через запятую. На ранжирование почти не влияет, но видно в HTML.</p>
+        </div>
+
+        <ImageField value={data.ogImage} onChange={v => set('ogImage', v)} label="Open Graph картинка (1200×630)" maxW={1200} maxH={630} />
+
+        <div>
+          <label className="block text-xs text-white/50 mb-1.5 font-semibold uppercase tracking-wider">OG alt-текст</label>
+          <input type="text" value={data.ogImageAlt || ''} onChange={e => set('ogImageAlt', e.target.value)}
+            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#D4A843] transition-colors" />
+        </div>
+
+        <div className="grid grid-cols-2 gap-4 pt-2 border-t border-white/5">
+          <label className="flex items-center gap-3 cursor-pointer select-none py-2">
+            <input type="checkbox" checked={data.robotsIndex !== false} onChange={e => set('robotsIndex', e.target.checked)}
+              className="w-4 h-4 rounded border-white/20 bg-white/5 text-[#D4A843] focus:ring-[#D4A843] focus:ring-offset-0" />
+            <span className="text-white/80 text-sm">Разрешить индексацию (index)</span>
+          </label>
+          <label className="flex items-center gap-3 cursor-pointer select-none py-2">
+            <input type="checkbox" checked={data.robotsFollow !== false} onChange={e => set('robotsFollow', e.target.checked)}
+              className="w-4 h-4 rounded border-white/20 bg-white/5 text-[#D4A843] focus:ring-[#D4A843] focus:ring-offset-0" />
+            <span className="text-white/80 text-sm">Переходить по ссылкам (follow)</span>
+          </label>
+        </div>
+      </div>
+
+      <div className="bg-[#0d1220] border border-white/5 rounded-xl p-4 text-xs text-white/40 leading-relaxed">
+        <strong className="text-white/70">Превью в Google:</strong>
+        <div className="mt-2 bg-white rounded p-3 text-left text-black">
+          <p className="text-[#1a0dab] text-base leading-tight truncate" style={{ fontFamily: 'arial, sans-serif' }}>
+            {data.title || 'Заголовок не задан'}
+          </p>
+          <p className="text-[#006621] text-xs mt-0.5" style={{ fontFamily: 'arial, sans-serif' }}>
+            https://expocontact.uz/{locale}
+          </p>
+          <p className="text-[#545454] text-sm mt-1 line-clamp-2" style={{ fontFamily: 'arial, sans-serif' }}>
+            {data.description || 'Описание не задано'}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function LandingSettingsManager({ toast }) {
+  const [locale, setLocale] = useState('ru');
+  const [data, setData] = useState(null);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    setData(null);
+    apiFetch('settings', {}, locale).then((d) => setData(d || {})).catch(() => {});
+  }, [locale]);
+
+  const update = (path, value) => {
+    setData((prev) => {
+      const next = structuredClone(prev || {});
+      const keys = path.split('.');
+      let cur = next;
+      for (let i = 0; i < keys.length - 1; i++) {
+        cur[keys[i]] = cur[keys[i]] || {};
+        cur = cur[keys[i]];
+      }
+      cur[keys[keys.length - 1]] = value;
+      return next;
+    });
+  };
+
+  const updateArr = (path, idx, field, value) => {
+    setData((prev) => {
+      const next = structuredClone(prev || {});
+      const arr = path.split('.').reduce((o, k) => (o[k] = o[k] || []), next);
+      arr[idx] = { ...arr[idx], [field]: value };
+      return next;
+    });
+  };
+
+  const addArrItem = (path, item) => {
+    setData((prev) => {
+      const next = structuredClone(prev || {});
+      const keys = path.split('.');
+      let cur = next;
+      for (let i = 0; i < keys.length - 1; i++) { cur[keys[i]] = cur[keys[i]] || {}; cur = cur[keys[i]]; }
+      cur[keys[keys.length - 1]] = [...(cur[keys[keys.length - 1]] || []), item];
+      return next;
+    });
+  };
+
+  const removeArrItem = (path, idx) => {
+    setData((prev) => {
+      const next = structuredClone(prev || {});
+      const keys = path.split('.');
+      let cur = next;
+      for (let i = 0; i < keys.length - 1; i++) { cur = cur[keys[i]] = cur[keys[i]] || {}; }
+      const arr = cur[keys[keys.length - 1]] || [];
+      cur[keys[keys.length - 1]] = arr.filter((_, i) => i !== idx);
+      return next;
+    });
+  };
+
+  const save = async () => {
+    setSaving(true);
+    try {
+      await apiFetch('settings', { method: 'POST', body: JSON.stringify({ action: 'save', item: data }) }, locale);
+      toast('Настройки сохранены');
+    } catch {
+      toast('Ошибка сохранения', 'error');
+    } finally { setSaving(false); }
+  };
+
+  if (!data) return (
+    <div className="space-y-4">
+      <LocaleTabs active={locale} onChange={setLocale} />
+      <div className="text-white/40 text-sm">Загрузка…</div>
+    </div>
+  );
+
+  const inputCls = 'w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-white text-sm focus:outline-none focus:border-[#D4A843] transition-colors';
+  const labelCls = 'block text-[11px] text-white/40 mb-1.5 font-semibold uppercase tracking-[0.15em]';
+  const cardCls  = 'bg-[#141929] border border-white/10 rounded-2xl p-6 space-y-4';
+  const sectCls  = 'space-y-4';
+
+  return (
+    <div className="max-w-4xl space-y-6 pb-24">
+      <div className="flex items-center gap-3 flex-wrap">
+        <LocaleTabs active={locale} onChange={setLocale} />
+        <span className="text-white/40 text-xs">Редактируется язык: <span className="text-white/80 font-bold uppercase">{locale}</span></span>
+      </div>
+      <div className="bg-[#1B2236] border border-[#D4A843]/20 rounded-xl px-5 py-4 text-sm text-white/70">
+        Эти настройки управляют контентом главной страницы сайта (Hero, статистика, marquee, контакты, футер).
+        Каждый язык редактируется отдельно. Поля FAQ, Услуги, Портфолио и Клиенты — в отдельных разделах слева.
+      </div>
+
+      {/* HERO */}
+      <div className={cardCls}>
+        <h3 className="text-white font-bold text-sm uppercase tracking-wider">Hero — главный экран</h3>
+        <div className={sectCls}>
+          <div><label className={labelCls}>Заголовок (строка 1)</label>
+            <input className={inputCls} value={data.hero?.titleLine1 || ''} onChange={(e) => update('hero.titleLine1', e.target.value)} /></div>
+          <div><label className={labelCls}>Заголовок (строка 2 — акцент)</label>
+            <input className={inputCls} value={data.hero?.titleLine2 || ''} onChange={(e) => update('hero.titleLine2', e.target.value)} /></div>
+          <div className="grid grid-cols-2 gap-4">
+            <div><label className={labelCls}>Кнопка CTA (главная)</label>
+              <input className={inputCls} value={data.hero?.ctaPrimary || ''} onChange={(e) => update('hero.ctaPrimary', e.target.value)} /></div>
+            <div><label className={labelCls}>Кнопка CTA (вторая)</label>
+              <input className={inputCls} value={data.hero?.ctaSecondary || ''} onChange={(e) => update('hero.ctaSecondary', e.target.value)} /></div>
+          </div>
+        </div>
+      </div>
+
+      {/* ABOUT */}
+      <div className={cardCls}>
+        <h3 className="text-white font-bold text-sm uppercase tracking-wider">Блок «Кто мы»</h3>
+        <div className={sectCls}>
+          <div><label className={labelCls}>Подпись (eyebrow)</label>
+            <input className={inputCls} value={data.about?.eyebrow || ''} onChange={(e) => update('about.eyebrow', e.target.value)} /></div>
+          <div><label className={labelCls}>Заголовок (можно использовать \n)</label>
+            <textarea rows={2} className={inputCls} value={data.about?.title || ''} onChange={(e) => update('about.title', e.target.value)} /></div>
+          <div><label className={labelCls}>Текст (поддерживает &lt;strong&gt;...&lt;/strong&gt;)</label>
+            <textarea rows={4} className={inputCls} value={data.about?.lead || ''} onChange={(e) => update('about.lead', e.target.value)} /></div>
+        </div>
+      </div>
+
+      {/* COUNTERS */}
+      <div className={cardCls}>
+        <div className="flex items-center justify-between">
+          <h3 className="text-white font-bold text-sm uppercase tracking-wider">Статистика (счётчики)</h3>
+          <button onClick={() => addArrItem('counters', { target: 0, suffix: '+', label: '' })}
+            className="text-[11px] tracking-wider uppercase text-[#D4A843] hover:text-[#E8C06E] font-semibold flex items-center gap-1">
+            {IC.plus} Добавить
+          </button>
+        </div>
+        <div className={sectCls}>
+          {(data.counters || []).map((c, i) => (
+            <div key={i} className="grid grid-cols-12 gap-3 items-end">
+              <div className="col-span-3"><label className={labelCls}>Число</label>
+                <input type="number" className={inputCls} value={c.target ?? 0} onChange={(e) => updateArr('counters', i, 'target', Number(e.target.value))} /></div>
+              <div className="col-span-2"><label className={labelCls}>Суффикс</label>
+                <input className={inputCls} value={c.suffix || ''} onChange={(e) => updateArr('counters', i, 'suffix', e.target.value)} /></div>
+              <div className="col-span-6"><label className={labelCls}>Подпись</label>
+                <input className={inputCls} value={c.label || ''} onChange={(e) => updateArr('counters', i, 'label', e.target.value)} /></div>
+              <button onClick={() => removeArrItem('counters', i)}
+                className="col-span-1 h-[42px] flex items-center justify-center text-white/30 hover:text-red-400 transition-colors">
+                {IC.trash}
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* MARQUEE */}
+      <div className={cardCls}>
+        <div className="flex items-center justify-between">
+          <h3 className="text-white font-bold text-sm uppercase tracking-wider">Бегущая строка</h3>
+          <button onClick={() => addArrItem('marquee', '')}
+            className="text-[11px] tracking-wider uppercase text-[#D4A843] hover:text-[#E8C06E] font-semibold flex items-center gap-1">
+            {IC.plus} Добавить
+          </button>
+        </div>
+        <div className={sectCls}>
+          {(data.marquee || []).map((t, i) => (
+            <div key={i} className="flex gap-3 items-center">
+              <input className={inputCls} value={t} onChange={(e) => {
+                setData((prev) => {
+                  const next = structuredClone(prev);
+                  next.marquee[i] = e.target.value;
+                  return next;
+                });
+              }} />
+              <button onClick={() => removeArrItem('marquee', i)}
+                className="text-white/30 hover:text-red-400 transition-colors p-2">{IC.trash}</button>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* PROCESS */}
+      <div className={cardCls}>
+        <h3 className="text-white font-bold text-sm uppercase tracking-wider">Блок «Процесс»</h3>
+        <div className={sectCls}>
+          <div><label className={labelCls}>Подпись (eyebrow)</label>
+            <input className={inputCls} value={data.process?.eyebrow || ''} onChange={(e) => update('process.eyebrow', e.target.value)} /></div>
+          <div><label className={labelCls}>Заголовок</label>
+            <input className={inputCls} value={data.process?.title || ''} onChange={(e) => update('process.title', e.target.value)} /></div>
+          <div><label className={labelCls}>Подпись индикатора (например «Шаг»)</label>
+            <input className={inputCls} value={data.process?.stepLabel || ''} onChange={(e) => update('process.stepLabel', e.target.value)} /></div>
+        </div>
+      </div>
+
+      {/* CLIENTS HEADER */}
+      <div className={cardCls}>
+        <h3 className="text-white font-bold text-sm uppercase tracking-wider">Шапка блока «Клиенты»</h3>
+        <div className={sectCls}>
+          <div><label className={labelCls}>Подпись (eyebrow)</label>
+            <input className={inputCls} value={data.clients?.eyebrow || ''} onChange={(e) => update('clients.eyebrow', e.target.value)} /></div>
+          <div><label className={labelCls}>Заголовок</label>
+            <input className={inputCls} value={data.clients?.title || ''} onChange={(e) => update('clients.title', e.target.value)} /></div>
+          <div className="grid grid-cols-2 gap-4">
+            <div><label className={labelCls}>Большое число</label>
+              <input className={inputCls} value={data.clients?.bigNumber || ''} onChange={(e) => update('clients.bigNumber', e.target.value)} /></div>
+            <div><label className={labelCls}>Суффикс</label>
+              <input className={inputCls} value={data.clients?.bigSuffix || ''} onChange={(e) => update('clients.bigSuffix', e.target.value)} /></div>
+          </div>
+          <div><label className={labelCls}>Подпись под числом</label>
+            <input className={inputCls} value={data.clients?.caption || ''} onChange={(e) => update('clients.caption', e.target.value)} /></div>
+        </div>
+      </div>
+
+      {/* CONTACT */}
+      <div className={cardCls}>
+        <h3 className="text-white font-bold text-sm uppercase tracking-wider">Контакты</h3>
+        <div className={sectCls}>
+          <div className="grid grid-cols-2 gap-4">
+            <div><label className={labelCls}>Телефон (отображение)</label>
+              <input className={inputCls} value={data.contact?.phone || ''} onChange={(e) => update('contact.phone', e.target.value)} /></div>
+            <div><label className={labelCls}>Телефон (для tel:)</label>
+              <input className={inputCls} value={data.contact?.phoneRaw || ''} onChange={(e) => update('contact.phoneRaw', e.target.value)} placeholder="+998977111711" /></div>
+          </div>
+          <div><label className={labelCls}>Email</label>
+            <input className={inputCls} value={data.contact?.email || ''} onChange={(e) => update('contact.email', e.target.value)} /></div>
+          <div><label className={labelCls}>Адрес</label>
+            <input className={inputCls} value={data.contact?.address || ''} onChange={(e) => update('contact.address', e.target.value)} /></div>
+          <div><label className={labelCls}>Часы работы</label>
+            <input className={inputCls} value={data.contact?.hours || ''} onChange={(e) => update('contact.hours', e.target.value)} /></div>
+          <div className="grid grid-cols-3 gap-4">
+            <div><label className={labelCls}>Instagram</label>
+              <input className={inputCls} value={data.contact?.instagram || ''} onChange={(e) => update('contact.instagram', e.target.value)} /></div>
+            <div><label className={labelCls}>Telegram</label>
+              <input className={inputCls} value={data.contact?.telegram || ''} onChange={(e) => update('contact.telegram', e.target.value)} /></div>
+            <div><label className={labelCls}>Behance</label>
+              <input className={inputCls} value={data.contact?.behance || ''} onChange={(e) => update('contact.behance', e.target.value)} /></div>
+          </div>
+        </div>
+      </div>
+
+      {/* FOOTER */}
+      <div className={cardCls}>
+        <h3 className="text-white font-bold text-sm uppercase tracking-wider">Футер</h3>
+        <div className={sectCls}>
+          <div><label className={labelCls}>Большой callout (поддерживает &lt;span class=&apos;accent&apos;&gt;...&lt;/span&gt;)</label>
+            <textarea rows={2} className={inputCls} value={data.footer?.callout || ''} onChange={(e) => update('footer.callout', e.target.value)} /></div>
+          <div><label className={labelCls}>Текст кнопки в callout</label>
+            <input className={inputCls} value={data.footer?.calloutCta || ''} onChange={(e) => update('footer.calloutCta', e.target.value)} /></div>
+          <div><label className={labelCls}>Описание под логотипом</label>
+            <textarea rows={3} className={inputCls} value={data.footer?.brandLead || ''} onChange={(e) => update('footer.brandLead', e.target.value)} /></div>
+          <div><label className={labelCls}>Копирайт</label>
+            <input className={inputCls} value={data.footer?.rights || ''} onChange={(e) => update('footer.rights', e.target.value)} /></div>
+          <div><label className={labelCls}>Авторы (credits)</label>
+            <input className={inputCls} value={data.footer?.credits || ''} onChange={(e) => update('footer.credits', e.target.value)} /></div>
+        </div>
+      </div>
+
+      {/* Save bar */}
+      <div className="fixed bottom-0 left-0 right-0 lg:left-60 bg-[#0d1220] border-t border-white/10 px-4 sm:px-6 py-4 flex justify-end gap-3 z-30">
+        <button
+          onClick={save}
+          disabled={saving}
+          className="px-6 py-3 bg-[#D4A843] hover:bg-[#E8C06E] text-[#0A0F1E] font-bold text-sm rounded-xl transition-colors disabled:opacity-60 flex items-center gap-2"
+        >
+          {saving ? 'Сохраняем…' : 'Сохранить настройки'}
+          {!saving && IC.check}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 // ── Sidebar ───────────────────────────────────────────────────────────────────
-function Sidebar({ section, onNavigate, onLogout, open, onClose }) {
+function Sidebar({ section, onNavigate, onLogout, open, onClose, newLeads = 0 }) {
   return (
     <>
       {open && <div className="fixed inset-0 bg-black/50 z-30 lg:hidden" onClick={onClose} />}
@@ -1093,7 +2360,11 @@ function Sidebar({ section, onNavigate, onLogout, open, onClose }) {
           {NAV.map(({ key, label, icon }) => (
             <button key={key} onClick={() => onNavigate(key)}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors text-left ${section === key ? 'bg-[#D4A843]/15 text-[#D4A843]' : 'text-white/50 hover:bg-white/5 hover:text-white'}`}>
-              {icon}{label}
+              {icon}
+              <span className="flex-1">{label}</span>
+              {key === 'leads' && newLeads > 0 && (
+                <span className="bg-emerald-500 text-[#0A0F1E] text-[10px] font-black px-1.5 py-0.5 rounded">{newLeads}</span>
+              )}
             </button>
           ))}
         </nav>
@@ -1117,12 +2388,25 @@ export default function AdminPage() {
   const [authed, setAuthed]       = useState(false);
   const [section, setSection]     = useState('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [newLeads, setNewLeads]   = useState(0);
   const { toasts, toast }         = useToast();
 
   useEffect(() => {
     const token = sessionStorage.getItem('cms_token');
-    if (token) apiFetch('portfolio').then(() => setAuthed(true)).catch(() => {});
+    if (token) apiFetch('portfolio', {}, 'ru').then(() => setAuthed(true)).catch(() => {});
   }, []);
+
+  // Poll new-lead count every 60s so badge stays fresh
+  useEffect(() => {
+    if (!authed) return;
+    let alive = true;
+    const refresh = () => leadsFetch('GET')
+      .then(d => alive && setNewLeads(Array.isArray(d) ? d.filter(l => l.status === 'new').length : 0))
+      .catch(() => {});
+    refresh();
+    const t = setInterval(refresh, 60_000);
+    return () => { alive = false; clearInterval(t); };
+  }, [authed, section]);
 
   const navigate = (s) => { setSection(s); setSidebarOpen(false); };
   const logout   = () => { sessionStorage.removeItem('cms_token'); setAuthed(false); };
@@ -1131,7 +2415,7 @@ export default function AdminPage() {
 
   return (
     <div className="min-h-screen bg-[#0A0F1E] text-white flex">
-      <Sidebar section={section} onNavigate={navigate} onLogout={logout} open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <Sidebar section={section} onNavigate={navigate} onLogout={logout} open={sidebarOpen} onClose={() => setSidebarOpen(false)} newLeads={newLeads} />
 
       <div className="flex-1 flex flex-col min-w-0">
         <header className="border-b border-white/5 bg-[#0d1220] px-4 sm:px-6 py-4 flex items-center gap-4 sticky top-0 z-20">
@@ -1144,7 +2428,12 @@ export default function AdminPage() {
 
         <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-x-hidden">
           {section === 'dashboard'    && <Dashboard onNavigate={navigate} />}
+          {section === 'leads'        && <LeadsManager toast={toast} />}
           {section === 'analytics'    && <AnalyticsPage />}
+          {section === 'landingSettings' && <LandingSettingsManager toast={toast} />}
+          {section === 'seo'          && <SeoManager toast={toast} />}
+          {section === 'media'        && <MediaLibrary toast={toast} />}
+          {section === 'backup'       && <BackupManager toast={toast} />}
           {section === 'portfolio'    && <CollectionManager key="portfolio"    collection="portfolio"    toast={toast} />}
           {section === 'testimonials' && <CollectionManager key="testimonials" collection="testimonials" toast={toast} />}
           {section === 'clients'      && <CollectionManager key="clients"      collection="clients"      toast={toast} />}
