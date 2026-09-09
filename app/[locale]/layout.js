@@ -6,6 +6,11 @@ import { Analytics } from '@vercel/analytics/next';
 import AnalyticsTracker from '@/components/AnalyticsTracker';
 import '@/app/globals.css';
 
+// Social preview image. Kept as a compressed 1200x630 JPEG on Blob: link
+// scrapers fetch it directly and skip images over a few megabytes.
+const OG_IMAGE =
+  'https://kha2ts7q3gkfbsis.public.blob.vercel-storage.com/img/og-image.jpg';
+
 // ── SEO metadata per locale ──────────────────────────────────────────────────
 const META = {
   ru: {
@@ -45,13 +50,13 @@ export async function generateMetadata({ params }) {
       siteName:    'ExpoContact',
       locale:      meta.locale,
       type:        'website',
-      images: [{ url: '/og-image.jpg', width: 1200, height: 630, alt: 'ExpoContact' }],
+      images: [{ url: OG_IMAGE, width: 1200, height: 630, alt: 'ExpoContact' }],
     },
     twitter: {
       card:        'summary_large_image',
       title:       meta.title,
       description: meta.description,
-      images:      ['/og-image.jpg'],
+      images:      [OG_IMAGE],
     },
     robots: {
       index:  true,
