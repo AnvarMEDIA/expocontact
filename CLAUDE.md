@@ -54,6 +54,22 @@ a raw `<img>` makes the browser download the full source.
 - `/admin` edits these files through `app/api/admin`, which writes to disk.
   That works locally but not on Vercel, where the filesystem is read-only.
 
+## SEO and AI discoverability
+
+- Titles, descriptions, keywords and the social image come from
+  `content/data/seo.{ru,en,uz}.json`, imported statically in
+  `app/[locale]/layout.js`. Do not switch this back to reading the files with
+  `fs` at request time: on Vercel those files are not in the bundle, the read
+  silently returns `{}` and every SEO setting disappears from production.
+- `layout.js` also emits one JSON-LD `@graph` (Organization/LocalBusiness with
+  its service catalogue, WebSite, WebPage, FAQPage) built from the locale
+  content, so FAQ and services edits flow into structured data automatically.
+- `app/robots.js` explicitly allows AI crawlers (GPTBot, ClaudeBot,
+  PerplexityBot, Google-Extended, ...). `public/llms.txt` is a plain-text
+  company brief for LLMs; update it when prices, geography or services change.
+- `/[locale]/new` is a draft landing and is `noindex`; remove that when it
+  becomes the main page.
+
 ## Environment
 
 See `.env.example`. `ADMIN_PASSWORD` guards every admin and analytics endpoint

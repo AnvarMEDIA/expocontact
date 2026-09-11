@@ -8,6 +8,10 @@ const PORTFOLIO = { ru: portfolioRu, en: portfolioEn, uz: portfolioUz };
 
 export const metadata = {
   title: 'ExpoContact — Vision in Form and Function',
+  // Draft alternative landing: keep it out of the index so it does not
+  // compete with the main page as duplicate content. Remove once it replaces
+  // the main landing.
+  robots: { index: false, follow: true },
 };
 
 export default async function Page({ params }) {
