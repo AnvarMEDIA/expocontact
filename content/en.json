@@ -135,42 +135,48 @@
         "icon": "PencilRuler",
         "title": "Design & 3D Visualization",
         "short": "Unique stand concepts with detailed 3D renders tailored to your brand",
-        "full": "Our designers develop a stand concept considering your brand, participation goals, and budget. You receive full 3D visualizations and blueprints before production begins — no surprises at the exhibition."
+        "full": "Our designers develop a stand concept considering your brand, participation goals, and budget. You receive full 3D visualizations and blueprints before production begins — no surprises at the exhibition.",
+        "image": "https://kha2ts7q3gkfbsis.public.blob.vercel-storage.com/img/service-design.webp"
       },
       {
         "id": "production",
         "icon": "Factory",
         "title": "Stand Production",
         "short": "We manufacture stands of any complexity at our own facility",
-        "full": "Our 2000 m² production facility allows us to build stands from small modular structures to large two-story pavilions. We use European materials and modern equipment."
+        "full": "Our 2000 m² production facility allows us to build stands from small modular structures to large two-story pavilions. We use European materials and modern equipment.",
+        "image": "https://kha2ts7q3gkfbsis.public.blob.vercel-storage.com/img/service-production.webp"
       },
       {
         "id": "mounting",
         "icon": "Wrench",
         "title": "Installation & Dismantling",
         "short": "Professional installation teams at every venue",
-        "full": "Our installation teams work within the strict time constraints of exhibitions. We take full responsibility for assembly and dismantling — you simply approve the finished result."
+        "full": "Our installation teams work within the strict time constraints of exhibitions. We take full responsibility for assembly and dismantling — you simply approve the finished result.",
+        "image": "https://kha2ts7q3gkfbsis.public.blob.vercel-storage.com/img/service-mounting.webp"
       },
       {
         "id": "branding",
         "icon": "Palette",
         "title": "Branding & Navigation",
         "short": "Printing, banners, navigation elements and brand environments",
-        "full": "We develop and produce all branding elements: large-format printing, roll-ups, lightboxes, navigation stands, branded furniture and accessories — all in a unified style."
+        "full": "We develop and produce all branding elements: large-format printing, roll-ups, lightboxes, navigation stands, branded furniture and accessories — all in a unified style.",
+        "image": "https://kha2ts7q3gkfbsis.public.blob.vercel-storage.com/img/service-branding.webp"
       },
       {
         "id": "logistics",
         "icon": "Truck",
         "title": "Logistics & Storage",
         "short": "Delivery of structures throughout Central Asia and abroad",
-        "full": "We organize delivery of the stand to the exhibition venue anywhere in Uzbekistan and abroad. We provide storage services for structures between exhibitions."
+        "full": "We organize delivery of the stand to the exhibition venue anywhere in Uzbekistan and abroad. We provide storage services for structures between exhibitions.",
+        "image": "https://kha2ts7q3gkfbsis.public.blob.vercel-storage.com/img/service-logistics.webp"
       },
       {
         "id": "support",
         "icon": "HeadphonesIcon",
         "title": "On-Site Support",
         "short": "Technical staff and project manager throughout the exhibition",
-        "full": "A technical specialist is present at the stand throughout the entire exhibition. The project manager coordinates all matters so you can focus on negotiations."
+        "full": "A technical specialist is present at the stand throughout the entire exhibition. The project manager coordinates all matters so you can focus on negotiations.",
+        "image": "https://kha2ts7q3gkfbsis.public.blob.vercel-storage.com/img/service-support.webp"
       }
     ]
   },

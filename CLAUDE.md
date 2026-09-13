@@ -38,9 +38,18 @@ absolute URL from `content/data/*.json`. `next.config.mjs` allows only the Blob
 and Tilda CDN hosts, so any new image host has to be added there.
 
 Store optimized derivatives, not camera/generator originals: roughly 1600x900
-WebP for portfolio shots, 256x256 WebP for avatars, and a 1200x630 JPEG for the
-social preview. Render every image through `next/image` with a `sizes` hint;
-a raw `<img>` makes the browser download the full source.
+WebP for portfolio shots, 800x520 WebP for the service hover previews, 256x256
+WebP for avatars, and a 1200x630 JPEG for the social preview. Render every image
+through `next/image` with a `sizes` hint; a raw `<img>` makes the browser
+download the full source. The two CSS `background-image` cases (portfolio bento
+cards and service previews) are the exception — they cannot go through
+`next/image`, which is why their sources are pre-sized and kept small.
+
+Service pictures live in the CMS at `services.items[].image` in each locale
+file, so they are editable in the admin under Тексты сайта. There are no
+generated placeholder URLs anywhere: an item with no picture renders the card's
+own dark surface. Do not reintroduce a random-image service such as picsum as a
+fallback — it put unrelated stock photos on the front page.
 
 ## Content
 

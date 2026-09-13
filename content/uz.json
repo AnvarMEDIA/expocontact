@@ -135,42 +135,48 @@
         "icon": "PencilRuler",
         "title": "Loyihalash va 3D vizualizatsiya",
         "short": "Brendingizga moslashtirilgan noyob stend kontseptsiyalari",
-        "full": "Dizaynerlarimiz brendingiz, ishtirok etish maqsadlari va byudjetingizni hisobga olgan holda stend kontseptsiyasini ishlab chiqadi. Ishlab chiqarish boshlanishidan oldin to'liq 3D vizualizatsiyalar va chizmalar olasiz."
+        "full": "Dizaynerlarimiz brendingiz, ishtirok etish maqsadlari va byudjetingizni hisobga olgan holda stend kontseptsiyasini ishlab chiqadi. Ishlab chiqarish boshlanishidan oldin to'liq 3D vizualizatsiyalar va chizmalar olasiz.",
+        "image": "https://kha2ts7q3gkfbsis.public.blob.vercel-storage.com/img/service-design.webp"
       },
       {
         "id": "production",
         "icon": "Factory",
         "title": "Stend ishlab chiqarish",
         "short": "O'z ishlab chiqarishimizda har qanday murakkablikdagi stendlar",
-        "full": "2000 m² ishlab chiqarish maydonimiz kichik modulli konstruksiyalardan tortib yirik ikki qavatli pavilyonlargacha stendlar qurishga imkon beradi. Evropa materiallari va zamonaviy uskunalardan foydalanamiz."
+        "full": "2000 m² ishlab chiqarish maydonimiz kichik modulli konstruksiyalardan tortib yirik ikki qavatli pavilyonlargacha stendlar qurishga imkon beradi. Evropa materiallari va zamonaviy uskunalardan foydalanamiz.",
+        "image": "https://kha2ts7q3gkfbsis.public.blob.vercel-storage.com/img/service-production.webp"
       },
       {
         "id": "mounting",
         "icon": "Wrench",
         "title": "Montaj va demontaj",
         "short": "Har bir maydonda professional montaj brigadasi",
-        "full": "Montaj brigadalarimiz ko'rgazmalarning qat'iy vaqt chegaralarida ishlaydi. Montaj va demontaj uchun to'liq javobgarlikni o'z zimmamizga olamiz — siz tayyor ishni qabul qilasiz."
+        "full": "Montaj brigadalarimiz ko'rgazmalarning qat'iy vaqt chegaralarida ishlaydi. Montaj va demontaj uchun to'liq javobgarlikni o'z zimmamizga olamiz — siz tayyor ishni qabul qilasiz.",
+        "image": "https://kha2ts7q3gkfbsis.public.blob.vercel-storage.com/img/service-mounting.webp"
       },
       {
         "id": "branding",
         "icon": "Palette",
         "title": "Brending va navigatsiya",
         "short": "Chop etish, bannerlar, navigatsiya elementlari va brend muhiti",
-        "full": "Brending elementlarini ishlab chiqamiz va ishlab chiqaramiz: keng formatli chop etish, roll-aplar, laytbokslar, navigatsiya stoykalar, brend mebellar va aksessuarlar — hammasi yagona uslubda."
+        "full": "Brending elementlarini ishlab chiqamiz va ishlab chiqaramiz: keng formatli chop etish, roll-aplar, laytbokslar, navigatsiya stoykalar, brend mebellar va aksessuarlar — hammasi yagona uslubda.",
+        "image": "https://kha2ts7q3gkfbsis.public.blob.vercel-storage.com/img/service-branding.webp"
       },
       {
         "id": "logistics",
         "icon": "Truck",
         "title": "Logistika va saqlash",
         "short": "Butun Markaziy Osiyo va xorijga konstruksiyalar yetkazib berish",
-        "full": "Stendni O'zbekistondagi va xorijdagi istalgan ko'rgazma maydoni yetkazib berishni tashkil etamiz. Ko'rgazmalar orasida konstruksiyalarni saqlash uchun ombor xizmatlarini taqdim etamiz."
+        "full": "Stendni O'zbekistondagi va xorijdagi istalgan ko'rgazma maydoni yetkazib berishni tashkil etamiz. Ko'rgazmalar orasida konstruksiyalarni saqlash uchun ombor xizmatlarini taqdim etamiz.",
+        "image": "https://kha2ts7q3gkfbsis.public.blob.vercel-storage.com/img/service-logistics.webp"
       },
       {
         "id": "support",
         "icon": "HeadphonesIcon",
         "title": "Ko'rgazmada qo'llab-quvvatlash",
         "short": "Ko'rgazma davomida texnik xodim va loyiha menejeri",
-        "full": "Butun ko'rgazma davomida stendda texnik mutaxassis mavjud bo'ladi. Loyiha menejeri barcha masalalarni muvofiqlashtirar, siz muzokaralarga e'tibor qaratishingiz mumkin."
+        "full": "Butun ko'rgazma davomida stendda texnik mutaxassis mavjud bo'ladi. Loyiha menejeri barcha masalalarni muvofiqlashtirar, siz muzokaralarga e'tibor qaratishingiz mumkin.",
+        "image": "https://kha2ts7q3gkfbsis.public.blob.vercel-storage.com/img/service-support.webp"
       }
     ]
   },

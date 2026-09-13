@@ -40,10 +40,11 @@ function mapCategory(raw) {
 // Card size palette, applied by index for the bento grid.
 const CARD_SIZES = ['card--xl', 'card--lg', 'card--md', 'card--sm', 'card--sm', 'card--wd', 'card--nr', 'card--md', 'card--sm'];
 
-// Picsum fallback for portfolio image when content has no real photo.
-function imgFor(p, i) {
-  if (p?.mainImage && !p.mainImage.includes('placeholder')) return p.mainImage;
-  return `https://picsum.photos/seed/folio${i + 1}/900/600`;
+// A project without a real photo shows the card's own dark surface. It used to
+// fall back to a random picsum image, which meant adding a project in the admin
+// without uploading a cover put an unrelated stock photo on the front page.
+function imgFor(p) {
+  return p?.mainImage && !p.mainImage.includes('placeholder') ? p.mainImage : '';
 }
 
 // Simple `\n` and `<strong>...` interpreter — content is admin-trusted markdown-ish.
@@ -73,16 +74,6 @@ const PROC_SVGS = [
   // 07
   (<svg viewBox="0 0 200 200" key="07"><path d="M30 100 H170" className="accent"/><path d="M50 100 L50 60 L150 60 L150 100" strokeDasharray="4 4"/><rect x="40" y="120" width="120" height="40"/></svg>),
 ];
-
-// Service images — placeholder picsum URLs (SERVICE_EXTRAS replaced by tServices.raw('extras') inside component)
-const SVC_IMGS = {
-  design:     'https://picsum.photos/seed/svc1/520/340',
-  production: 'https://picsum.photos/seed/svc2/520/340',
-  mounting:   'https://picsum.photos/seed/svc3/520/340',
-  branding:   'https://picsum.photos/seed/svc4/520/340',
-  logistics:  'https://picsum.photos/seed/svc5/520/340',
-  support:    'https://picsum.photos/seed/svc6/520/340',
-};
 
 const CLIENT_LIST_FALLBACK_A = [
   { n: 'Silk Road Motors', m: 'diamond' }, { n: 'Alif Bank', m: 'circle' }, { n: 'UzAuto', m: '' }, { n: 'Perfectum', m: 'dot' },
@@ -487,7 +478,7 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
     ...p,
     _size: CARD_SIZES[i] || 'card--md',
     _cls: mapCategory(p.category),
-    _img: imgFor(p, i),
+    _img: imgFor(p),
   }));
 
   return (
@@ -712,7 +703,7 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
                 title={sv.title}
                 desc={sv.full || sv.short}
                 includes={serviceExtras[sv.id]?.includes || []}
-                img={SVC_IMGS[sv.id] || `https://picsum.photos/seed/svc${i + 1}/520/340`}
+                img={sv.image}
               />
             ))}
           </div>
@@ -761,7 +752,7 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
                   tabIndex={0}
                   aria-label={`${p.title} — открыть галерею`}
                 >
-                  <div className="card__img" style={{ backgroundImage: `url('${p._img}')` }} />
+                  <div className="card__img" style={p._img ? { backgroundImage: `url('${p._img}')` } : undefined} />
                   <div className="card__shade" />
                   <span className="card__sub">/{String(i + 1).padStart(2, '0')} · {p.exhibition || p.client}</span>
                   {galleryCount > 0 && (
@@ -1169,7 +1160,10 @@ function ServiceItem({ idx, title, desc, includes, img }) {
     }}>
       <div className="svc-item__num">/{String(idx + 1).padStart(2, '0')}</div>
       <div className="svc-item__title">{title}</div>
-      <div className="svc-item__preview" style={{ backgroundImage: `url('${img}')` }} />
+      {/* Hover preview. The URL comes from the CMS (services.items[].image), so
+          a service without a picture simply shows the empty surface instead of
+          a broken background. */}
+      <div className="svc-item__preview" style={img ? { backgroundImage: `url('${img}')` } : undefined} />
       <div className="svc-item__toggle" data-hover />
       <div className="svc-item__body">
         <div className="svc-item__body-inner">
