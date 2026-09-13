@@ -29,9 +29,9 @@
  */
 import { NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
-import { readList, readObject, writeDoc, storeStatus } from '@/lib/store';
+import { readList, readObject, writeDoc, storeStatus, listStoredDocs } from '@/lib/store';
 import { leadsStatus } from '@/lib/leads';
-import { LOCALES } from '@/lib/seed';
+import { LOCALES, DOC_NAMES } from '@/lib/seed';
 
 const LOCALE_DATA_COLLECTIONS      = ['portfolio', 'testimonials'];
 const GLOBAL_DATA_COLLECTIONS      = ['clients'];
@@ -71,8 +71,10 @@ export async function GET(request) {
   const locale     = searchParams.get('locale') || 'ru';
 
   if (collection === '_status') {
+    const saved = await listStoredDocs();
     return NextResponse.json({
       content:   storeStatus(),
+      documents: saved === null ? null : { saved, total: DOC_NAMES.length },
       leads:     await leadsStatus(),
       media:     { backend: process.env.BLOB_READ_WRITE_TOKEN ? 'blob' : 'local', persistent: !!process.env.BLOB_READ_WRITE_TOKEN },
       analytics: {

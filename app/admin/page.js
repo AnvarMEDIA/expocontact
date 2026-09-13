@@ -2399,6 +2399,20 @@ function SystemStatus() {
         title={`Контент сайта — ${s.content?.backend === 'blob' ? 'Vercel Blob' : 'локальные файлы'}`}
         detail={s.content?.note || ''}
       />
+      {s.documents && (
+        <StatusRow
+          ok
+          title={`Сохранено через админку: ${s.documents.saved.length} из ${s.documents.total} документов`}
+          detail={
+            s.documents.saved.length
+              ? `Эти разделы берутся из хранилища: ${s.documents.saved.join(', ')}. `
+                + 'Остальные пока отдаются из копии, собранной вместе с сайтом — '
+                + 'они появятся здесь после первого сохранения.'
+              : 'Пока ничего не сохраняли: сайт показывает исходный контент из сборки. '
+                + 'Сохраните любой раздел, и он появится в этом списке.'
+          }
+        />
+      )}
       <StatusRow
         ok={leadsOk}
         title={`Заявки — ${s.leads?.provider || 'база не подключена'}`}
