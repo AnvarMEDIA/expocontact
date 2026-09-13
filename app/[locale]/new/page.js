@@ -1,10 +1,7 @@
 import NewLanding from '@/components/new/NewLanding';
-import portfolioRu from '@/content/data/portfolio.ru.json';
-import portfolioEn from '@/content/data/portfolio.en.json';
-import portfolioUz from '@/content/data/portfolio.uz.json';
-import clientsData from '@/content/data/clients.json';
+import { readList } from '@/lib/store';
 
-const PORTFOLIO = { ru: portfolioRu, en: portfolioEn, uz: portfolioUz };
+export const revalidate = 60;
 
 export const metadata = {
   title: 'ExpoContact — Vision in Form and Function',
@@ -17,11 +14,16 @@ export const metadata = {
 export default async function Page({ params }) {
   const { locale } = await params;
   const lc = ['ru', 'en', 'uz'].includes(locale) ? locale : 'ru';
+  const [projects, clients] = await Promise.all([
+    readList(`portfolio.${lc}`),
+    readList('clients'),
+  ]);
+
   return (
     <NewLanding
       locale={lc}
-      projects={PORTFOLIO[lc]}
-      clients={clientsData}
+      projects={projects}
+      clients={clients}
     />
   );
 }

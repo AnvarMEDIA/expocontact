@@ -1,91 +1,61 @@
 /**
- * File-based CMS API
+ * CMS API, backed by the persistent store (lib/store.js).
  *
- * Locale-aware data collections (content/data/{collection}.{locale}.json):
+ * Locale-aware collections (documents `portfolio.<locale>`, `testimonials.<locale>`):
  *   GET  /api/admin?collection=portfolio|testimonials&locale=ru|en|uz
  *   POST /api/admin?collection=...&locale=...  body: { action, item, id }
+ *     actions: create | update | delete | duplicate
  *
- * Locale-aware singleton (content/data/{collection}.{locale}.json):
- *   GET  /api/admin?collection=settings&locale=ru|en|uz
- *   POST /api/admin?collection=settings&locale=...  body: { action:'save', item }
+ * Locale-aware singletons (`settings.<locale>`, `seo.<locale>`):
+ *   GET  /api/admin?collection=settings|seo&locale=ru|en|uz
+ *   POST .. body: { action:'save', item }
  *
- * Locale-agnostic data collections (content/data/{collection}.json):
+ * Locale-agnostic collection (`clients`):
  *   GET  /api/admin?collection=clients
- *   POST /api/admin?collection=clients  body: { action, item, id }
+ *   POST .. body: { action, item, id }
  *
- * Locale collections (content/{locale}.json):
+ * Collections nested inside the locale content file (`content.<locale>`):
  *   GET  /api/admin?collection=faq|services&locale=ru|en|uz
- *   POST /api/admin?collection=faq|services&locale=ru|en|uz  body: { action, item, id }
+ *   POST .. body: { action, item, id }
  *
- * Protected by ADMIN_PASSWORD env var (default: "admin123").
+ * Whole locale content file — every heading, label and list the site renders:
+ *   GET  /api/admin?collection=content&locale=ru|en|uz
+ *   POST .. body: { action:'save', item }
+ *
+ * Storage health, used by the admin dashboard:
+ *   GET  /api/admin?collection=_status
+ *
+ * Protected by ADMIN_PASSWORD.
  */
 import { NextResponse } from 'next/server';
-import { promises as fs } from 'fs';
-import path from 'path';
+import { revalidatePath } from 'next/cache';
+import { readList, readObject, writeDoc, storeStatus } from '@/lib/store';
+import { leadsStatus } from '@/lib/leads';
+import { LOCALES } from '@/lib/seed';
 
-const DATA_DIR    = path.join(process.cwd(), 'content', 'data');
-const CONTENT_DIR = path.join(process.cwd(), 'content');
-
-const LOCALE_DATA_COLLECTIONS    = ['portfolio', 'testimonials'];
-const GLOBAL_DATA_COLLECTIONS    = ['clients'];
+const LOCALE_DATA_COLLECTIONS      = ['portfolio', 'testimonials'];
+const GLOBAL_DATA_COLLECTIONS      = ['clients'];
 const LOCALE_SINGLETON_COLLECTIONS = ['settings', 'seo'];
-const LOCALE_COLLECTIONS         = ['faq', 'services'];
-const LOCALES                    = ['ru', 'en', 'uz'];
+const NESTED_COLLECTIONS           = ['faq', 'services'];
 
-// ── Auth ─────────────────────────────────────────────────────────────────────
 function checkAuth(request) {
   const token    = (request.headers.get('Authorization') || '').replace('Bearer ', '');
   const password = process.env.ADMIN_PASSWORD || 'admin123';
   return token === password;
 }
 
-// ── Data collection helpers ──────────────────────────────────────────────────
-async function readData(file) {
+/** Published pages are ISR-cached; drop that cache so edits show immediately. */
+function refreshSite() {
   try {
-    const raw = await fs.readFile(path.join(DATA_DIR, file), 'utf8');
-    return JSON.parse(raw);
-  } catch {
-    return [];
+    revalidatePath('/[locale]', 'layout');
+    revalidatePath('/', 'layout');
+  } catch (err) {
+    console.error('[admin] revalidate failed:', err.message);
   }
 }
 
-async function writeData(file, data) {
-  await fs.writeFile(
-    path.join(DATA_DIR, file),
-    JSON.stringify(data, null, 2),
-    'utf8',
-  );
-}
-
-async function readSingleton(file) {
-  try {
-    const raw = await fs.readFile(path.join(DATA_DIR, file), 'utf8');
-    return JSON.parse(raw);
-  } catch {
-    return {};
-  }
-}
-
-async function writeSingleton(file, data) {
-  await fs.writeFile(
-    path.join(DATA_DIR, file),
-    JSON.stringify(data, null, 2),
-    'utf8',
-  );
-}
-
-// ── Locale file helpers ──────────────────────────────────────────────────────
-async function readLocale(locale) {
-  const raw = await fs.readFile(path.join(CONTENT_DIR, `${locale}.json`), 'utf8');
-  return JSON.parse(raw);
-}
-
-async function writeLocale(locale, data) {
-  await fs.writeFile(
-    path.join(CONTENT_DIR, `${locale}.json`),
-    JSON.stringify(data, null, 2),
-    'utf8',
-  );
+function badRequest(error, status = 400) {
+  return NextResponse.json({ error }, { status });
 }
 
 function indexedItems(items) {
@@ -94,175 +64,204 @@ function indexedItems(items) {
 
 // ── GET ──────────────────────────────────────────────────────────────────────
 export async function GET(request) {
-  if (!checkAuth(request))
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!checkAuth(request)) return badRequest('Unauthorized', 401);
 
   const { searchParams } = new URL(request.url);
   const collection = searchParams.get('collection');
   const locale     = searchParams.get('locale') || 'ru';
 
+  if (collection === '_status') {
+    return NextResponse.json({
+      content:   storeStatus(),
+      leads:     leadsStatus(),
+      media:     { backend: process.env.BLOB_READ_WRITE_TOKEN ? 'blob' : 'local', persistent: !!process.env.BLOB_READ_WRITE_TOKEN },
+      analytics: {
+        metrika: !!process.env.YANDEX_METRIKA_TOKEN,
+        local:   process.env.VERCEL !== '1',
+      },
+      telegram:  !!(process.env.TELEGRAM_BOT_TOKEN && process.env.TELEGRAM_CHAT_ID),
+      adminPasswordSet: !!process.env.ADMIN_PASSWORD,
+    });
+  }
+
+  const needsLocale =
+    LOCALE_DATA_COLLECTIONS.includes(collection) ||
+    LOCALE_SINGLETON_COLLECTIONS.includes(collection) ||
+    NESTED_COLLECTIONS.includes(collection) ||
+    collection === 'content';
+
+  if (needsLocale && !LOCALES.includes(locale)) return badRequest('Unknown locale');
+
   if (LOCALE_DATA_COLLECTIONS.includes(collection)) {
-    if (!LOCALES.includes(locale))
-      return NextResponse.json({ error: 'Unknown locale' }, { status: 400 });
-    return NextResponse.json(await readData(`${collection}.${locale}.json`));
+    return NextResponse.json(await readList(`${collection}.${locale}`));
   }
 
   if (GLOBAL_DATA_COLLECTIONS.includes(collection)) {
-    return NextResponse.json(await readData(`${collection}.json`));
+    return NextResponse.json(await readList(collection));
   }
 
   if (LOCALE_SINGLETON_COLLECTIONS.includes(collection)) {
-    if (!LOCALES.includes(locale))
-      return NextResponse.json({ error: 'Unknown locale' }, { status: 400 });
-    return NextResponse.json(await readSingleton(`${collection}.${locale}.json`));
+    return NextResponse.json(await readObject(`${collection}.${locale}`));
   }
 
-  if (LOCALE_COLLECTIONS.includes(collection)) {
-    if (!LOCALES.includes(locale))
-      return NextResponse.json({ error: 'Unknown locale' }, { status: 400 });
-    const file  = await readLocale(locale);
+  if (collection === 'content') {
+    return NextResponse.json(await readObject(`content.${locale}`));
+  }
+
+  if (NESTED_COLLECTIONS.includes(collection)) {
+    const file  = await readObject(`content.${locale}`);
     const items = file[collection]?.items ?? [];
     return NextResponse.json(indexedItems(items));
   }
 
-  return NextResponse.json({ error: 'Unknown collection' }, { status: 400 });
+  return badRequest('Unknown collection');
 }
 
 // ── POST ─────────────────────────────────────────────────────────────────────
 export async function POST(request) {
-  if (!checkAuth(request))
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!checkAuth(request)) return badRequest('Unauthorized', 401);
 
   const { searchParams } = new URL(request.url);
   const collection = searchParams.get('collection');
   const locale     = searchParams.get('locale') || 'ru';
 
-  const { action, item, id } = await request.json();
+  const { action, item, id } = await request.json().catch(() => ({}));
 
-  // ── Locale-scoped data collections (portfolio, testimonials) ──────────────
-  if (LOCALE_DATA_COLLECTIONS.includes(collection)) {
-    if (!LOCALES.includes(locale))
-      return NextResponse.json({ error: 'Unknown locale' }, { status: 400 });
+  const needsLocale =
+    LOCALE_DATA_COLLECTIONS.includes(collection) ||
+    LOCALE_SINGLETON_COLLECTIONS.includes(collection) ||
+    NESTED_COLLECTIONS.includes(collection) ||
+    collection === 'content';
 
-    const file = `${collection}.${locale}.json`;
-    let data = await readData(file);
+  if (needsLocale && !LOCALES.includes(locale)) return badRequest('Unknown locale');
 
-    if (action === 'create') {
-      const newItem = { ...item, id: Date.now().toString() };
-      data.push(newItem);
-      await writeData(file, data);
-      return NextResponse.json(newItem);
-    }
-    if (action === 'update') {
-      data = data.map((d) => (d.id === id ? { ...d, ...item, id } : d));
-      await writeData(file, data);
-      return NextResponse.json({ ok: true });
-    }
-    if (action === 'delete') {
-      data = data.filter((d) => d.id !== id);
-      await writeData(file, data);
-      return NextResponse.json({ ok: true });
-    }
-    if (action === 'duplicate') {
-      const toLocale = item?.toLocale;
-      if (!LOCALES.includes(toLocale))
-        return NextResponse.json({ error: 'Unknown toLocale' }, { status: 400 });
-      const source = data.find((d) => d.id === id);
-      if (!source)
-        return NextResponse.json({ error: 'Item not found' }, { status: 404 });
-      const targetFile = `${collection}.${toLocale}.json`;
-      const target = await readData(targetFile);
-      const copy = { ...source, id: Date.now().toString() };
-      target.push(copy);
-      await writeData(targetFile, target);
-      return NextResponse.json(copy);
-    }
-  }
+  try {
+    // ── Collections of items, locale-scoped or global ─────────────────────────
+    const isLocaleList = LOCALE_DATA_COLLECTIONS.includes(collection);
+    const isGlobalList = GLOBAL_DATA_COLLECTIONS.includes(collection);
 
-  // ── Global data collections (clients) ─────────────────────────────────────
-  if (GLOBAL_DATA_COLLECTIONS.includes(collection)) {
-    const file = `${collection}.json`;
-    let data = await readData(file);
+    if (isLocaleList || isGlobalList) {
+      const doc = isLocaleList ? `${collection}.${locale}` : collection;
+      let data  = await readList(doc);
 
-    if (action === 'create') {
-      const newItem = { ...item, id: Date.now().toString() };
-      data.push(newItem);
-      await writeData(file, data);
-      return NextResponse.json(newItem);
-    }
-    if (action === 'update') {
-      data = data.map((d) => (d.id === id ? { ...d, ...item, id } : d));
-      await writeData(file, data);
-      return NextResponse.json({ ok: true });
-    }
-    if (action === 'delete') {
-      data = data.filter((d) => d.id !== id);
-      await writeData(file, data);
-      return NextResponse.json({ ok: true });
-    }
-  }
-
-  // ── Locale-scoped singleton (settings) ────────────────────────────────────
-  if (LOCALE_SINGLETON_COLLECTIONS.includes(collection)) {
-    if (!LOCALES.includes(locale))
-      return NextResponse.json({ error: 'Unknown locale' }, { status: 400 });
-    if (action === 'save') {
-      await writeSingleton(`${collection}.${locale}.json`, item ?? {});
-      return NextResponse.json({ ok: true });
-    }
-    return NextResponse.json({ error: 'Unsupported action' }, { status: 400 });
-  }
-
-  // ── Locale collections (faq, services) ────────────────────────────────────
-  if (LOCALE_COLLECTIONS.includes(collection)) {
-    if (!LOCALES.includes(locale))
-      return NextResponse.json({ error: 'Unknown locale' }, { status: 400 });
-
-    const file  = await readLocale(locale);
-    const items = file[collection]?.items ?? [];
-
-    if (collection === 'faq') {
       if (action === 'create') {
-        items.push({ q: item.q ?? '', a: item.a ?? '' });
-        file.faq.items = items;
-        await writeLocale(locale, file);
-        return NextResponse.json({ ok: true, idx: items.length - 1 });
+        const newItem = { ...item, id: Date.now().toString() };
+        data.push(newItem);
+        await writeDoc(doc, data);
+        refreshSite();
+        return NextResponse.json(newItem);
       }
+
       if (action === 'update') {
-        const idx = Number(id);
-        if (idx < 0 || idx >= items.length)
-          return NextResponse.json({ error: 'Not found' }, { status: 404 });
-        items[idx] = { q: item.q ?? items[idx].q, a: item.a ?? items[idx].a };
-        file.faq.items = items;
-        await writeLocale(locale, file);
+        if (!data.some((d) => d.id === id)) return badRequest('Not found', 404);
+        data = data.map((d) => (d.id === id ? { ...d, ...item, id } : d));
+        await writeDoc(doc, data);
+        refreshSite();
         return NextResponse.json({ ok: true });
       }
+
       if (action === 'delete') {
-        const idx = Number(id);
-        if (idx < 0 || idx >= items.length)
-          return NextResponse.json({ error: 'Not found' }, { status: 404 });
-        items.splice(idx, 1);
-        file.faq.items = items;
-        await writeLocale(locale, file);
+        const next = data.filter((d) => d.id !== id);
+        if (next.length === data.length) return badRequest('Not found', 404);
+        await writeDoc(doc, next);
+        refreshSite();
         return NextResponse.json({ ok: true });
       }
+
+      if (action === 'duplicate' && isLocaleList) {
+        const toLocale = item?.toLocale;
+        if (!LOCALES.includes(toLocale)) return badRequest('Unknown toLocale');
+        const source = data.find((d) => d.id === id);
+        if (!source) return badRequest('Item not found', 404);
+
+        const targetDoc = `${collection}.${toLocale}`;
+        const target    = await readList(targetDoc);
+        const copy      = { ...source, id: Date.now().toString() };
+        target.push(copy);
+        await writeDoc(targetDoc, target);
+        refreshSite();
+        return NextResponse.json(copy);
+      }
+
+      return badRequest('Unsupported action');
     }
 
-    if (collection === 'services' && action === 'update') {
-      const idx = items.findIndex((s) => s.id === id);
-      if (idx === -1)
-        return NextResponse.json({ error: 'Not found' }, { status: 404 });
-      items[idx] = {
-        ...items[idx],
-        ...(item.title !== undefined && { title: item.title }),
-        ...(item.short !== undefined && { short: item.short }),
-        ...(item.full  !== undefined && { full:  item.full  }),
-      };
-      file.services.items = items;
-      await writeLocale(locale, file);
+    // ── Locale-scoped singletons (settings, seo) ──────────────────────────────
+    if (LOCALE_SINGLETON_COLLECTIONS.includes(collection)) {
+      if (action !== 'save') return badRequest('Unsupported action');
+      await writeDoc(`${collection}.${locale}`, item ?? {});
+      refreshSite();
       return NextResponse.json({ ok: true });
     }
-  }
 
-  return NextResponse.json({ error: 'Unknown action or collection' }, { status: 400 });
+    // ── Whole locale content file ────────────────────────────────────────────
+    if (collection === 'content') {
+      if (action !== 'save') return badRequest('Unsupported action');
+      if (!item || typeof item !== 'object' || Array.isArray(item))
+        return badRequest('Content must be an object');
+      await writeDoc(`content.${locale}`, item);
+      refreshSite();
+      return NextResponse.json({ ok: true });
+    }
+
+    // ── Collections nested in the locale content file (faq, services) ────────
+    if (NESTED_COLLECTIONS.includes(collection)) {
+      const doc   = `content.${locale}`;
+      const file  = await readObject(doc);
+      const items = file[collection]?.items ?? [];
+
+      const persist = async (nextItems) => {
+        file[collection] = { ...(file[collection] || {}), items: nextItems };
+        await writeDoc(doc, file);
+        refreshSite();
+      };
+
+      if (collection === 'faq') {
+        if (action === 'create') {
+          items.push({ q: item?.q ?? '', a: item?.a ?? '' });
+          await persist(items);
+          return NextResponse.json({ ok: true, idx: items.length - 1 });
+        }
+        const idx = Number(id);
+        if (!Number.isInteger(idx) || idx < 0 || idx >= items.length)
+          return badRequest('Not found', 404);
+
+        if (action === 'update') {
+          items[idx] = { q: item?.q ?? items[idx].q, a: item?.a ?? items[idx].a };
+          await persist(items);
+          return NextResponse.json({ ok: true });
+        }
+        if (action === 'delete') {
+          items.splice(idx, 1);
+          await persist(items);
+          return NextResponse.json({ ok: true });
+        }
+        return badRequest('Unsupported action');
+      }
+
+      if (collection === 'services' && action === 'update') {
+        const idx = items.findIndex((s) => s.id === id);
+        if (idx === -1) return badRequest('Not found', 404);
+        items[idx] = {
+          ...items[idx],
+          ...(item?.title !== undefined && { title: item.title }),
+          ...(item?.short !== undefined && { short: item.short }),
+          ...(item?.full  !== undefined && { full:  item.full  }),
+        };
+        await persist(items);
+        return NextResponse.json({ ok: true });
+      }
+
+      return badRequest('Unsupported action');
+    }
+
+    return badRequest('Unknown collection');
+  } catch (err) {
+    // A write with nowhere durable to go must surface, not look like a success.
+    console.error('[admin] write failed:', err);
+    return NextResponse.json(
+      { error: `Не удалось сохранить: ${err.message}` },
+      { status: 500 },
+    );
+  }
 }

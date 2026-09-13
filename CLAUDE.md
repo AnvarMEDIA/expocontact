@@ -51,8 +51,30 @@ a raw `<img>` makes the browser download the full source.
   `seo.{ru,en,uz}.json`, plus locale-independent `clients.json`. The three
   files of a set share ids and differ only in translated text, so a change to
   images or ids has to be applied to all three.
-- `/admin` edits these files through `app/api/admin`, which writes to disk.
-  That works locally but not on Vercel, where the filesystem is read-only.
+- Nothing reads these files directly at runtime. Everything goes through
+  `lib/store.js`, which keeps the same JSON documents in Vercel Blob under
+  `cms/` and falls back to the copies bundled by `lib/seed.js`. The repository
+  files are the seed for a fresh deployment; once an editor saves, Blob wins.
+- Never read content with `fs` in a route or component: on Vercel those files
+  are not in the serverless bundle and the read fails silently. Import through
+  `lib/seed.js` or read through `lib/store.js`.
+- `/admin` writes through the same store and then calls `revalidatePath`, so an
+  edit reaches the live site within a minute without a redeploy. Pages carry
+  `export const revalidate = 60`.
+
+## Storage map
+
+| Data | Where it lives | Needed env |
+|---|---|---|
+| Site content, portfolio, testimonials, clients, settings, SEO | Vercel Blob `cms/` | `BLOB_READ_WRITE_TOKEN` |
+| Uploaded images | Vercel Blob `uploads/` | `BLOB_READ_WRITE_TOKEN` |
+| Leads (personal data) | Vercel KV or Upstash Redis | `KV_REST_API_URL`+`KV_REST_API_TOKEN` or `UPSTASH_REDIS_REST_URL`+`UPSTASH_REDIS_REST_TOKEN` |
+| Visitor analytics | Yandex Metrika API | `YANDEX_METRIKA_TOKEN` |
+| Lead notifications | Telegram | `TELEGRAM_BOT_TOKEN`+`TELEGRAM_CHAT_ID` |
+
+Leads must never go into Blob: blobs are public to anyone holding the URL.
+Without a Redis store on Vercel, lead writes throw and Telegram is the only
+record — the admin dashboard shows this as a red row.
 
 ## SEO and AI discoverability
 

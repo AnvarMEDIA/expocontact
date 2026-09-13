@@ -19,7 +19,14 @@ async function apiFetch(collection, options = {}, locale = null) {
     ...options,
   });
   if (res.status === 401) throw new Error('unauthorized');
-  return res.json();
+
+  const data = await res.json().catch(() => null);
+  // A failed write used to come back as a plain object and read like a
+  // success, so an editor could lose work without any warning. Surface it.
+  if (!res.ok) {
+    throw new Error(data?.error || `Ошибка сервера (${res.status})`);
+  }
+  return data;
 }
 
 // ── Toast ─────────────────────────────────────────────────────────────────────
@@ -90,6 +97,7 @@ const NAV = [
   { key: 'clients',         label: 'Клиенты',           icon: IC.clients      },
   { key: 'faq',             label: 'FAQ',               icon: IC.faq          },
   { key: 'services',        label: 'Услуги',            icon: IC.services     },
+  { key: 'content',         label: 'Тексты сайта',      icon: IC.settings     },
   { key: 'backup',          label: 'Бэкап',             icon: IC_BACKUP       },
   { key: 'settings',        label: 'Инструкция',        icon: IC.settings     },
 ];
@@ -101,6 +109,7 @@ const SECTION_TITLES = {
   media: 'Медиа-библиотека',
   portfolio: 'Портфолио', testimonials: 'Отзывы клиентов',
   clients: 'Клиенты', faq: 'FAQ — Частые вопросы', services: 'Тексты услуг',
+  content: 'Тексты сайта — все надписи и списки',
   backup: 'Бэкап и восстановление',
   settings: 'Инструкция и настройки',
 };
@@ -1603,12 +1612,15 @@ function Dashboard({ onNavigate }) {
         </div>
       </div>
 
+      <SystemStatus />
+
       <div className="bg-[#141929] border border-[#D4A843]/20 rounded-xl p-5">
-        <h3 className="text-[#D4A843] font-semibold mb-2 text-sm">Подсказка</h3>
+        <h3 className="text-[#D4A843] font-semibold mb-2 text-sm">Как это работает</h3>
         <p className="text-white/50 text-sm leading-relaxed">
-          Портфолио, отзывы и клиенты хранятся в <code className="text-white/70">content/data/*.json</code>.<br />
-          FAQ и тексты услуг — в <code className="text-white/70">content/ru.json</code>, <code className="text-white/70">en.json</code>, <code className="text-white/70">uz.json</code>.<br />
-          Изменения применяются сразу без перезапуска.
+          Портфолио, отзывы, клиенты, тексты, услуги, FAQ и SEO хранятся в постоянном
+          хранилище и редактируются здесь.<br />
+          После сохранения страница сайта обновляется в течение минуты, перевыкладка не нужна.<br />
+          Тексты у каждого языка свои — переключайте язык вкладками внутри раздела.
         </p>
       </div>
     </div>
@@ -2347,6 +2359,294 @@ function LandingSettingsManager({ toast }) {
 }
 
 // ── Sidebar ───────────────────────────────────────────────────────────────────
+// ── SystemStatus — where each kind of data is actually stored ─────────────────
+function StatusRow({ ok, title, detail }) {
+  return (
+    <div className="flex items-start gap-3 py-2.5 border-b border-white/5 last:border-0">
+      <span className={`mt-0.5 w-2 h-2 rounded-full flex-shrink-0 ${ok ? 'bg-emerald-400' : 'bg-red-400'}`} />
+      <div className="min-w-0">
+        <p className="text-white/80 text-sm font-medium">{title}</p>
+        <p className="text-white/40 text-xs mt-0.5 leading-relaxed">{detail}</p>
+      </div>
+    </div>
+  );
+}
+
+function SystemStatus() {
+  const [s, setS] = useState(null);
+  const [err, setErr] = useState(null);
+
+  useEffect(() => {
+    apiFetch('_status').then(setS).catch(e => setErr(e.message));
+  }, []);
+
+  if (err) return null;
+  if (!s) return <div className="bg-[#141929] border border-white/10 rounded-xl p-5 text-white/30 text-sm">Проверяем хранилища...</div>;
+
+  const contentOk = s.content?.persistent;
+  const leadsOk   = s.leads?.persistent;
+  const allOk     = contentOk && leadsOk && s.media?.persistent && s.adminPasswordSet;
+
+  return (
+    <div className={`bg-[#141929] border rounded-xl p-5 ${allOk ? 'border-white/10' : 'border-amber-500/30'}`}>
+      <h3 className="text-white font-semibold mb-1 text-sm">Хранилища и подключения</h3>
+      <p className="text-white/30 text-xs mb-3">
+        Где физически лежат данные. Красная точка означает, что изменения не сохранятся.
+      </p>
+
+      <StatusRow
+        ok={contentOk}
+        title={`Контент сайта — ${s.content?.backend === 'blob' ? 'Vercel Blob' : 'локальные файлы'}`}
+        detail={s.content?.note || ''}
+      />
+      <StatusRow
+        ok={leadsOk}
+        title={`Заявки — ${s.leads?.provider || 'база не подключена'}`}
+        detail={s.leads?.note || 'Заявки сохраняются и доступны во вкладке Заявки.'}
+      />
+      <StatusRow
+        ok={!!s.media?.persistent}
+        title={`Медиа — ${s.media?.backend === 'blob' ? 'Vercel Blob' : 'локальная папка'}`}
+        detail={s.media?.persistent
+          ? 'Загруженные картинки попадают в постоянное хранилище.'
+          : 'Нет BLOB_READ_WRITE_TOKEN — загрузки не сохранятся.'}
+      />
+      <StatusRow
+        ok={!!s.telegram}
+        title={s.telegram ? 'Telegram — подключён' : 'Telegram — не настроен'}
+        detail={s.telegram
+          ? 'Каждая заявка дублируется в чат.'
+          : 'Задайте TELEGRAM_BOT_TOKEN и TELEGRAM_CHAT_ID, иначе уведомлений о заявках не будет.'}
+      />
+      <StatusRow
+        ok={!!s.analytics?.metrika}
+        title={s.analytics?.metrika ? 'Яндекс.Метрика — подключена' : 'Яндекс.Метрика — без токена'}
+        detail={s.analytics?.metrika
+          ? 'Аналитика берётся из Метрики.'
+          : 'Без YANDEX_METRIKA_TOKEN вкладка аналитики покажет только локальные данные, а на сервере их нет.'}
+      />
+      <StatusRow
+        ok={!!s.adminPasswordSet}
+        title={s.adminPasswordSet ? 'Пароль админки — задан' : 'Пароль админки — по умолчанию'}
+        detail={s.adminPasswordSet
+          ? 'Используется значение из переменных окружения.'
+          : 'Переменная ADMIN_PASSWORD не задана, работает запасной пароль из кода. Задайте её в настройках проекта.'}
+      />
+    </div>
+  );
+}
+
+// ── ContentManager — every heading, label and list the site renders ───────────
+const CONTENT_SECTIONS = {
+  nav:          'Меню навигации',
+  hero:         'Первый экран',
+  about:        'Блок о компании',
+  stats:        'Цифры и достижения',
+  services:     'Услуги — заголовки блока',
+  portfolio:    'Портфолио — заголовки и фильтры',
+  process:      'Процесс работы',
+  clients:      'Клиенты — заголовки блока',
+  testimonials: 'Отзывы — заголовки блока',
+  faq:          'FAQ — заголовки блока',
+  contact:      'Контакты и форма заявки',
+  footer:       'Подвал сайта',
+  common:       'Общие надписи',
+  marquee:      'Бегущая строка',
+};
+
+const INPUT_CLS =
+  'w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm ' +
+  'focus:outline-none focus:border-[#D4A843] transition-colors';
+
+function setIn(obj, path, value) {
+  const next = JSON.parse(JSON.stringify(obj));
+  let cur = next;
+  for (let i = 0; i < path.length - 1; i++) cur = cur[path[i]];
+  cur[path[path.length - 1]] = value;
+  return next;
+}
+
+function removeAt(obj, path, index) {
+  const next = JSON.parse(JSON.stringify(obj));
+  let cur = next;
+  for (const key of path) cur = cur[key];
+  cur.splice(index, 1);
+  return next;
+}
+
+function appendTo(obj, path, value) {
+  const next = JSON.parse(JSON.stringify(obj));
+  let cur = next;
+  for (const key of path) cur = cur[key];
+  cur.push(value);
+  return next;
+}
+
+/** Renders any JSON value as an editable control, recursing into objects and arrays. */
+function ContentNode({ label, value, path, onSet, onRemove, onAppend }) {
+  if (typeof value === 'boolean') {
+    return (
+      <label className="flex items-center gap-3 cursor-pointer select-none py-1.5">
+        <input type="checkbox" checked={value} onChange={e => onSet(path, e.target.checked)}
+          className="w-4 h-4 rounded border-white/20 bg-white/5" />
+        <span className="text-white/70 text-sm">{label}</span>
+      </label>
+    );
+  }
+
+  if (typeof value === 'number') {
+    return (
+      <div>
+        <label className="block text-xs text-white/40 mb-1">{label}</label>
+        <input type="number" value={value} onChange={e => onSet(path, Number(e.target.value))} className={INPUT_CLS} />
+      </div>
+    );
+  }
+
+  if (typeof value === 'string') {
+    const multiline = value.length > 70 || value.includes('\n');
+    return (
+      <div>
+        <label className="block text-xs text-white/40 mb-1">{label}</label>
+        {multiline
+          ? <textarea rows={Math.min(6, value.split('\n').length + 1)} value={value}
+              onChange={e => onSet(path, e.target.value)} className={`${INPUT_CLS} resize-y`} />
+          : <input type="text" value={value} onChange={e => onSet(path, e.target.value)} className={INPUT_CLS} />}
+      </div>
+    );
+  }
+
+  if (Array.isArray(value)) {
+    const sample = value.find(v => v && typeof v === 'object');
+    const blank  = sample
+      ? Object.fromEntries(Object.keys(sample).map(k => [k, typeof sample[k] === 'number' ? 0 : '']))
+      : '';
+    return (
+      <div className="border border-white/10 rounded-lg p-3">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-xs text-white/50 font-semibold uppercase tracking-wider">{label}</span>
+          <span className="text-white/25 text-xs">{value.length} шт.</span>
+        </div>
+        <div className="space-y-2">
+          {value.map((entry, i) => (
+            <div key={i} className="flex gap-2 items-start">
+              <div className="flex-1 min-w-0 space-y-2">
+                <ContentNode
+                  label={`${i + 1}`}
+                  value={entry}
+                  path={[...path, i]}
+                  onSet={onSet} onRemove={onRemove} onAppend={onAppend}
+                />
+              </div>
+              <button type="button" onClick={() => onRemove(path, i)}
+                className="text-white/25 hover:text-red-400 transition-colors text-xs px-2 py-2 flex-shrink-0"
+                title="Удалить">✕</button>
+            </div>
+          ))}
+        </div>
+        <button type="button" onClick={() => onAppend(path, blank)}
+          className="mt-2 px-3 py-1.5 bg-white/5 text-white/60 rounded-lg text-xs hover:bg-white/10 hover:text-white transition-colors">
+          + Добавить
+        </button>
+      </div>
+    );
+  }
+
+  if (value && typeof value === 'object') {
+    return (
+      <div className="border border-white/10 rounded-lg p-3 space-y-3">
+        {label && <p className="text-xs text-white/40 font-semibold">{label}</p>}
+        {Object.entries(value).map(([k, v]) => (
+          <ContentNode key={k} label={k} value={v} path={[...path, k]}
+            onSet={onSet} onRemove={onRemove} onAppend={onAppend} />
+        ))}
+      </div>
+    );
+  }
+
+  return null;
+}
+
+function ContentManager({ toast }) {
+  const [locale, setLocale] = useState('ru');
+  const [data, setData]     = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving]   = useState(false);
+  const [open, setOpen]       = useState(null);
+
+  const load = useCallback(() => {
+    setLoading(true);
+    apiFetch('content', {}, locale)
+      .then(d => setData(d && typeof d === 'object' ? d : {}))
+      .catch(e => toast(`Ошибка загрузки: ${e.message}`, 'error'))
+      .finally(() => setLoading(false));
+  }, [locale, toast]);
+
+  useEffect(() => { load(); }, [load]);
+
+  const onSet    = useCallback((path, value) => setData(d => setIn(d, path, value)), []);
+  const onRemove = useCallback((path, i)     => setData(d => removeAt(d, path, i)), []);
+  const onAppend = useCallback((path, value) => setData(d => appendTo(d, path, value)), []);
+
+  const save = async () => {
+    setSaving(true);
+    try {
+      await apiFetch('content', {
+        method: 'POST',
+        body: JSON.stringify({ action: 'save', item: data }),
+      }, locale);
+      toast('Тексты сохранены — сайт обновится в течение минуты');
+    } catch (e) {
+      toast(`Не сохранено: ${e.message}`, 'error');
+    } finally { setSaving(false); }
+  };
+
+  if (loading || !data) return <p className="text-white/30 text-sm py-12 text-center">Загрузка...</p>;
+
+  const sections = Object.keys(data);
+
+  return (
+    <div className="space-y-5 max-w-4xl">
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <LocaleTabs active={locale} onChange={setLocale} />
+        <button onClick={save} disabled={saving}
+          className="flex items-center gap-2 px-5 py-2.5 bg-[#D4A843] text-[#0A0F1E] font-bold rounded-xl hover:bg-[#E8C06E] transition-colors text-sm disabled:opacity-50">
+          {IC.check} {saving ? 'Сохраняем...' : 'Сохранить'}
+        </button>
+      </div>
+
+      <p className="text-white/40 text-xs leading-relaxed">
+        Здесь лежат все надписи сайта для выбранного языка: заголовки блоков, подписи кнопок,
+        слайды первого экрана, шаги процесса, бегущая строка и тексты формы.
+        Ключи одинаковы во всех трёх языках, поэтому не удаляйте их, а только меняйте значения.
+      </p>
+
+      <div className="space-y-2">
+        {sections.map(key => (
+          <div key={key} className="bg-[#141929] border border-white/10 rounded-xl overflow-hidden">
+            <button type="button" onClick={() => setOpen(open === key ? null : key)}
+              className="w-full flex items-center justify-between px-5 py-3.5 text-left hover:bg-white/[0.02] transition-colors">
+              <span className="text-white/85 text-sm font-medium">
+                {CONTENT_SECTIONS[key] || key}
+                <span className="text-white/25 ml-2 text-xs">{key}</span>
+              </span>
+              <span className="text-white/30 text-xs">{open === key ? '−' : '+'}</span>
+            </button>
+            {open === key && (
+              <div className="px-5 pb-5 pt-1 space-y-3 border-t border-white/5">
+                {Object.entries(data[key] || {}).map(([k, v]) => (
+                  <ContentNode key={k} label={k} value={v} path={[key, k]}
+                    onSet={onSet} onRemove={onRemove} onAppend={onAppend} />
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function Sidebar({ section, onNavigate, onLogout, open, onClose, newLeads = 0 }) {
   return (
     <>
@@ -2439,6 +2739,7 @@ export default function AdminPage() {
           {section === 'clients'      && <CollectionManager key="clients"      collection="clients"      toast={toast} />}
           {section === 'faq'          && <FaqManager toast={toast} />}
           {section === 'services'     && <ServicesManager toast={toast} />}
+          {section === 'content'      && <ContentManager toast={toast} />}
           {section === 'settings'     && <SettingsPage />}
         </main>
       </div>

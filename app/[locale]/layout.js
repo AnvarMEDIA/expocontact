@@ -5,16 +5,13 @@ import { routing } from '@/i18n/routing';
 import { Analytics } from '@vercel/analytics/next';
 import AnalyticsTracker from '@/components/AnalyticsTracker';
 import '@/app/globals.css';
+import { readObject } from '@/lib/store';
 
-// SEO settings are imported statically, like the rest of content/data. The
-// previous fs.readFile at request time silently returned {} on Vercel, where
-// these files are not part of the serverless bundle, so nothing edited in the
-// admin SEO panel ever reached production.
-import seoRu from '@/content/data/seo.ru.json';
-import seoEn from '@/content/data/seo.en.json';
-import seoUz from '@/content/data/seo.uz.json';
-
-const SEO = { ru: seoRu, en: seoEn, uz: seoUz };
+// SEO comes from the persistent store, which falls back to the content files
+// bundled with the deployment. It must never be read with fs at request time:
+// on Vercel those files are not in the serverless bundle, the read fails and
+// every SEO setting silently disappears.
+export const revalidate = 60;
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://expocontact.uz';
 const LOGO_URL =
@@ -55,7 +52,7 @@ const META = {
 };
 
 function readSeo(locale) {
-  return SEO[locale] || SEO.ru || {};
+  return readObject(`seo.${locale}`);
 }
 
 // "a, b, c" → ["a", "b", "c"]; arrays pass through.
@@ -177,7 +174,7 @@ function buildJsonLd({ locale, meta, seo, messages }) {
 export async function generateMetadata({ params }) {
   const { locale } = await params;
   const meta = META[locale] || META.ru;
-  const seo  = readSeo(locale);
+  const seo  = await readSeo(locale);
 
   const title       = seo.title       || meta.title;
   const description = seo.description || meta.description;
@@ -243,7 +240,7 @@ export default async function LocaleLayout({ children, params }) {
 
   const meta = META[locale] || META.ru;
   const messages = await getMessages();
-  const jsonLd = buildJsonLd({ locale, meta, seo: readSeo(locale), messages });
+  const jsonLd = buildJsonLd({ locale, meta, seo: await readSeo(locale), messages });
 
   return (
     <html lang={locale}>

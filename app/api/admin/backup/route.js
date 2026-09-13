@@ -9,40 +9,31 @@
  *     timestamp: ISO string,
  *     site:      'expocontact',
  *     data: {
- *       leads:               [...],
- *       clients:             [...],
- *       portfolio_ru/en/uz:  [...],
- *       testimonials_ru/en/uz: [...],
- *       settings_ru/en/uz:   {...},
- *       seo_ru/en/uz:        {...},
- *       locale_ru/en/uz:     {...}   // full content/{locale}.json (FAQ + services + nav + ...)
+ *       leads:                  [...],
+ *       clients:                [...],
+ *       portfolio_ru/en/uz:     [...],
+ *       testimonials_ru/en/uz:  [...],
+ *       settings_ru/en/uz:      {...},
+ *       seo_ru/en/uz:           {...},
+ *       locale_ru/en/uz:        {...}   // full content/{locale}.json
  *     }
  *   }
+ *
+ * Reads and writes go through the persistent store, so a restore performed on
+ * production actually replaces the live content instead of writing to a
+ * read-only filesystem.
  *
  * Protected by ADMIN_PASSWORD.
  */
 import { NextResponse } from 'next/server';
-import { promises as fs } from 'fs';
-import path from 'path';
+import { revalidatePath } from 'next/cache';
+import { readDoc, writeDoc } from '@/lib/store';
+import { LOCALES } from '@/lib/seed';
 import { listLeads, restoreLeads } from '@/lib/leads';
-
-const DATA_DIR    = path.join(process.cwd(), 'content', 'data');
-const CONTENT_DIR = path.join(process.cwd(), 'content');
-const LOCALES     = ['ru', 'en', 'uz'];
 
 function checkAuth(request) {
   const token = (request.headers.get('Authorization') || '').replace('Bearer ', '');
   return token === (process.env.ADMIN_PASSWORD || 'admin123');
-}
-
-async function readJson(filepath, fallback) {
-  try { return JSON.parse(await fs.readFile(filepath, 'utf8')); }
-  catch { return fallback; }
-}
-
-async function writeJson(filepath, content) {
-  await fs.mkdir(path.dirname(filepath), { recursive: true });
-  await fs.writeFile(filepath, JSON.stringify(content, null, 2), 'utf8');
 }
 
 export async function GET(request) {
@@ -50,16 +41,24 @@ export async function GET(request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const data = {
-    leads:   await listLeads(),
-    clients: await readJson(path.join(DATA_DIR, 'clients.json'), []),
+    clients: await readDoc('clients'),
   };
 
+  // Leads live in a separate store and may be unavailable; never fail the
+  // whole backup because of them.
+  try {
+    data.leads = await listLeads();
+  } catch (err) {
+    data.leads = [];
+    data.leadsError = err.message;
+  }
+
   for (const locale of LOCALES) {
-    data[`portfolio_${locale}`]    = await readJson(path.join(DATA_DIR, `portfolio.${locale}.json`),    []);
-    data[`testimonials_${locale}`] = await readJson(path.join(DATA_DIR, `testimonials.${locale}.json`), []);
-    data[`settings_${locale}`]     = await readJson(path.join(DATA_DIR, `settings.${locale}.json`),     {});
-    data[`seo_${locale}`]          = await readJson(path.join(DATA_DIR, `seo.${locale}.json`),          {});
-    data[`locale_${locale}`]       = await readJson(path.join(CONTENT_DIR, `${locale}.json`),           {});
+    data[`portfolio_${locale}`]    = await readDoc(`portfolio.${locale}`);
+    data[`testimonials_${locale}`] = await readDoc(`testimonials.${locale}`);
+    data[`settings_${locale}`]     = await readDoc(`settings.${locale}`);
+    data[`seo_${locale}`]          = await readDoc(`seo.${locale}`);
+    data[`locale_${locale}`]       = await readDoc(`content.${locale}`);
   }
 
   const backup = {
@@ -98,24 +97,32 @@ export async function POST(request) {
     catch (err) { failed.push({ label, error: err.message }); }
   };
 
-  if (Array.isArray(d.clients))
-    await trySave('clients', () => writeJson(path.join(DATA_DIR, 'clients.json'), d.clients));
+  const isList   = (v) => Array.isArray(v);
+  const isObject = (v) => v && typeof v === 'object' && !Array.isArray(v);
+
+  if (isList(d.clients))
+    await trySave('clients', () => writeDoc('clients', d.clients));
 
   for (const locale of LOCALES) {
-    if (Array.isArray(d[`portfolio_${locale}`]))
-      await trySave(`portfolio.${locale}`, () => writeJson(path.join(DATA_DIR, `portfolio.${locale}.json`), d[`portfolio_${locale}`]));
-    if (Array.isArray(d[`testimonials_${locale}`]))
-      await trySave(`testimonials.${locale}`, () => writeJson(path.join(DATA_DIR, `testimonials.${locale}.json`), d[`testimonials_${locale}`]));
-    if (d[`settings_${locale}`] && typeof d[`settings_${locale}`] === 'object')
-      await trySave(`settings.${locale}`, () => writeJson(path.join(DATA_DIR, `settings.${locale}.json`), d[`settings_${locale}`]));
-    if (d[`seo_${locale}`] && typeof d[`seo_${locale}`] === 'object')
-      await trySave(`seo.${locale}`, () => writeJson(path.join(DATA_DIR, `seo.${locale}.json`), d[`seo_${locale}`]));
-    if (d[`locale_${locale}`] && typeof d[`locale_${locale}`] === 'object')
-      await trySave(`${locale}.json`, () => writeJson(path.join(CONTENT_DIR, `${locale}.json`), d[`locale_${locale}`]));
+    if (isList(d[`portfolio_${locale}`]))
+      await trySave(`portfolio.${locale}`, () => writeDoc(`portfolio.${locale}`, d[`portfolio_${locale}`]));
+    if (isList(d[`testimonials_${locale}`]))
+      await trySave(`testimonials.${locale}`, () => writeDoc(`testimonials.${locale}`, d[`testimonials_${locale}`]));
+    if (isObject(d[`settings_${locale}`]))
+      await trySave(`settings.${locale}`, () => writeDoc(`settings.${locale}`, d[`settings_${locale}`]));
+    if (isObject(d[`seo_${locale}`]))
+      await trySave(`seo.${locale}`, () => writeDoc(`seo.${locale}`, d[`seo_${locale}`]));
+    if (isObject(d[`locale_${locale}`]))
+      await trySave(`content.${locale}`, () => writeDoc(`content.${locale}`, d[`locale_${locale}`]));
   }
 
-  if (Array.isArray(d.leads))
+  if (isList(d.leads))
     await trySave('leads', () => restoreLeads(d.leads));
+
+  try {
+    revalidatePath('/[locale]', 'layout');
+    revalidatePath('/', 'layout');
+  } catch { /* revalidation is best-effort */ }
 
   return NextResponse.json({ ok: failed.length === 0, restored, failed });
 }

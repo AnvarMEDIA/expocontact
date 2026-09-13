@@ -1,35 +1,34 @@
 /**
  * Server Component — entry point for each locale (/ru, /en, /uz).
- * Reads locale-specific JSON data on the server and passes it to the HomePage client.
+ *
+ * Content comes from the persistent store rather than a static import, so an
+ * edit made in /admin shows up without a redeploy. The page stays cached and
+ * is regenerated on a timer (see `revalidate` below) or immediately when the
+ * admin API revalidates it after a save.
  */
 import HomePageClient from '@/components/HomePageClient';
+import { readList, readObject } from '@/lib/store';
 
-import portfolioRu    from '@/content/data/portfolio.ru.json';
-import portfolioEn    from '@/content/data/portfolio.en.json';
-import portfolioUz    from '@/content/data/portfolio.uz.json';
-import testimonialsRu from '@/content/data/testimonials.ru.json';
-import testimonialsEn from '@/content/data/testimonials.en.json';
-import testimonialsUz from '@/content/data/testimonials.uz.json';
-import settingsRu     from '@/content/data/settings.ru.json';
-import settingsEn     from '@/content/data/settings.en.json';
-import settingsUz     from '@/content/data/settings.uz.json';
-import clientsData    from '@/content/data/clients.json';
-
-const PORTFOLIO    = { ru: portfolioRu,    en: portfolioEn,    uz: portfolioUz };
-const TESTIMONIALS = { ru: testimonialsRu, en: testimonialsEn, uz: testimonialsUz };
-const SETTINGS     = { ru: settingsRu,     en: settingsEn,     uz: settingsUz };
+export const revalidate = 60;
 
 export default async function Page({ params }) {
   const { locale } = await params;
   const lc = ['ru', 'en', 'uz'].includes(locale) ? locale : 'ru';
 
+  const [projects, testimonials, settings, clients] = await Promise.all([
+    readList(`portfolio.${lc}`),
+    readList(`testimonials.${lc}`),
+    readObject(`settings.${lc}`),
+    readList('clients'),
+  ]);
+
   return (
     <HomePageClient
       locale={lc}
-      projects={PORTFOLIO[lc]}
-      testimonials={TESTIMONIALS[lc]}
-      clients={clientsData}
-      settings={SETTINGS[lc]}
+      projects={projects}
+      testimonials={testimonials}
+      clients={clients}
+      settings={settings}
     />
   );
 }
