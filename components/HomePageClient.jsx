@@ -862,6 +862,14 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
             </span>
           </div>
           <FAQList items={faqItems} />
+
+          {/* Full answers on their own URL — crawlable and quotable, unlike an
+              accordion that keeps every answer collapsed. */}
+          <div style={{ marginTop: 40 }}>
+            <a href={`/${locale}/faq`} className="btn-ghost">
+              {tFAQ('moreLink')} →
+            </a>
+          </div>
         </div>
       </section>
 

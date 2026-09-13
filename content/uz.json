@@ -1,29 +1,44 @@
 {
   "nav": {
-    "about":     "Biz haqimizda",
-    "services":  "Xizmatlar",
+    "about": "Biz haqimizda",
+    "services": "Xizmatlar",
     "portfolio": "Portfolio",
-    "process":   "Jarayon",
-    "contacts":  "Aloqa",
-    "cta":       "Ariza qoldirish",
-    "openMenu":  "Menyuni ochish"
+    "process": "Jarayon",
+    "contacts": "Aloqa",
+    "cta": "Ariza qoldirish",
+    "openMenu": "Menyuni ochish"
   },
   "hero": {
-    "headline":    "Sizning stendingiz — birinchi taassurotingiz",
+    "headline": "Sizning stendingiz — birinchi taassurotingiz",
     "subheadline": "O'zbekiston va Markaziy Osiyoda ko'rgazma stendlarini loyihalash va quramiz",
-    "cta1":        "Ishlarimizni ko'rish",
-    "cta2":        "Ariza qoldirish",
-    "badge":       "20 yil · 5000+ loyiha · Markaziy Osiyo",
-    "mini1":       "yil tajriba",
-    "mini2":       "loyiha",
-    "mini3":       "davlat",
+    "cta1": "Ishlarimizni ko'rish",
+    "cta2": "Ariza qoldirish",
+    "badge": "20 yil · 5000+ loyiha · Markaziy Osiyo",
+    "mini1": "yil tajriba",
+    "mini2": "loyiha",
+    "mini3": "davlat",
     "ctaSecondary": "Ishlar",
     "slides": [
-      { "headline": "Siz uchun ishlaydigan ko'rgazma stendlari", "cta": "Loyihani muhokama qilish" },
-      { "headline": "Siz biznes bilan — biz tadbir bilan shug'ullanamiz", "cta": "Maslahat olish" },
-      { "headline": "Tadbiringiz ishonchli qo'llarda", "cta": "Narxni hisoblash" },
-      { "headline": "Haqida gapiriladigan tadbirlar yaratamiz", "cta": "Rejalashtirish boshlash" },
-      { "headline": "Tadbiringizni hayotga tatbiq etishga tayyormiz", "cta": "Ariza qoldirish" }
+      {
+        "headline": "Siz uchun ishlaydigan ko'rgazma stendlari",
+        "cta": "Loyihani muhokama qilish"
+      },
+      {
+        "headline": "Siz biznes bilan — biz tadbir bilan shug'ullanamiz",
+        "cta": "Maslahat olish"
+      },
+      {
+        "headline": "Tadbiringiz ishonchli qo'llarda",
+        "cta": "Narxni hisoblash"
+      },
+      {
+        "headline": "Haqida gapiriladigan tadbirlar yaratamiz",
+        "cta": "Rejalashtirish boshlash"
+      },
+      {
+        "headline": "Tadbiringizni hayotga tatbiq etishga tayyormiz",
+        "cta": "Ariza qoldirish"
+      }
     ]
   },
   "about": {
@@ -34,210 +49,268 @@
   "stats": {
     "title": "ExpoContact raqamlarda",
     "items": [
-      { "value": 20,   "suffix": "+", "label": "yillik tajriba" },
-      { "value": 5000, "suffix": "+", "label": "qurilgan stend" },
-      { "value": 50,   "suffix": "+", "label": "yiliga ko'rgazma" },
-      { "value": 3,    "suffix": "",  "label": "davlatda faoliyat" }
+      {
+        "value": 20,
+        "suffix": "+",
+        "label": "yillik tajriba"
+      },
+      {
+        "value": 5000,
+        "suffix": "+",
+        "label": "qurilgan stend"
+      },
+      {
+        "value": 50,
+        "suffix": "+",
+        "label": "yiliga ko'rgazma"
+      },
+      {
+        "value": 3,
+        "suffix": "",
+        "label": "davlatda faoliyat"
+      }
     ]
   },
   "services": {
-    "title":    "Bizning xizmatlar",
+    "title": "Bizning xizmatlar",
     "subtitle": "To'liq sikl — g'oyadan demontajgacha",
-    "label":    "Nima qilamiz",
-    "ctaLink":  "Loyihangizni muhokama qilish",
-    "eyebrow":  "/03 — Nima qilamiz",
-    "heading":  "To'liq sikl.\nBitta pudratchi.",
-    "mono":     "Eskiz birinchi qatoridan to'liq demontajgacha — bitta jamoa javob beradi.",
+    "label": "Nima qilamiz",
+    "ctaLink": "Loyihangizni muhokama qilish",
+    "eyebrow": "/03 — Nima qilamiz",
+    "heading": "To'liq sikl.\nBitta pudratchi.",
+    "mono": "Eskiz birinchi qatoridan to'liq demontajgacha — bitta jamoa javob beradi.",
     "extras": {
-      "design":     { "includes": ["Konsept eskizlar", "3D model + renderlar", "KM/KMD chizmalari", "Maydon bilan muvofiqlashtirish"] },
-      "production": { "includes": ["MDF, metall, akril", "Keng formatli chop etish", "Yoritish, AV texnika", "Bosqichma-bosqich nazorat"] },
-      "mounting":   { "includes": ["UzExpoCentre · CAEx", "Atakent · Almaty Expo", "Logistika va sug'urta", "Ko'rgazmalar orasida saqlash"] },
-      "branding":   { "includes": ["Belgiler, bannerlar", "Transport brendingi", "POSM, merch", "Roll-up, press-wall"] },
-      "logistics":  { "includes": ["Tashish", "Yuk sug'urtasi", "Toshkentda saqlash", "Xalqaro hablar"] },
-      "support":    { "includes": ["Maydonda 24/7", "Ehtiyot materiallar", "AV muhandis", "Kunlik hisobot"] }
+      "design": {
+        "includes": [
+          "Konsept eskizlar",
+          "3D model + renderlar",
+          "KM/KMD chizmalari",
+          "Maydon bilan muvofiqlashtirish"
+        ]
+      },
+      "production": {
+        "includes": [
+          "MDF, metall, akril",
+          "Keng formatli chop etish",
+          "Yoritish, AV texnika",
+          "Bosqichma-bosqich nazorat"
+        ]
+      },
+      "mounting": {
+        "includes": [
+          "UzExpoCentre · CAEx",
+          "Atakent · Almaty Expo",
+          "Logistika va sug'urta",
+          "Ko'rgazmalar orasida saqlash"
+        ]
+      },
+      "branding": {
+        "includes": [
+          "Belgiler, bannerlar",
+          "Transport brendingi",
+          "POSM, merch",
+          "Roll-up, press-wall"
+        ]
+      },
+      "logistics": {
+        "includes": [
+          "Tashish",
+          "Yuk sug'urtasi",
+          "Toshkentda saqlash",
+          "Xalqaro hablar"
+        ]
+      },
+      "support": {
+        "includes": [
+          "Maydonda 24/7",
+          "Ehtiyot materiallar",
+          "AV muhandis",
+          "Kunlik hisobot"
+        ]
+      }
     },
     "items": [
       {
-        "id":    "design",
-        "icon":  "PencilRuler",
+        "id": "design",
+        "icon": "PencilRuler",
         "title": "Loyihalash va 3D vizualizatsiya",
         "short": "Brendingizga moslashtirilgan noyob stend kontseptsiyalari",
-        "full":  "Dizaynerlarimiz brendingiz, ishtirok etish maqsadlari va byudjetingizni hisobga olgan holda stend kontseptsiyasini ishlab chiqadi. Ishlab chiqarish boshlanishidan oldin to'liq 3D vizualizatsiyalar va chizmalar olasiz."
+        "full": "Dizaynerlarimiz brendingiz, ishtirok etish maqsadlari va byudjetingizni hisobga olgan holda stend kontseptsiyasini ishlab chiqadi. Ishlab chiqarish boshlanishidan oldin to'liq 3D vizualizatsiyalar va chizmalar olasiz."
       },
       {
-        "id":    "production",
-        "icon":  "Factory",
+        "id": "production",
+        "icon": "Factory",
         "title": "Stend ishlab chiqarish",
         "short": "O'z ishlab chiqarishimizda har qanday murakkablikdagi stendlar",
-        "full":  "2000 m² ishlab chiqarish maydonimiz kichik modulli konstruksiyalardan tortib yirik ikki qavatli pavilyonlargacha stendlar qurishga imkon beradi. Evropa materiallari va zamonaviy uskunalardan foydalanamiz."
+        "full": "2000 m² ishlab chiqarish maydonimiz kichik modulli konstruksiyalardan tortib yirik ikki qavatli pavilyonlargacha stendlar qurishga imkon beradi. Evropa materiallari va zamonaviy uskunalardan foydalanamiz."
       },
       {
-        "id":    "mounting",
-        "icon":  "Wrench",
+        "id": "mounting",
+        "icon": "Wrench",
         "title": "Montaj va demontaj",
         "short": "Har bir maydonda professional montaj brigadasi",
-        "full":  "Montaj brigadalarimiz ko'rgazmalarning qat'iy vaqt chegaralarida ishlaydi. Montaj va demontaj uchun to'liq javobgarlikni o'z zimmamizga olamiz — siz tayyor ishni qabul qilasiz."
+        "full": "Montaj brigadalarimiz ko'rgazmalarning qat'iy vaqt chegaralarida ishlaydi. Montaj va demontaj uchun to'liq javobgarlikni o'z zimmamizga olamiz — siz tayyor ishni qabul qilasiz."
       },
       {
-        "id":    "branding",
-        "icon":  "Palette",
+        "id": "branding",
+        "icon": "Palette",
         "title": "Brending va navigatsiya",
         "short": "Chop etish, bannerlar, navigatsiya elementlari va brend muhiti",
-        "full":  "Brending elementlarini ishlab chiqamiz va ishlab chiqaramiz: keng formatli chop etish, roll-aplar, laytbokslar, navigatsiya stoykalar, brend mebellar va aksessuarlar — hammasi yagona uslubda."
+        "full": "Brending elementlarini ishlab chiqamiz va ishlab chiqaramiz: keng formatli chop etish, roll-aplar, laytbokslar, navigatsiya stoykalar, brend mebellar va aksessuarlar — hammasi yagona uslubda."
       },
       {
-        "id":    "logistics",
-        "icon":  "Truck",
+        "id": "logistics",
+        "icon": "Truck",
         "title": "Logistika va saqlash",
         "short": "Butun Markaziy Osiyo va xorijga konstruksiyalar yetkazib berish",
-        "full":  "Stendni O'zbekistondagi va xorijdagi istalgan ko'rgazma maydoni yetkazib berishni tashkil etamiz. Ko'rgazmalar orasida konstruksiyalarni saqlash uchun ombor xizmatlarini taqdim etamiz."
+        "full": "Stendni O'zbekistondagi va xorijdagi istalgan ko'rgazma maydoni yetkazib berishni tashkil etamiz. Ko'rgazmalar orasida konstruksiyalarni saqlash uchun ombor xizmatlarini taqdim etamiz."
       },
       {
-        "id":    "support",
-        "icon":  "HeadphonesIcon",
+        "id": "support",
+        "icon": "HeadphonesIcon",
         "title": "Ko'rgazmada qo'llab-quvvatlash",
         "short": "Ko'rgazma davomida texnik xodim va loyiha menejeri",
-        "full":  "Butun ko'rgazma davomida stendda texnik mutaxassis mavjud bo'ladi. Loyiha menejeri barcha masalalarni muvofiqlashtirar, siz muzokaralarga e'tibor qaratishingiz mumkin."
+        "full": "Butun ko'rgazma davomida stendda texnik mutaxassis mavjud bo'ladi. Loyiha menejeri barcha masalalarni muvofiqlashtirar, siz muzokaralarga e'tibor qaratishingiz mumkin."
       }
     ]
   },
   "portfolio": {
-    "title":       "Portfolio",
-    "subtitle":    "Markaziy Osiyoda 5000 dan ortiq bajarilgan loyihalar",
-    "filterAll":   "Hammasi",
+    "title": "Portfolio",
+    "subtitle": "Markaziy Osiyoda 5000 dan ortiq bajarilgan loyihalar",
+    "filterAll": "Hammasi",
     "filterLarge": "Yirik",
     "filterModular": "Modulli",
     "filterConference": "Konferensiyalar",
     "filterInternational": "Xalqaro",
-    "areaLabel":    "m²",
-    "viewProject":  "Loyihani ko'rish",
-    "close":        "Yopish",
-    "clientLabel":  "Mijoz",
-    "noProjects":   "Bu kategoriyada loyihalar yo'q",
-    "eyebrow":      "/04 — Portfolio",
-    "heading":      "Ishlaydigan\nishlar.",
-    "countLabel":   "{count} ta 5000+ dan",
-    "ctaAll":       "Barcha loyihalar (5000+) →"
+    "areaLabel": "m²",
+    "viewProject": "Loyihani ko'rish",
+    "close": "Yopish",
+    "clientLabel": "Mijoz",
+    "noProjects": "Bu kategoriyada loyihalar yo'q",
+    "eyebrow": "/04 — Portfolio",
+    "heading": "Ishlaydigan\nishlar.",
+    "countLabel": "{count} ta 5000+ dan",
+    "ctaAll": "Barcha loyihalar (5000+) →"
   },
   "process": {
-    "title":    "Qanday ishlashamiz",
+    "title": "Qanday ishlashamiz",
     "subtitle": "Birinchi qo'ng'iroqdan oxirgi vintegacha — shaffof jarayon",
-    "label":    "Jarayonimiz",
-    "eyebrow":  "/05 — Qanday ishlashamiz",
+    "label": "Jarayonimiz",
+    "eyebrow": "/05 — Qanday ishlashamiz",
     "stepLabel": "Qadam",
     "progressLabel": "Jarayon",
     "durLabel": "Muddat",
     "steps": [
       {
         "number": "01",
-        "title":  "Brifing",
-        "desc":   "Ishtirok etish maqsadlari, stend maydoni, byudjet va dizayn istaklari muhokama qilinadi. Brendingiz va raqobatchilaringiz bilan tanishamiz.",
-        "label":  "Brifing",
+        "title": "Brifing",
+        "desc": "Ishtirok etish maqsadlari, stend maydoni, byudjet va dizayn istaklari muhokama qilinadi. Brendingiz va raqobatchilaringiz bilan tanishamiz.",
+        "label": "Brifing",
         "duration": "1–2 kun"
       },
       {
         "number": "02",
-        "title":  "3D kontseptsiya",
-        "desc":   "Dizaynerlar batafsil 3D vizualizatsiyalar va rejalash bilan 2–3 ta kontseptsiya varianti yaratadi.",
-        "label":  "3D kontseptsiya",
+        "title": "3D kontseptsiya",
+        "desc": "Dizaynerlar batafsil 3D vizualizatsiyalar va rejalash bilan 2–3 ta kontseptsiya varianti yaratadi.",
+        "label": "3D kontseptsiya",
         "duration": "3–5 kun"
       },
       {
         "number": "03",
-        "title":  "Kelishuv",
-        "desc":   "Tuzatishlar kiritamiz, yakuniy dizayn va smeta tasdiqlaydi. Shartnoma imzolaydi va ishlab chiqarish boshlanadi.",
-        "label":  "Kelishuv",
+        "title": "Kelishuv",
+        "desc": "Tuzatishlar kiritamiz, yakuniy dizayn va smeta tasdiqlaydi. Shartnoma imzolaydi va ishlab chiqarish boshlanadi.",
+        "label": "Kelishuv",
         "duration": "2–4 kun"
       },
       {
         "number": "04",
-        "title":  "Ishlab chiqarish",
-        "desc":   "Barcha konstruktiv elementlarni o'z ishlab chiqarishimizda tayyorlaymiz. Har bosqichda foto hisobot.",
-        "label":  "Ishlab chiqarish",
+        "title": "Ishlab chiqarish",
+        "desc": "Barcha konstruktiv elementlarni o'z ishlab chiqarishimizda tayyorlaymiz. Har bosqichda foto hisobot.",
+        "label": "Ishlab chiqarish",
         "duration": "7–14 kun"
       },
       {
         "number": "05",
-        "title":  "Yetkazib berish",
-        "desc":   "Stendni kelishilgan muddatlarda ko'rgazma maydoniga qadoqlaymiz va yetkazib beramiz.",
-        "label":  "Yetkazib berish",
+        "title": "Yetkazib berish",
+        "desc": "Stendni kelishilgan muddatlarda ko'rgazma maydoniga qadoqlaymiz va yetkazib beramiz.",
+        "label": "Yetkazib berish",
         "duration": "1–3 kun"
       },
       {
         "number": "06",
-        "title":  "Montaj",
-        "desc":   "Professional brigada stendni yig'adi. Ko'rgazma ochilishidan oldin barcha elementlarni yakuniy tekshirish.",
-        "label":  "Montaj",
+        "title": "Montaj",
+        "desc": "Professional brigada stendni yig'adi. Ko'rgazma ochilishidan oldin barcha elementlarni yakuniy tekshirish.",
+        "label": "Montaj",
         "duration": "1–3 kun"
       },
       {
         "number": "07",
-        "title":  "Demontaj",
-        "desc":   "Ko'rgazma tugagach, konstruksiyalarni parchalab olib ketamiz. Keyingi tadbirgacha saqlashni taklif qilamiz.",
-        "label":  "Demontaj",
+        "title": "Demontaj",
+        "desc": "Ko'rgazma tugagach, konstruksiyalarni parchalab olib ketamiz. Keyingi tadbirgacha saqlashni taklif qilamiz.",
+        "label": "Demontaj",
         "duration": "1 kecha"
       }
     ]
   },
   "clients": {
-    "title":     "Bozor liderlarimizga ishonishadi",
-    "subtitle":  "Butun Markaziy Osiyoda 500 dan ortiq kompaniya",
-    "eyebrow":   "/06 — Mijozlar",
-    "heading":   "Brendingizning birinchi taassuroti bizga ishonilgan.",
+    "title": "Bozor liderlarimizga ishonishadi",
+    "subtitle": "Butun Markaziy Osiyoda 500 dan ortiq kompaniya",
+    "eyebrow": "/06 — Mijozlar",
+    "heading": "Brendingizning birinchi taassuroti bizga ishonilgan.",
     "bigNumber": "500",
     "bigSuffix": "+",
-    "caption":   "kompaniya 2004 yildan"
+    "caption": "kompaniya 2004 yildan"
   },
   "testimonials": {
-    "title":      "Mijozlar nima deydi",
-    "subtitle":   "Hamkorlar va buyurtmachilarning haqiqiy sharhlari",
-    "swipeHint":  "← suring →",
+    "title": "Mijozlar nima deydi",
+    "subtitle": "Hamkorlar va buyurtmachilarning haqiqiy sharhlari",
+    "swipeHint": "← suring →",
     "starsLabel": "5 dan yulduz",
     "items": [
       {
-        "name":    "Alisher Karimov",
+        "name": "Alisher Karimov",
         "position": "Marketing direktori",
         "company": "UzTechExpo",
-        "rating":  5,
-        "quote":   "ExpoContact barcha kutilganlardan oshib ketdi. Stend belgilangan muddatda tayyor bo'ldi, bajarish sifati benuqson edi. Bizning stendimiz ko'rgazmadagi eng e'tiborli bo'ldi. Keyingisini allaqachon buyurtma berayapmiz!"
+        "rating": 5,
+        "quote": "ExpoContact barcha kutilganlardan oshib ketdi. Stend belgilangan muddatda tayyor bo'ldi, bajarish sifati benuqson edi. Bizning stendimiz ko'rgazmadagi eng e'tiborli bo'ldi. Keyingisini allaqachon buyurtma berayapmiz!"
       },
       {
-        "name":    "Madina Yusupova",
+        "name": "Madina Yusupova",
         "position": "Savdo bo'limi rahbari",
         "company": "Central Asia Trade",
-        "rating":  5,
-        "quote":   "ExpoContact bilan 5 yildan beri ishlaymiz. Shu vaqt ichida ular bizga turli maydonchalarda 20 dan ortiq stend qurishdi. Professional jamoasi bilan ishonchli hamkor."
+        "rating": 5,
+        "quote": "ExpoContact bilan 5 yildan beri ishlaymiz. Shu vaqt ichida ular bizga turli maydonchalarda 20 dan ortiq stend qurishdi. Professional jamoasi bilan ishonchli hamkor."
       },
       {
-        "name":    "Dmitriy Petrenko",
+        "name": "Dmitriy Petrenko",
         "position": "Bosh direktor",
         "company": "BuildMaster Tashkent",
-        "rating":  5,
-        "quote":   "Moskvadagi ko'rgazma uchun birinchi marta murojaat qilgan edik. Jamoa hamma narsani kalit ostida tashkil qildi — dizayn, ishlab chiqarish, yetkazib berish va montaj. Asabsiz, faqat natija."
+        "rating": 5,
+        "quote": "Moskvadagi ko'rgazma uchun birinchi marta murojaat qilgan edik. Jamoa hamma narsani kalit ostida tashkil qildi — dizayn, ishlab chiqarish, yetkazib berish va montaj. Asabsiz, faqat natija."
       },
       {
-        "name":    "Nilufar Rashidova",
+        "name": "Nilufar Rashidova",
         "position": "Brend menejeri",
         "company": "Silk Road Pharma",
-        "rating":  5,
-        "quote":   "ExpoContact tufayli farmatsevtik stendimiz chinakam premium ko'rindi. Jamoa barcha istaklarimizni hisobga oldi va ishni belgilangan muddatdan oldin topshirdi."
+        "rating": 5,
+        "quote": "ExpoContact tufayli farmatsevtik stendimiz chinakam premium ko'rindi. Jamoa barcha istaklarimizni hisobga oldi va ishni belgilangan muddatdan oldin topshirdi."
       },
       {
-        "name":    "Akbar Ismailov",
+        "name": "Akbar Ismailov",
         "position": "Tijorat direktori",
         "company": "AgroUz Export",
-        "rating":  4,
-        "quote":   "Tez, professional, byudjet doirasida. Yuqori sifatli 3D vizualizatsiya ayniqsa yoqdi — ishlab chiqarish boshlanishidan oldin natijani ko'rdik."
+        "rating": 4,
+        "quote": "Tez, professional, byudjet doirasida. Yuqori sifatli 3D vizualizatsiya ayniqsa yoqdi — ishlab chiqarish boshlanishidan oldin natijani ko'rdik."
       }
     ]
   },
   "faq": {
-    "title":    "Ko'p so'raladigan savollar",
+    "title": "Ko'p so'raladigan savollar",
     "subtitle": "Ishimiz haqidagi eng mashhur savollarga javoblar",
-    "eyebrow":  "/07 — FAQ",
-    "heading":  "Suvlanmasdan.\nMohiyatida.",
-    "askCta":   "Savolingizni topmadingizmi?",
-    "askLink":  "Yozing.",
+    "eyebrow": "/07 — FAQ",
+    "heading": "Suvlanmasdan.\nMohiyatida.",
+    "askCta": "Savolingizni topmadingizmi?",
+    "askLink": "Yozing.",
     "items": [
       {
         "q": "Ko'rgazma stendi qancha turadi?",
@@ -267,83 +340,87 @@
         "q": "Hamkorlikni qanday boshlash mumkin?",
         "a": "Saytimizda shaklni to'ldiring yoki bizga qo'ng'iroq qiling. Menejer bir soat ichida siz bilan bog'lanadi, loyihangizning tafsilotlarini aniqlashtiradi va dastlabki tijorat taklifini tayyorlaydi. Birinchi maslahat va kontseptsiya ishlab chiqish — bepul."
       }
-    ]
+    ],
+    "moreLink": "Barcha savol va javoblar"
   },
   "contact": {
-    "title":        "Biz bilan bog'laning",
-    "subtitle":     "Loyihangiz haqida aytib bering — 24 soat ichida taklif tayyorlaymiz",
-    "formName":     "Ismingiz",
-    "formCompany":  "Kompaniya",
-    "formPhone":    "Telefon",
-    "formExpo":     "Ko'rgazma nomi",
-    "formMessage":  "Xabar (ixtiyoriy)",
-    "formSubmit":   "Ariza yuborish",
+    "title": "Biz bilan bog'laning",
+    "subtitle": "Loyihangiz haqida aytib bering — 24 soat ichida taklif tayyorlaymiz",
+    "formName": "Ismingiz",
+    "formCompany": "Kompaniya",
+    "formPhone": "Telefon",
+    "formExpo": "Ko'rgazma nomi",
+    "formMessage": "Xabar (ixtiyoriy)",
+    "formSubmit": "Ariza yuborish",
     "successTitle": "Ariza qabul qilindi!",
-    "successText":  "Bir soat ichida siz bilan bog'lanamiz",
-    "phone1":       "+998 97 711-17-11",
-    "phone2":       "+998 97 131-79-79",
-    "address":      "Toshkent sh., Amir Temur ko'chasi, 107B",
-    "hours":        "Du–Ju: 9:00–18:00",
-    "whatsapp":         "WhatsApp da yozish",
-    "mapPlaceholder":   "Xarita",
-    "labelPhones":      "Telefonlar",
-    "labelAddress":     "Manzil",
-    "labelHours":       "Ish vaqti",
-    "labelMessenger":   "Messenger",
-    "placeholderName":  "Alisher Karimov",
-    "placeholderCompany": "Kompaniya nomi",
-    "eyebrow":      "/08 — Aloqa",
-    "heading":      "Boshlashga\ntayyormisiz?",
-    "modalTitle":   "Loyiha uchun ariza",
-    "modalSubtitle": "30 daqiqa ichida javob beramiz",
-    "labelPhone":   "Telefon / WhatsApp",
+    "successText": "Bir soat ichida siz bilan bog'lanamiz",
+    "phone1": "+998 97 711-17-11",
+    "phone2": "+998 97 131-79-79",
+    "address": "Toshkent sh., Amir Temur ko'chasi, 107B",
+    "hours": "Du–Ju: 9:00–18:00",
+    "whatsapp": "WhatsApp da yozish",
+    "mapPlaceholder": "Xarita",
+    "labelPhones": "Telefonlar",
     "labelAddress": "Manzil",
-    "labelHours":   "Ish vaqti",
-    "labelEmail":   "Email",
+    "labelHours": "Ish vaqti",
+    "labelMessenger": "Messenger",
+    "placeholderName": "Alisher Karimov",
+    "placeholderCompany": "Kompaniya nomi",
+    "eyebrow": "/08 — Aloqa",
+    "heading": "Boshlashga\ntayyormisiz?",
+    "modalTitle": "Loyiha uchun ariza",
+    "modalSubtitle": "30 daqiqa ichida javob beramiz",
+    "labelPhone": "Telefon / WhatsApp",
+    "labelEmail": "Email",
     "defaultAddress": "Toshkent sh., Amir Temur ko'chasi, 107B",
-    "defaultHours":   "Du–Shan · 09:00–19:00",
-    "formNameLabel":    "Ism",
+    "defaultHours": "Du–Shan · 09:00–19:00",
+    "formNameLabel": "Ism",
     "formCompanyLabel": "Kompaniya",
-    "formPhoneLabel":   "Telefon",
-    "formExpoLabel":    "Ko'rgazma / Sana",
+    "formPhoneLabel": "Telefon",
+    "formExpoLabel": "Ko'rgazma / Sana",
     "formMessageLabel": "Xabar",
-    "formNamePlaceholder":    "Ismingizni kiriting",
+    "formNamePlaceholder": "Ismingizni kiriting",
     "formCompanyPlaceholder": "Kompaniya nomini kiriting",
-    "formPhonePlaceholder":   "Telefon raqamingizni kiriting",
-    "formExpoPlaceholder":    "Nomi va sanasini kiriting",
+    "formPhonePlaceholder": "Telefon raqamingizni kiriting",
+    "formExpoPlaceholder": "Nomi va sanasini kiriting",
     "formMessagePlaceholder": "Loyiha haqida yozing",
-    "formPrivacy":     "Shaklni yuborish orqali siz rozilik bildirasiz",
+    "formPrivacy": "Shaklni yuborish orqali siz rozilik bildirasiz",
     "formPrivacyLink": "ma'lumotlarni qayta ishlash siyosati",
-    "formSent":        "Ariza yuborildi",
-    "modalEyebrow":  "Ariza · 30 soniya",
-    "modalHeading":  "Loyihangizni muhokama qilaylik",
-    "modalCallUs":   "Ish vaqtida 30 daqiqa ichida qayta qo'ng'iroq qilamiz."
+    "formSent": "Ariza yuborildi",
+    "modalEyebrow": "Ariza · 30 soniya",
+    "modalHeading": "Loyihangizni muhokama qilaylik",
+    "modalCallUs": "Ish vaqtida 30 daqiqa ichida qayta qo'ng'iroq qilamiz."
   },
   "footer": {
-    "tagline":       "Markaziy Osiyoda premium ko'rgazma stendlari",
-    "copyright":     "© 2024 ExpoContact. Barcha huquqlar himoyalangan.",
-    "madeWith":      "Toshkentda ❤️ bilan yaratilgan",
-    "navTitle":      "Navigatsiya",
+    "tagline": "Markaziy Osiyoda premium ko'rgazma stendlari",
+    "copyright": "© 2024 ExpoContact. Barcha huquqlar himoyalangan.",
+    "madeWith": "Toshkentda ❤️ bilan yaratilgan",
+    "navTitle": "Navigatsiya",
     "contactsTitle": "Aloqa",
-    "callout":       "Esda qoladigan\nstend <span class='accent'>qurishga tayyormisiz?</span>",
-    "calloutCta":    "Ariza qoldirish",
-    "brandLead":     "Markaziy Osiyoda ko'rgazma arxitekturasi studiyasi. To'liq sikl, bitta pudratchi, vositachilar yo'q.",
-    "labelPhone":    "Telefon",
-    "labelEmail":    "Email",
-    "labelAddress":  "Manzil",
-    "social":        "Ijtimoiy tarmoqlar",
-    "rights":        "© 2026 ExpoContact. Barcha huquqlar himoyalangan.",
-    "credits":       "MAZE"
+    "callout": "Esda qoladigan\nstend <span class='accent'>qurishga tayyormisiz?</span>",
+    "calloutCta": "Ariza qoldirish",
+    "brandLead": "Markaziy Osiyoda ko'rgazma arxitekturasi studiyasi. To'liq sikl, bitta pudratchi, vositachilar yo'q.",
+    "labelPhone": "Telefon",
+    "labelEmail": "Email",
+    "labelAddress": "Manzil",
+    "social": "Ijtimoiy tarmoqlar",
+    "rights": "© 2026 ExpoContact. Barcha huquqlar himoyalangan.",
+    "credits": "MAZE"
   },
   "common": {
-    "close":      "Yopish",
-    "backToTop":  "Yuqoriga",
-    "dragHint":   "Drag · 360°",
-    "prevSlide":  "Oldingi",
-    "nextSlide":  "Keyingi",
+    "close": "Yopish",
+    "backToTop": "Yuqoriga",
+    "dragHint": "Drag · 360°",
+    "prevSlide": "Oldingi",
+    "nextSlide": "Keyingi",
     "slideLabel": "Slayd"
   },
   "marquee": {
-    "items": ["Bozorda 20+ yil", "5000+ loyiha", "3 davlat", "500+ mijoz"]
+    "items": [
+      "Bozorda 20+ yil",
+      "5000+ loyiha",
+      "3 davlat",
+      "500+ mijoz"
+    ]
   }
 }
