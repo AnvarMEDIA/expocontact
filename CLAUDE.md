@@ -111,6 +111,22 @@ answered, and is async because it performs that probe.
   customers. The current testimonials are placeholder content, which is why
   there is no `Review` or `AggregateRating` markup anywhere.
 
+## Forms
+
+- Both lead forms live in `components/HomePageClient.jsx` (the contact section
+  and the modal) and are uncontrolled — they submit via `FormData`, so any new
+  field needs a real `name` attribute.
+- Phone input is `components/PhoneField.jsx`: a country dial-code selector plus
+  the national number, assembled into one hidden `phone` input. The country is
+  preselected from `/api/geo` (the Vercel edge geo header) and falls back to
+  Uzbekistan; an explicit choice by the visitor is never overwritten by the
+  late geo answer. Pasting a number that starts with a dial code moves the
+  selector instead of doubling the prefix.
+- `/api/geo` is its own endpoint precisely so the landing can stay ISR-cached;
+  do not call `headers()` during page render just to read the country.
+- `components/sections/*` are leftovers from the pre-merge design and are not
+  rendered anywhere. Do not update them when changing the live site.
+
 ## Environment
 
 See `.env.example`. `ADMIN_PASSWORD` guards every admin and analytics endpoint

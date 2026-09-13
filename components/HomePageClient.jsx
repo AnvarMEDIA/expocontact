@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import { usePathname, useRouter } from 'next/navigation';
 import BrandLogo from './BrandLogo';
 import HeroLogo3D from './HeroLogo3D';
+import PhoneField from './PhoneField';
 import '@/app/landing.css';
 
 /* ════════════════════════════════════════════════════════════════════════════
@@ -927,7 +928,7 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
               <div className="form__row">
                 <div className="field">
                   <label>{tContact('formPhoneLabel')} <span className="req">*</span></label>
-                  <input type="tel" name="phone" required placeholder={tContact('formPhonePlaceholder')} />
+                  <PhoneField locale={locale} placeholder={tContact('formPhonePlaceholder')} />
                 </div>
                 <div className="field">
                   <label>{tContact('formExpoLabel')}</label>
@@ -1139,7 +1140,7 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
             </div>
             <div className="field">
               <label>{tContact('formPhoneLabel')} <span className="req">*</span></label>
-              <input type="tel" name="phone" required placeholder={tContact('formPhonePlaceholder')} />
+              <PhoneField locale={locale} placeholder={tContact('formPhonePlaceholder')} />
             </div>
             <button type="submit" className={`btn-submit magnetic ${modalSent ? 'is-sent' : ''}`} data-hover>
               <span className="btn-submit__label">{modalSent ? tContact('formSent') : tContact('formSubmit')}</span>
