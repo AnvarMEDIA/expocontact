@@ -73,7 +73,7 @@ export async function GET(request) {
   if (collection === '_status') {
     return NextResponse.json({
       content:   storeStatus(),
-      leads:     leadsStatus(),
+      leads:     await leadsStatus(),
       media:     { backend: process.env.BLOB_READ_WRITE_TOKEN ? 'blob' : 'local', persistent: !!process.env.BLOB_READ_WRITE_TOKEN },
       analytics: {
         metrika: !!process.env.YANDEX_METRIKA_TOKEN,

@@ -68,13 +68,22 @@ a raw `<img>` makes the browser download the full source.
 |---|---|---|
 | Site content, portfolio, testimonials, clients, settings, SEO | Vercel Blob `cms/` | `BLOB_READ_WRITE_TOKEN` |
 | Uploaded images | Vercel Blob `uploads/` | `BLOB_READ_WRITE_TOKEN` |
-| Leads (personal data) | Vercel KV or Upstash Redis | `KV_REST_API_URL`+`KV_REST_API_TOKEN` or `UPSTASH_REDIS_REST_URL`+`UPSTASH_REDIS_REST_TOKEN` |
+| Leads (personal data) | Upstash Redis | any variable pair ending in `KV_REST_API_URL`+`KV_REST_API_TOKEN` (or `UPSTASH_REDIS_REST_URL`+`_TOKEN`) |
 | Visitor analytics | Yandex Metrika API | `YANDEX_METRIKA_TOKEN` |
 | Lead notifications | Telegram | `TELEGRAM_BOT_TOKEN`+`TELEGRAM_CHAT_ID` |
 
 Leads must never go into Blob: blobs are public to anyone holding the URL.
 Without a Redis store on Vercel, lead writes throw and Telegram is the only
 record — the admin dashboard shows this as a red row.
+
+The Vercel Upstash integration prefixes the standard names with the store
+label, so this project has `UPSTASH_REDIS_REST_KV_REST_API_URL` rather than the
+documented `UPSTASH_REDIS_REST_URL`, and the retired Vercel KV store left bare
+`KV_REST_API_*` variables behind that no longer resolve. `lib/leads.js`
+therefore discovers credential pairs by suffix, tries prefixed pairs before
+bare ones, and probes each with a read before using it — do not replace that
+with hardcoded variable names. `leadsStatus()` reports which variable actually
+answered, and is async because it performs that probe.
 
 ## SEO and AI discoverability
 
