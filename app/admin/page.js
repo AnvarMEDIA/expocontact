@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { CLICK_ID_PARAMS } from '@/lib/marketing';
+import { QUALIFIER_KEYS, qualifierLabel, qualifierValueLabel } from '@/lib/leadFields';
 
 // ── API helper ────────────────────────────────────────────────────────────────
 const API = '/api/admin';
@@ -174,11 +175,16 @@ const CSV_MARKETING = ['source', 'medium', 'campaign', 'content', 'term', 'click
 function downloadCsv(leads) {
   const headers = [
     'id','createdAt','status','name','company','phone','expo','message','source','locale',
+    ...QUALIFIER_KEYS,
     ...CSV_MARKETING.map(k => `utm_${k}`),
   ];
   const rows = leads.map(l => headers.map(h => {
     if (h === 'createdAt') return fmtDate(l.createdAt);
     if (h.startsWith('utm_')) return escapeCsv(l.marketing?.[h.slice(4)]);
+    // Brief answers are stored as keys; export them the way a human reads them.
+    if (QUALIFIER_KEYS.includes(h)) {
+      return escapeCsv(l.details?.[h] ? qualifierValueLabel(h, l.details[h]) : '');
+    }
     return escapeCsv(l[h]);
   }).join(','));
   const csv = '﻿' + [headers.join(','), ...rows].join('\n');
@@ -1491,6 +1497,17 @@ function LeadsManager({ toast }) {
               <Field k="Форма" v={LEAD_FORM_LABELS[selected.source] || selected.source || '—'} />
               {selected.locale  && <Field k="Локаль" v={selected.locale.toUpperCase()} />}
             </div>
+
+            {selected.details && (
+              <div className="pt-3 border-t border-white/5">
+                <p className="text-white/40 text-xs uppercase tracking-wider mb-2">Бриф по стенду</p>
+                <div className="space-y-2 text-sm">
+                  {QUALIFIER_KEYS.filter(k => selected.details[k]).map(k => (
+                    <Field key={k} k={qualifierLabel(k)} v={qualifierValueLabel(k, selected.details[k])} />
+                  ))}
+                </div>
+              </div>
+            )}
 
             {selected.marketing && (
               <div className="pt-3 border-t border-white/5">

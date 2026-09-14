@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import PhoneField from './PhoneField';
 import useMarketing from './useMarketing';
+import { QUALIFIERS } from '@/lib/leadFields';
 import '@/app/landing.css';
 
 const LOGO_URL =
@@ -16,15 +17,19 @@ const LOGO_URL =
  * locale content overrides them field by field. That matters because the
  * Russian content document already lives in Blob, so a key added to the
  * repository file would never reach the live Russian page on its own.
+ *
+ * The wording of the three pill questions is not here — it lives in
+ * lib/leadFields.js next to the values they store.
  */
 const DEFAULTS = {
   ru: {
     eyebrow: 'Заявка на выставочный стенд',
     headline: 'Стенд, который заметят',
     lead: 'Проектируем, производим и монтируем выставочные стенды под ключ в Ташкенте и по всей Центральной Азии. Один подрядчик на весь цикл — от эскиза до демонтажа.',
-    formTitle: 'Получить расчёт',
-    formNote: 'Ответим в течение часа в рабочее время. Первая консультация и предварительный расчёт — бесплатно.',
-    submit: 'Получить расчёт',
+    formTitle: 'Бриф на расчёт стенда',
+    formNote: 'Ответим в течение часа',
+    formHint: 'Семь вопросов в один шаг — займёт около минуты. Расчёт и первая консультация бесплатны.',
+    submit: 'Отправить бриф',
     sentTitle: 'Заявка принята',
     sentText: 'Менеджер свяжется с вами в течение часа и уточнит детали проекта.',
     benefitsTitle: 'Что вы получаете',
@@ -38,70 +43,110 @@ const DEFAULTS = {
     contactTitle: 'Или позвоните прямо сейчас',
     privacy: 'Нажимая кнопку, вы соглашаетесь на обработку персональных данных.',
     nameLabel: 'Имя', companyLabel: 'Компания', phoneLabel: 'Телефон',
-    expoLabel: 'Выставка', messageLabel: 'Задача',
+    expoLabel: 'Выставка и площадка', messageLabel: 'Задача',
     namePlaceholder: 'Как к вам обращаться',
     companyPlaceholder: 'Название компании',
     phonePlaceholder: '90 123-45-67',
-    expoPlaceholder: 'Например, UzBuild',
-    messagePlaceholder: 'Площадь стенда, сроки, пожелания',
+    expoPlaceholder: 'Например, UzBuild, Ташкент',
+    messagePlaceholder: 'Что важно учесть: зонирование, оборудование, фирменный стиль',
   },
   en: {
     eyebrow: 'Exhibition stand enquiry',
     headline: 'A stand they will notice',
-    lead: 'We design, build and install turnkey exhibition stands in Tashkent and across Central Asia. One contractor for the whole cycle — from sketch to dismantling.',
-    formTitle: 'Request a quote',
-    formNote: 'We reply within an hour during business hours. First consultation and draft estimate are free.',
-    submit: 'Request a quote',
+    lead: 'We design, build and install turnkey exhibition stands in Tashkent and across Central Asia. One contractor for the whole cycle — from the first sketch to dismantling.',
+    formTitle: 'Stand project brief',
+    formNote: 'We reply within an hour',
+    formHint: 'Seven questions in a single step — about a minute. The quote and the first consultation are free.',
+    submit: 'Send the brief',
     sentTitle: 'Request received',
-    sentText: 'A manager will contact you within an hour to go through the details.',
+    sentText: 'A manager will call you within an hour to go through the details.',
     benefitsTitle: 'What you get',
     benefits: [
-      'Concept and 3D visualisation before any work starts — you see the stand in advance',
-      'Our own production facility: timing and quality do not depend on subcontractors',
-      'Installation and dismantling by our own crew, on the venue build schedule',
-      'Logistics and customs handled for exhibitions abroad',
+      'Concept and 3D visualisation before the build — you see the stand in advance',
+      'Our own production: deadlines and quality do not depend on subcontractors',
+      'Installation and dismantling by our own crew within the venue schedule',
+      'Logistics and customs for exhibitions abroad',
       'A technician on the stand every day of the show',
     ],
     contactTitle: 'Or call us right now',
-    privacy: 'By submitting the form you agree to the processing of your personal data.',
+    privacy: 'By submitting the form you agree to the processing of personal data.',
     nameLabel: 'Name', companyLabel: 'Company', phoneLabel: 'Phone',
-    expoLabel: 'Exhibition', messageLabel: 'Brief',
-    namePlaceholder: 'Your name',
+    expoLabel: 'Exhibition and venue', messageLabel: 'Your brief',
+    namePlaceholder: 'How should we address you',
     companyPlaceholder: 'Company name',
     phonePlaceholder: '90 123-45-67',
-    expoPlaceholder: 'For example, UzBuild',
-    messagePlaceholder: 'Stand area, dates, requirements',
+    expoPlaceholder: 'For example, UzBuild, Tashkent',
+    messagePlaceholder: 'What matters: zoning, equipment, brand identity',
   },
   uz: {
     eyebrow: 'Ko’rgazma stendi uchun ariza',
     headline: 'E’tiborni tortadigan stend',
     lead: 'Toshkentda va butun Markaziy Osiyoda ko’rgazma stendlarini loyihalaymiz, ishlab chiqaramiz va o’rnatamiz. Eskizdan demontajgacha — bitta pudratchi.',
-    formTitle: 'Hisob-kitob olish',
-    formNote: 'Ish vaqtida bir soat ichida javob beramiz. Birinchi maslahat va dastlabki hisob-kitob bepul.',
-    submit: 'Hisob-kitob olish',
+    formTitle: 'Stend uchun brif',
+    formNote: 'Bir soat ichida javob beramiz',
+    formHint: 'Bir bosqichda yetti savol — taxminan bir daqiqa. Hisob-kitob va birinchi maslahat bepul.',
+    submit: 'Brifni yuborish',
     sentTitle: 'Ariza qabul qilindi',
-    sentText: 'Menejer bir soat ichida bog’lanadi va loyiha tafsilotlarini aniqlaydi.',
+    sentText: 'Menejer bir soat ichida bog’lanib, loyiha tafsilotlarini aniqlaydi.',
     benefitsTitle: 'Siz nima olasiz',
     benefits: [
-      'Ish boshlanishidan oldin konsepsiya va 3D vizualizatsiya',
+      'Ishlar boshlanishidan oldin konsepsiya va 3D vizualizatsiya — stendni oldindan ko’rasiz',
       'O’z ishlab chiqarishimiz: muddat va sifat pudratchilarga bog’liq emas',
-      'Montaj va demontaj o’z brigadamiz tomonidan',
-      'Chet el ko’rgazmalarida logistika va bojxona',
+      'Maydon jadvaliga mos ravishda o’z brigadamiz bilan montaj va demontaj',
+      'Xorijiy ko’rgazmalarda logistika va bojxona',
       'Ko’rgazmaning barcha kunlarida stendda texnik mutaxassis',
     ],
     contactTitle: 'Yoki hoziroq qo’ng’iroq qiling',
-    privacy: 'Tugmani bosish orqali shaxsiy ma’lumotlaringizni qayta ishlashga rozilik bildirasiz.',
+    privacy: 'Tugmani bosish orqali siz shaxsiy ma’lumotlarni qayta ishlashga rozilik bildirasiz.',
     nameLabel: 'Ism', companyLabel: 'Kompaniya', phoneLabel: 'Telefon',
-    expoLabel: 'Ko’rgazma', messageLabel: 'Vazifa',
-    namePlaceholder: 'Ismingiz',
+    expoLabel: 'Ko’rgazma va maydon', messageLabel: 'Vazifa',
+    namePlaceholder: 'Sizga qanday murojaat qilaylik',
     companyPlaceholder: 'Kompaniya nomi',
     phonePlaceholder: '90 123-45-67',
-    expoPlaceholder: 'Masalan, UzBuild',
-    messagePlaceholder: 'Stend maydoni, muddatlar, talablar',
+    expoPlaceholder: 'Masalan, UzBuild, Toshkent',
+    messagePlaceholder: 'Nima muhim: zonalash, jihozlar, firma uslubi',
   },
 };
 
 const METRIKA_ID = 108497871;
+
+/** The three qualifying questions, in the order they are asked. */
+const PILL_QUESTIONS = ['area', 'standType', 'timing'];
+
+/**
+ * One qualifying question answered by tapping a pill.
+ *
+ * A pill beats a dropdown here: every option is visible at once, it is one tap
+ * on a phone, and the answer stays a stable key rather than the label shown.
+ */
+function PillQuestion({ id, locale, value, onChange }) {
+  const q = QUALIFIERS[id];
+  const label = q.label[locale] || q.label.ru;
+
+  return (
+    <div className="field field--tags">
+      <label id={`q-${id}`}>{label}</label>
+      <div className="tags" role="group" aria-labelledby={`q-${id}`}>
+        {q.options.map((o) => {
+          const active = value === o.value;
+          return (
+            <button
+              key={o.value}
+              type="button"
+              className={`tag${active ? ' is-active' : ''}`}
+              aria-pressed={active}
+              // Tapping the chosen pill again clears it — the question is
+              // optional and a visitor must be able to take an answer back.
+              onClick={() => onChange(active ? '' : o.value)}
+            >
+              {o[locale] || o.ru}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
 
 export default function AdLanding({ locale = 'ru', settings = {}, overrides = {} }) {
   const base = DEFAULTS[locale] || DEFAULTS.ru;
@@ -114,6 +159,9 @@ export default function AdLanding({ locale = 'ru', settings = {}, overrides = {}
   const [sent, setSent]   = useState(false);
   const [busy, setBusy]   = useState(false);
   const [error, setError] = useState('');
+  const [details, setDetails] = useState({});
+
+  const pick = (id) => (value) => setDetails((d) => ({ ...d, [id]: value }));
 
   const submit = async (e) => {
     e.preventDefault();
@@ -122,8 +170,13 @@ export default function AdLanding({ locale = 'ru', settings = {}, overrides = {}
 
     setBusy(true);
     setError('');
+
+    // The pill answers are React state, not form controls, so they are added
+    // here rather than picked up by FormData.
+    const answered = Object.fromEntries(Object.entries(details).filter(([, v]) => v));
     const payload = {
       ...Object.fromEntries(new FormData(form).entries()),
+      details: Object.keys(answered).length ? answered : undefined,
       source: 'ads',
       locale,
       marketing: getMarketing(),
@@ -151,18 +204,15 @@ export default function AdLanding({ locale = 'ru', settings = {}, overrides = {}
     }
   };
 
+  const phoneLink = contact.phone && (
+    <a href={`tel:${contact.phoneRaw || contact.phone}`} className="btn-ghost">{contact.phone}</a>
+  );
+
   return (
-    <main style={{ minHeight: '100vh' }}>
+    <main className="lp" style={{ minHeight: '100vh' }}>
       {/* Deliberately no navigation: this page is bought traffic and every
           extra link is a way out of the funnel. Logo and phone only. */}
-      <header
-        style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          gap: 24, flexWrap: 'wrap',
-          padding: '24px clamp(20px, 4vw, 80px)',
-          borderBottom: '1px solid var(--line)',
-        }}
-      >
+      <header className="lp-header">
         <Image src={LOGO_URL} alt="ExpoContact" width={150} height={36}
           style={{ height: 28, width: 'auto' }} unoptimized priority />
         {contact.phone && (
@@ -172,136 +222,174 @@ export default function AdLanding({ locale = 'ru', settings = {}, overrides = {}
         )}
       </header>
 
-      <section className="section" style={{ paddingTop: 56 }}>
+      <section className="section lp-section">
         <div className="wrap">
-          <span className="eyebrow">{t.eyebrow}</span>
+          {/* ── Pitch, kept short: the form below is the point of the page ── */}
+          <div className="lp-intro">
+            <span className="eyebrow">{t.eyebrow}</span>
+            <h1 className="section-title lp-title">{t.headline}</h1>
+            <p className="hero__lead lp-lead">{t.lead}</p>
 
-          <div
-            style={{
-              display: 'grid', gap: 'clamp(32px, 5vw, 72px)',
-              gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 560px)',
-              alignItems: 'start', marginTop: 28,
-            }}
-            className="lp-grid"
-          >
-            <div>
-              <h1 className="section-title" style={{ margin: 0 }}>{t.headline}</h1>
-              <p className="hero__lead" style={{ marginTop: 20, maxWidth: '46ch' }}>{t.lead}</p>
-
-              {counters.length > 0 && (
-                <div className="counters" style={{ marginTop: 44 }}>
-                  {counters.map((c, i) => (
-                    <div className="counter" key={i}>
-                      <div className="counter__num">
-                        {c.target}{c.suffix ? <sup>{c.suffix}</sup> : null}
-                      </div>
-                      <div className="counter__label">{c.label}</div>
+            {counters.length > 0 && (
+              <div className="counters lp-counters">
+                {counters.map((c, i) => (
+                  <div className="counter" key={i}>
+                    <div className="counter__num">
+                      {c.target}{c.suffix ? <sup>{c.suffix}</sup> : null}
                     </div>
-                  ))}
-                </div>
-              )}
-
-              <h2 className="mono mono--bright" style={{ marginTop: 56, marginBottom: 18 }}>
-                {t.benefitsTitle}
-              </h2>
-              <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: 14, maxWidth: '54ch' }}>
-                {t.benefits.map((b, i) => (
-                  <li key={i} style={{ display: 'flex', gap: 14, alignItems: 'baseline' }}>
-                    <span className="mono mono--accent" style={{ flexShrink: 0 }}>
-                      /{String(i + 1).padStart(2, '0')}
-                    </span>
-                    <span style={{ color: 'rgba(245,245,242,.66)', fontSize: 15, lineHeight: 1.6 }}>{b}</span>
-                  </li>
+                    <div className="counter__label">{c.label}</div>
+                  </div>
                 ))}
-              </ul>
+              </div>
+            )}
+          </div>
 
-              {contact.phone && (
-                <div style={{ marginTop: 48 }}>
-                  <p className="mono" style={{ marginBottom: 10 }}>{t.contactTitle}</p>
-                  <a href={`tel:${contact.phoneRaw || contact.phone}`} className="btn-ghost">
-                    {contact.phone}
-                  </a>
+          {/* ── The form: centre stage, one step ─────────────────────────── */}
+          <div className="lp-form" id="brief">
+            {sent ? (
+              <div className="form" style={{ textAlign: 'center', padding: 'clamp(40px, 6vw, 72px)' }}>
+                <p className="form__head-title" style={{ marginBottom: 12 }}>{t.sentTitle}</p>
+                <p style={{ color: 'rgba(245,245,242,.6)', fontSize: 15, lineHeight: 1.6 }}>{t.sentText}</p>
+                {contact.phone && <div style={{ marginTop: 28 }}>{phoneLink}</div>}
+              </div>
+            ) : (
+              <form className="form" onSubmit={submit} noValidate>
+                <div className="form__head">
+                  <p className="form__head-title">{t.formTitle}</p>
+                  <p className="form__head-meta">{t.formNote}</p>
                 </div>
-              )}
-            </div>
 
-            {/* ── Form ─────────────────────────────────────────────────── */}
-            <div>
-              {sent ? (
-                <div className="form" style={{ textAlign: 'center', padding: 'clamp(32px, 5vw, 56px)' }}>
-                  <p className="form__head-title" style={{ marginBottom: 12 }}>{t.sentTitle}</p>
-                  <p style={{ color: 'rgba(245,245,242,.6)', fontSize: 15, lineHeight: 1.6 }}>{t.sentText}</p>
-                  {contact.phone && (
-                    <a href={`tel:${contact.phoneRaw || contact.phone}`} className="btn-ghost" style={{ marginTop: 28 }}>
-                      {contact.phone}
-                    </a>
-                  )}
+                {t.formHint && <p className="lp-form-hint">{t.formHint}</p>}
+
+                <div className="form__row">
+                  <div className="field">
+                    <label>{t.nameLabel} <span className="req">*</span></label>
+                    <input type="text" name="name" required placeholder={t.namePlaceholder} />
+                  </div>
+                  <div className="field">
+                    <label>{t.phoneLabel} <span className="req">*</span></label>
+                    <PhoneField locale={locale} placeholder={t.phonePlaceholder} />
+                  </div>
                 </div>
-              ) : (
-                <form className="form" onSubmit={submit} noValidate>
-                  <div className="form__head">
-                    <p className="form__head-title">{t.formTitle}</p>
-                    <p className="form__head-meta">{t.formNote}</p>
+
+                <div className="form__row">
+                  <div className="field">
+                    <label>{t.companyLabel}</label>
+                    <input type="text" name="company" placeholder={t.companyPlaceholder} />
                   </div>
-
-                  <div className="form__row">
-                    <div className="field">
-                      <label>{t.nameLabel} <span className="req">*</span></label>
-                      <input type="text" name="name" required placeholder={t.namePlaceholder} />
-                    </div>
-                    <div className="field">
-                      <label>{t.companyLabel}</label>
-                      <input type="text" name="company" placeholder={t.companyPlaceholder} />
-                    </div>
+                  <div className="field">
+                    <label>{t.expoLabel}</label>
+                    <input type="text" name="event" placeholder={t.expoPlaceholder} />
                   </div>
+                </div>
 
-                  <div className="form__row">
-                    <div className="field">
-                      <label>{t.phoneLabel} <span className="req">*</span></label>
-                      <PhoneField locale={locale} placeholder={t.phonePlaceholder} />
-                    </div>
-                    <div className="field">
-                      <label>{t.expoLabel}</label>
-                      <input type="text" name="event" placeholder={t.expoPlaceholder} />
-                    </div>
+                {PILL_QUESTIONS.map((id) => (
+                  <div className="form__row" key={id}>
+                    <PillQuestion id={id} locale={locale} value={details[id] || ''} onChange={pick(id)} />
                   </div>
+                ))}
 
-                  <div className="form__row">
-                    <div className="field field--span">
-                      <label>{t.messageLabel}</label>
-                      <textarea name="message" rows={3} placeholder={t.messagePlaceholder} />
-                    </div>
+                <div className="form__row">
+                  <div className="field field--span">
+                    <label>{t.messageLabel}</label>
+                    <textarea name="message" rows={3} placeholder={t.messagePlaceholder} />
                   </div>
+                </div>
 
-                  {error && (
-                    <p style={{ color: '#ff6b6b', fontSize: 13, marginTop: 16 }}>{error}</p>
-                  )}
+                {error && <p className="lp-error">{error}</p>}
 
-                  <button type="submit" className="btn-submit" disabled={busy} style={{ marginTop: 24 }}>
-                    <span className="btn-submit__label">{t.submit}</span>
-                    <span className="btn-submit__circle" aria-hidden>
-                      <svg className="a1" viewBox="0 0 22 12" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M1 6 H20 M15 1 L20 6 L15 11" />
-                      </svg>
-                      <svg className="a2" viewBox="0 0 22 12" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M1 6 H20 M15 1 L20 6 L15 11" />
-                      </svg>
-                    </span>
-                  </button>
+                <button type="submit" className="btn-submit" disabled={busy} style={{ marginTop: 28 }}>
+                  <span className="btn-submit__label">{t.submit}</span>
+                  <span className="btn-submit__circle" aria-hidden>
+                    <svg className="a1" viewBox="0 0 22 12" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M1 6 H20 M15 1 L20 6 L15 11" />
+                    </svg>
+                    <svg className="a2" viewBox="0 0 22 12" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M1 6 H20 M15 1 L20 6 L15 11" />
+                    </svg>
+                  </span>
+                </button>
 
-                  <p className="mono" style={{ marginTop: 18, textTransform: 'none', letterSpacing: 0, lineHeight: 1.5 }}>
-                    {t.privacy}
-                  </p>
-                </form>
-              )}
-            </div>
+                <p className="mono lp-privacy">{t.privacy}</p>
+              </form>
+            )}
+          </div>
+
+          {/* ── Reassurance, after the ask ───────────────────────────────── */}
+          <div className="lp-after">
+            <h2 className="mono mono--bright lp-benefits-title">{t.benefitsTitle}</h2>
+            <ul className="lp-benefits">
+              {t.benefits.map((b, i) => (
+                <li key={i}>
+                  <span className="mono mono--accent">/{String(i + 1).padStart(2, '0')}</span>
+                  <span>{b}</span>
+                </li>
+              ))}
+            </ul>
+
+            {contact.phone && (
+              <div className="lp-call">
+                <p className="mono" style={{ marginBottom: 12 }}>{t.contactTitle}</p>
+                {phoneLink}
+              </div>
+            )}
           </div>
         </div>
       </section>
 
       <style>{`
-        @media (max-width: 980px) {
-          .lp-grid { grid-template-columns: minmax(0, 1fr) !important; }
+        /* landing.css hides the system cursor in favour of the custom one on
+           the main page, which this page does not render: bring it back.
+           Keep this block free of apostrophes and angle brackets: the server
+           escapes them as entities, the browser does not decode entities in
+           a style element, and the mismatch breaks hydration. */
+        .lp a, .lp button, .lp .tag { cursor: pointer; }
+
+        .lp-header{
+          display:flex; align-items:center; justify-content:space-between;
+          gap:24px; flex-wrap:wrap;
+          padding:24px clamp(20px, 4vw, 80px);
+          border-bottom:1px solid var(--line);
+        }
+        .lp-section{ padding-top:clamp(40px, 6vw, 84px); padding-bottom:clamp(64px, 9vw, 140px); }
+
+        .lp-intro{ max-width:940px; margin:0 auto; text-align:center; }
+        .lp-title{ margin:18px 0 0; }
+        .lp-lead{ margin:22px auto 0; max-width:60ch; }
+        .lp-counters{ margin-top:40px; justify-content:center; }
+
+        /* The form is the page: wide, centred, and the first thing reachable. */
+        .lp-form{ max-width:900px; margin:clamp(40px, 6vw, 72px) auto 0; }
+        .lp-form .form{ padding:clamp(24px, 3.2vw, 52px); }
+        .lp-form-hint{
+          color:rgba(245,245,242,.5); font-size:14px; line-height:1.55;
+          margin:-14px 0 22px;
+        }
+        .lp-error{ color:#ff6b6b; font-size:14px; margin-top:18px; }
+        .lp-privacy{
+          margin-top:18px; text-transform:none; letter-spacing:0; line-height:1.5;
+        }
+
+        .lp-after{ max-width:1000px; margin:clamp(56px, 8vw, 104px) auto 0; }
+        .lp-benefits-title{ text-align:center; margin:0 0 26px; }
+        .lp-benefits{
+          list-style:none; margin:0; padding:0;
+          display:grid; gap:18px 32px;
+          grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));
+        }
+        .lp-benefits li{ display:flex; gap:14px; align-items:baseline; }
+        .lp-benefits li span:last-child{
+          color:rgba(245,245,242,.66); font-size:15px; line-height:1.6;
+        }
+        .lp-call{ margin-top:clamp(40px, 6vw, 64px); text-align:center; }
+
+        @media (max-width: 600px){
+          .lp-header{ padding:18px 20px; }
+          .lp-form .form{ padding:22px 18px; }
+          .lp-form-hint{ margin:-10px 0 18px; font-size:13px; }
+          /* Full-width tap targets beat a cramped two-up row on a phone. */
+          .lp .tags{ gap:8px; }
+          .lp .tag{ padding:11px 15px; }
         }
       `}</style>
     </main>

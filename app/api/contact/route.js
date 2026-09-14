@@ -9,10 +9,13 @@
  *   locale    'ru' | 'en' | 'uz'
  *   marketing campaign attribution from the browser — see lib/marketing.js.
  *             Never trusted as-is; sanitizeMarketing() whitelists and bounds it.
+ *   details   answers to the qualifying questions on the ad landing — see
+ *             lib/leadFields.js. Only known questions with known answers survive.
  */
 import { NextResponse } from 'next/server';
 import { createLead } from '@/lib/leads';
 import { sanitizeMarketing, marketingSummary, clickIdLabel } from '@/lib/marketing';
+import { sanitizeDetails, qualifierLabel, qualifierValueLabel } from '@/lib/leadFields';
 
 const FORM_LABELS = {
   contact: 'форма контактов',
@@ -27,6 +30,10 @@ export async function POST(request) {
   // Campaign data is whitelisted and bounded — it arrives from the browser and
   // ends up in Telegram messages, the leads list and CSV exports.
   const marketing = sanitizeMarketing(body.marketing);
+
+  // Same rule for the brief answers: only questions we ask, answered with one
+  // of the options we offer.
+  const details = sanitizeDetails(body.details);
 
   if (!name || !phone) {
     return NextResponse.json({ error: 'name and phone are required' }, { status: 400 });
@@ -47,7 +54,7 @@ export async function POST(request) {
   // delivery channel of record, so a failure here is logged and nothing more.
   let lead = null;
   try {
-    lead = await createLead({ ...safe, source, locale, marketing });
+    lead = await createLead({ ...safe, source, locale, marketing, details });
   } catch (err) {
     console.error('[contact] Lead save failed:', err.message);
   }
@@ -67,6 +74,9 @@ export async function POST(request) {
       safe.company ? `🏢 Компания: ${safe.company}` : null,
       `📞 Телефон: ${safe.phone}`,
       safe.expo    ? `🎪 Выставка: ${safe.expo}`    : null,
+      ...(details
+        ? Object.entries(details).map(([k, v]) => `📐 ${qualifierLabel(k)}: ${qualifierValueLabel(k, v)}`)
+        : []),
       safe.message ? `💬 Сообщение: ${safe.message}` : null,
       source   ? `📍 Форма: ${FORM_LABELS[source] || source}` : null,
       locale   ? `🌐 Локаль: ${locale.toUpperCase()}` : null,
@@ -96,7 +106,7 @@ export async function POST(request) {
     }
   } else {
     console.log('[contact] Form submission (Telegram not configured):', {
-      id: lead?.id, ...safe, source, locale, marketing,
+      id: lead?.id, ...safe, source, locale, marketing, details,
     });
   }
 

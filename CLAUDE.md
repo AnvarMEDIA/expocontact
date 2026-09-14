@@ -146,6 +146,22 @@ answered, and is async because it performs that probe.
   from `adLanding` in the locale content when that key exists. The defaults are
   not decoration: `content.ru` is already stored in Blob, so a key added to
   `content/ru.json` in the repository would never reach the live Russian page.
+- The form is the page: centred, up to 900px wide, one step with seven
+  questions (name, phone, company, exhibition, stand area, stand type, timing)
+  plus a free-text brief. The three pill questions are defined once in
+  `lib/leadFields.js`: the visitor sees their locale's label, the lead stores
+  the stable key (`'24_50'`), and the admin, Telegram and CSV show the Russian
+  wording through `qualifierValueLabel()`. Add or reword options there, never
+  in the component, and never rename a stored key — old leads carry it.
+- The API runs the answers through `sanitizeDetails()`: unknown questions and
+  answers that are not one of the offered options are dropped, not stored.
+- The page's `<style>` block must stay free of apostrophes and angle brackets,
+  even in comments: React escapes them as entities, the browser does not
+  decode entities inside a style element, and the mismatch breaks hydration
+  (the whole page then re-renders on the client). This has bitten once.
+- `landing.css` sets `cursor:none` on every `button` for the main page's custom
+  cursor, which this page does not render; the page restores `cursor:pointer`
+  on its links, buttons and pills in its own style block.
 - Attribution: `components/useMarketing.js` reads `utm_source`, `utm_medium`,
   `utm_campaign`, `utm_content`, `utm_term` and the platform click ids
   (`gclid`, `yclid`, `fbclid`, `ttclid`, `msclkid`, `twclid`) off the landing
