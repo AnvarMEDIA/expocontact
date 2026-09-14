@@ -23,11 +23,9 @@ const LOGO_URL =
  */
 const DEFAULTS = {
   ru: {
-    eyebrow: 'Заявка на выставочный стенд',
     headline: 'Стенд, который заметят',
-    lead: 'Проектируем, производим и монтируем выставочные стенды под ключ в Ташкенте и по всей Центральной Азии. Один подрядчик на весь цикл — от эскиза до демонтажа.',
-    formTitle: 'Бриф на расчёт стенда',
-    formNote: 'Ответим в течение часа',
+    lead: 'Проектируем, производим и монтируем выставочные стенды под ключ в Ташкенте и по всей Центральной Азии. Один подрядчик — от эскиза до демонтажа.',
+    formNote: 'Отвечаем в течение часа',
     formHint: 'Семь вопросов в один шаг — займёт около минуты. Расчёт и первая консультация бесплатны.',
     submit: 'Отправить бриф',
     sentTitle: 'Заявка принята',
@@ -40,7 +38,6 @@ const DEFAULTS = {
       'Логистика и таможня при участии в зарубежных выставках',
       'Технический специалист на стенде все дни выставки',
     ],
-    contactTitle: 'Или позвоните прямо сейчас',
     privacy: 'Нажимая кнопку, вы соглашаетесь на обработку персональных данных.',
     nameLabel: 'Имя', companyLabel: 'Компания', phoneLabel: 'Телефон',
     expoLabel: 'Выставка и площадка', messageLabel: 'Задача',
@@ -51,10 +48,8 @@ const DEFAULTS = {
     messagePlaceholder: 'Что важно учесть: зонирование, оборудование, фирменный стиль',
   },
   en: {
-    eyebrow: 'Exhibition stand enquiry',
     headline: 'A stand they will notice',
-    lead: 'We design, build and install turnkey exhibition stands in Tashkent and across Central Asia. One contractor for the whole cycle — from the first sketch to dismantling.',
-    formTitle: 'Stand project brief',
+    lead: 'We design, build and install turnkey exhibition stands in Tashkent and across Central Asia. One contractor — from the first sketch to dismantling.',
     formNote: 'We reply within an hour',
     formHint: 'Seven questions in a single step — about a minute. The quote and the first consultation are free.',
     submit: 'Send the brief',
@@ -68,7 +63,6 @@ const DEFAULTS = {
       'Logistics and customs for exhibitions abroad',
       'A technician on the stand every day of the show',
     ],
-    contactTitle: 'Or call us right now',
     privacy: 'By submitting the form you agree to the processing of personal data.',
     nameLabel: 'Name', companyLabel: 'Company', phoneLabel: 'Phone',
     expoLabel: 'Exhibition and venue', messageLabel: 'Your brief',
@@ -79,10 +73,8 @@ const DEFAULTS = {
     messagePlaceholder: 'What matters: zoning, equipment, brand identity',
   },
   uz: {
-    eyebrow: 'Ko’rgazma stendi uchun ariza',
     headline: 'E’tiborni tortadigan stend',
     lead: 'Toshkentda va butun Markaziy Osiyoda ko’rgazma stendlarini loyihalaymiz, ishlab chiqaramiz va o’rnatamiz. Eskizdan demontajgacha — bitta pudratchi.',
-    formTitle: 'Stend uchun brif',
     formNote: 'Bir soat ichida javob beramiz',
     formHint: 'Bir bosqichda yetti savol — taxminan bir daqiqa. Hisob-kitob va birinchi maslahat bepul.',
     submit: 'Brifni yuborish',
@@ -96,7 +88,6 @@ const DEFAULTS = {
       'Xorijiy ko’rgazmalarda logistika va bojxona',
       'Ko’rgazmaning barcha kunlarida stendda texnik mutaxassis',
     ],
-    contactTitle: 'Yoki hoziroq qo’ng’iroq qiling',
     privacy: 'Tugmani bosish orqali siz shaxsiy ma’lumotlarni qayta ishlashga rozilik bildirasiz.',
     nameLabel: 'Ism', companyLabel: 'Kompaniya', phoneLabel: 'Telefon',
     expoLabel: 'Ko’rgazma va maydon', messageLabel: 'Vazifa',
@@ -113,29 +104,36 @@ const METRIKA_ID = 108497871;
 /** The three qualifying questions, in the order they are asked. */
 const PILL_QUESTIONS = ['area', 'standType', 'timing'];
 
+/** A counter such as { target: 5000, suffix: '+', label: 'Стендов / ...' } as a short badge phrase. */
+function counterPhrase(c) {
+  if (!c) return '';
+  const noun = String(c.label || '').split('/')[0].trim().toLowerCase();
+  return `${c.target}${c.suffix || ''} ${noun}`.trim();
+}
+
 /**
- * One qualifying question answered by tapping a pill.
+ * One qualifying question answered by tapping a chip.
  *
- * A pill beats a dropdown here: every option is visible at once, it is one tap
+ * A chip beats a dropdown here: every option is visible at once, it is one tap
  * on a phone, and the answer stays a stable key rather than the label shown.
  */
-function PillQuestion({ id, locale, value, onChange }) {
+function ChipQuestion({ id, locale, value, onChange }) {
   const q = QUALIFIERS[id];
   const label = q.label[locale] || q.label.ru;
 
   return (
-    <div className="field field--tags">
-      <label id={`q-${id}`}>{label}</label>
-      <div className="tags" role="group" aria-labelledby={`q-${id}`}>
+    <div className="brief__field brief__field--wide">
+      <span className="brief__label" id={`q-${id}`}>{label}</span>
+      <div className="chips" role="group" aria-labelledby={`q-${id}`}>
         {q.options.map((o) => {
           const active = value === o.value;
           return (
             <button
               key={o.value}
               type="button"
-              className={`tag${active ? ' is-active' : ''}`}
+              className={`chip${active ? ' is-active' : ''}`}
               aria-pressed={active}
-              // Tapping the chosen pill again clears it — the question is
+              // Tapping the chosen chip again clears it — the question is
               // optional and a visitor must be able to take an answer back.
               onClick={() => onChange(active ? '' : o.value)}
             >
@@ -148,12 +146,268 @@ function PillQuestion({ id, locale, value, onChange }) {
   );
 }
 
+const ICONS = {
+  instagram: (
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.7">
+      <rect x="3" y="3" width="18" height="18" rx="5" />
+      <circle cx="12" cy="12" r="4" />
+      <circle cx="17.3" cy="6.7" r="1" fill="currentColor" stroke="none" />
+    </svg>
+  ),
+  telegram: (
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round">
+      <path d="M21 4 3 11.5l5.5 2L17 7l-6.5 8v5l3-3.5 4.5 3.5z" />
+    </svg>
+  ),
+  phone: (
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z" />
+    </svg>
+  ),
+};
+
+/**
+ * Page styles, injected as raw HTML on purpose.
+ *
+ * A style tag written as JSX text is escaped by the server (quotes, apostrophes
+ * and angle brackets become entities) but the browser does not decode entities
+ * inside a style element, so the client sees different text and hydration
+ * fails for the whole page. dangerouslySetInnerHTML skips that escaping. The
+ * string is a constant of this file, never user content.
+ */
+const LP_CSS = `
+
+        .lp{
+          position:relative; overflow:hidden; isolation:isolate;
+          min-height:100vh; padding-bottom:clamp(72px, 10vw, 140px);
+          background:#0a0a0d; color:var(--text-primary);
+          font-family:var(--f-body);
+        }
+        /* landing.css hides the system cursor on every button for the custom
+           cursor of the main page, which this page does not render. */
+        .lp a, .lp button, .lp select { cursor:pointer; }
+
+        /* ── Backdrop: glow, faint columns, stars and the horizon arc ──── */
+        .lp-bg{ position:absolute; inset:0; z-index:-1; pointer-events:none; }
+        .lp-bg::before{
+          content:""; position:absolute; inset:0;
+          background:
+            radial-gradient(ellipse 70% 55% at 50% 0%, rgba(255,255,255,.075), transparent 70%),
+            radial-gradient(1px 1px at 12% 18%, rgba(255,255,255,.5), transparent 100%),
+            radial-gradient(1px 1px at 26% 41%, rgba(255,255,255,.35), transparent 100%),
+            radial-gradient(1.5px 1.5px at 71% 22%, rgba(255,255,255,.45), transparent 100%),
+            radial-gradient(1px 1px at 84% 47%, rgba(255,255,255,.35), transparent 100%),
+            radial-gradient(1px 1px at 58% 12%, rgba(255,255,255,.3), transparent 100%),
+            radial-gradient(1.5px 1.5px at 38% 8%, rgba(255,255,255,.4), transparent 100%),
+            repeating-linear-gradient(90deg, rgba(255,255,255,.035) 0 1px, transparent 1px 22vw);
+          background-position:0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 11vw 0;
+          -webkit-mask-image:linear-gradient(180deg, #000 0%, #000 55%, transparent 100%);
+          mask-image:linear-gradient(180deg, #000 0%, #000 55%, transparent 100%);
+        }
+        .lp-bg::after{
+          content:""; position:absolute; left:50%; top:clamp(640px, 78vh, 900px);
+          width:max(230vw, 2200px); aspect-ratio:1; border-radius:50%;
+          transform:translateX(-50%);
+          background:#060608;
+          border:1px solid rgba(255,255,255,.14);
+          box-shadow:0 -40px 120px rgba(255,255,255,.07), 0 -1px 0 rgba(255,255,255,.08);
+        }
+
+        /* ── Header ─────────────────────────────────────────────────────── */
+        .lp-header{
+          display:flex; align-items:center; justify-content:space-between; gap:20px;
+          padding:22px clamp(20px, 4vw, 64px);
+        }
+        .lp-glass-btn{
+          display:inline-flex; align-items:center; justify-content:center;
+          padding:0 18px; height:42px; border-radius:12px;
+          font-size:15px; font-weight:500; color:#fff; letter-spacing:.01em;
+          background:linear-gradient(180deg, rgba(255,255,255,.16), rgba(255,255,255,.05));
+          border:1px solid rgba(255,255,255,.16);
+          box-shadow:0 1px 0 rgba(255,255,255,.14) inset, 0 12px 32px -14px rgba(255,255,255,.28);
+          transition:background .25s, border-color .25s, transform .25s;
+        }
+        .lp-glass-btn:hover{ background:linear-gradient(180deg, rgba(255,255,255,.22), rgba(255,255,255,.08)); border-color:rgba(255,255,255,.26); }
+
+        /* ── Hero ───────────────────────────────────────────────────────── */
+        .lp-hero{
+          max-width:760px; margin:clamp(56px, 9vw, 120px) auto 0;
+          padding:0 20px; text-align:center;
+        }
+        .lp-badge{
+          display:inline-flex; align-items:center; flex-wrap:wrap; justify-content:center;
+          padding:6px 6px; border-radius:999px;
+          background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.10);
+          box-shadow:0 1px 0 rgba(255,255,255,.06) inset;
+          font-size:14px; color:rgba(245,245,242,.82);
+        }
+        .lp-badge__item{
+          display:inline-flex; align-items:center; gap:8px; padding:4px 12px;
+          white-space:nowrap;
+        }
+        .lp-badge__item + .lp-badge__item{ border-left:1px solid rgba(255,255,255,.12); }
+        .lp-badge__dot{
+          width:7px; height:7px; border-radius:50%; background:#3FCB5A;
+          box-shadow:0 0 10px #3FCB5A99; animation:livePulse 1.6s ease-in-out infinite;
+        }
+        .lp-title{
+          margin:26px 0 0;
+          font-family:var(--f-display); font-weight:500;
+          font-size:clamp(40px, 6.4vw, 78px); line-height:1.02; letter-spacing:-.035em;
+          color:#fff;
+        }
+        .lp-lead{
+          margin:20px auto 0; max-width:48ch;
+          font-size:clamp(15px, 1.2vw, 18px); line-height:1.55;
+          color:rgba(245,245,242,.55);
+        }
+
+        /* ── Brief ──────────────────────────────────────────────────────── */
+        .brief{ max-width:720px; margin:clamp(40px, 6vw, 64px) auto 0; padding:0 20px; }
+        .brief__hint{
+          margin:0 0 22px; text-align:center;
+          font-size:14px; line-height:1.55; color:rgba(245,245,242,.45);
+        }
+        .brief__grid{ display:grid; grid-template-columns:1fr 1fr; gap:18px 24px; }
+        .brief__field{ display:flex; flex-direction:column; min-width:0; }
+        .brief__field--wide{ grid-column:1 / -1; }
+        .brief__label{
+          display:block; margin-bottom:8px;
+          font-size:15px; font-weight:500; color:#f5f5f2; letter-spacing:-.005em;
+        }
+        .brief__label b{ font-weight:500; color:rgba(245,245,242,.45); }
+
+        .brief__input, .brief__phone{
+          width:100%; min-height:48px; padding:0 16px;
+          border-radius:11px;
+          background:rgba(255,255,255,.035);
+          border:1px solid rgba(255,255,255,.11);
+          box-shadow:0 1px 0 rgba(255,255,255,.04) inset;
+          color:#f5f5f2; font-family:var(--f-body); font-size:16px; line-height:1.4;
+          outline:none;
+          transition:border-color .2s, background .2s, box-shadow .2s;
+        }
+        .brief__input::placeholder{ color:rgba(245,245,242,.28); }
+        .brief__input:hover, .brief__phone:hover{ border-color:rgba(255,255,255,.18); }
+        .brief__input:focus, .brief__phone:focus-within{
+          border-color:rgba(255,255,255,.34);
+          background:rgba(255,255,255,.05);
+          box-shadow:0 0 0 4px rgba(255,255,255,.05);
+        }
+        .brief__textarea{ min-height:124px; padding:13px 16px; resize:vertical; }
+
+        /* The dial-code selector, restyled into the same box as the inputs. */
+        .brief__phone{ display:flex; align-items:center; padding-right:12px; }
+        .brief__phone .phone-input{ align-items:center; gap:8px; }
+        .brief__phone .phone-input__code{
+          font-family:var(--f-body); font-weight:500; font-size:16px; letter-spacing:0;
+          padding:0 18px 0 0; color:#f5f5f2;
+        }
+        .brief__phone .phone-input__code:focus{ color:#fff; }
+        .brief__phone .phone-input__num{
+          background:transparent; border:0; outline:none; min-width:0;
+          color:#f5f5f2; font-family:var(--f-body); font-size:16px; padding:0;
+          border-left:1px solid rgba(255,255,255,.12); padding-left:12px;
+        }
+        .brief__phone .phone-input__num::placeholder{ color:rgba(245,245,242,.28); }
+
+        .chips{ display:flex; flex-wrap:wrap; gap:8px; }
+        .chip{
+          padding:10px 16px; border-radius:999px;
+          background:rgba(255,255,255,.035);
+          border:1px solid rgba(255,255,255,.11);
+          color:rgba(245,245,242,.72);
+          font-family:var(--f-body); font-size:14px; line-height:1;
+          transition:all .2s;
+        }
+        .chip:hover{ color:#fff; border-color:rgba(255,255,255,.3); }
+        .chip.is-active{
+          background:linear-gradient(180deg, rgba(255,255,255,.2), rgba(255,255,255,.1));
+          border-color:rgba(255,255,255,.4); color:#fff;
+          box-shadow:0 1px 0 rgba(255,255,255,.18) inset, 0 8px 24px -12px rgba(255,255,255,.35);
+        }
+
+        .brief__error{ margin:16px 0 0; font-size:14px; color:#ff7b6b; text-align:center; }
+        .brief__submit{
+          display:block; width:100%; height:54px; margin-top:26px;
+          border-radius:14px;
+          font-family:var(--f-body); font-size:16px; font-weight:500; color:#fff;
+          background:linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,255,255,.06));
+          border:1px solid rgba(255,255,255,.2);
+          box-shadow:0 1px 0 rgba(255,255,255,.16) inset, 0 18px 48px -16px rgba(255,255,255,.35);
+          transition:background .25s, border-color .25s, transform .15s, opacity .2s;
+        }
+        .brief__submit:hover{ background:linear-gradient(180deg, rgba(255,255,255,.26), rgba(255,255,255,.1)); border-color:rgba(255,255,255,.3); }
+        .brief__submit:active{ transform:translateY(1px); }
+        .brief__submit:disabled{ opacity:.55; cursor:default; }
+        .brief__privacy{
+          margin:14px 0 0; text-align:center;
+          font-size:12.5px; line-height:1.5; color:rgba(245,245,242,.38);
+        }
+
+        .brief__sent{
+          text-align:center; padding:clamp(36px, 5vw, 56px) 24px;
+          border-radius:18px;
+          background:rgba(255,255,255,.035); border:1px solid rgba(255,255,255,.11);
+        }
+        .brief__sent-title{ margin:0; font-family:var(--f-display); font-weight:500; font-size:28px; letter-spacing:-.02em; }
+        .brief__sent-text{ margin:10px auto 0; max-width:40ch; font-size:15px; line-height:1.6; color:rgba(245,245,242,.55); }
+
+        /* ── Divider with contacts, then the reassurance list ───────────── */
+        .lp-divider{
+          display:flex; align-items:center; justify-content:center; gap:22px;
+          max-width:720px; margin:34px auto 0; padding:0 20px;
+        }
+        .lp-divider::before, .lp-divider::after{
+          content:""; flex:1; height:1px;
+          background:linear-gradient(90deg, transparent, rgba(255,255,255,.16));
+        }
+        .lp-divider::after{ background:linear-gradient(90deg, rgba(255,255,255,.16), transparent); }
+        .lp-social{ color:rgba(245,245,242,.5); display:inline-flex; transition:color .2s; }
+        .lp-social:hover{ color:#fff; }
+
+        .lp-benefits{ max-width:880px; margin:clamp(48px, 7vw, 80px) auto 0; padding:0 20px; }
+        .lp-benefits__title{
+          margin:0 0 20px; text-align:center;
+          font-family:var(--f-mono); font-size:11px; letter-spacing:.24em; text-transform:uppercase;
+          color:rgba(245,245,242,.45);
+        }
+        .lp-benefits ul{
+          list-style:none; margin:0; padding:0;
+          display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:14px 32px;
+        }
+        .lp-benefits li{ display:flex; gap:12px; align-items:baseline; font-size:14px; line-height:1.55; color:rgba(245,245,242,.6); }
+        .lp-benefits__n{ font-family:var(--f-mono); font-size:11px; color:rgba(245,245,242,.35); flex-shrink:0; }
+
+        @media (max-width: 640px){
+          .lp-header{ padding:16px 18px; }
+          .lp-glass-btn{ height:38px; padding:0 14px; font-size:14px; }
+          .lp-hero{ margin-top:44px; }
+          .lp-badge{ font-size:13px; }
+          .lp-badge__item{ padding:4px 10px; }
+          /* Two facts do not fit next to the reply promise on a phone, and a
+             wrapped item leaves its separator dangling. Keep one. */
+          .lp-badge__item:nth-child(3){ display:none; }
+          .brief__grid{ grid-template-columns:1fr; gap:16px; }
+          .brief{ padding:0 18px; }
+          .chip{ padding:11px 15px; }
+          .lp-bg::after{ top:clamp(720px, 92vh, 980px); width:max(320vw, 1400px); }
+        }
+      `;
+
 export default function AdLanding({ locale = 'ru', settings = {}, overrides = {} }) {
   const base = DEFAULTS[locale] || DEFAULTS.ru;
   const t = { ...base, ...Object.fromEntries(Object.entries(overrides || {}).filter(([, v]) => v)) };
 
   const contact  = settings.contact || {};
-  const counters = Array.isArray(settings.counters) ? settings.counters.slice(0, 4) : [];
+  const counters = Array.isArray(settings.counters) ? settings.counters : [];
+  const badgeFacts = [counters[0], counters[1]].map(counterPhrase).filter(Boolean);
+
+  const socials = [
+    contact.instagram && contact.instagram !== '#' && { key: 'instagram', href: contact.instagram, label: 'Instagram' },
+    contact.telegram  && contact.telegram  !== '#' && { key: 'telegram',  href: contact.telegram,  label: 'Telegram' },
+    contact.phone && { key: 'phone', href: `tel:${contact.phoneRaw || contact.phone}`, label: contact.phone },
+  ].filter(Boolean);
 
   const getMarketing = useMarketing();
   const [sent, setSent]   = useState(false);
@@ -171,7 +425,7 @@ export default function AdLanding({ locale = 'ru', settings = {}, overrides = {}
     setBusy(true);
     setError('');
 
-    // The pill answers are React state, not form controls, so they are added
+    // The chip answers are React state, not form controls, so they are added
     // here rather than picked up by FormData.
     const answered = Object.fromEntries(Object.entries(details).filter(([, v]) => v));
     const payload = {
@@ -204,194 +458,116 @@ export default function AdLanding({ locale = 'ru', settings = {}, overrides = {}
     }
   };
 
-  const phoneLink = contact.phone && (
-    <a href={`tel:${contact.phoneRaw || contact.phone}`} className="btn-ghost">{contact.phone}</a>
-  );
-
   return (
-    <main className="lp" style={{ minHeight: '100vh' }}>
+    <main className="lp">
+      <div className="lp-bg" aria-hidden />
+
       {/* Deliberately no navigation: this page is bought traffic and every
           extra link is a way out of the funnel. Logo and phone only. */}
       <header className="lp-header">
         <Image src={LOGO_URL} alt="ExpoContact" width={150} height={36}
-          style={{ height: 28, width: 'auto' }} unoptimized priority />
+          style={{ height: 26, width: 'auto' }} unoptimized priority />
         {contact.phone && (
-          <a href={`tel:${contact.phoneRaw || contact.phone}`} className="mono mono--bright">
+          <a href={`tel:${contact.phoneRaw || contact.phone}`} className="lp-glass-btn">
             {contact.phone}
           </a>
         )}
       </header>
 
-      <section className="section lp-section">
-        <div className="wrap">
-          {/* ── Pitch, kept short: the form below is the point of the page ── */}
-          <div className="lp-intro">
-            <span className="eyebrow">{t.eyebrow}</span>
-            <h1 className="section-title lp-title">{t.headline}</h1>
-            <p className="hero__lead lp-lead">{t.lead}</p>
-
-            {counters.length > 0 && (
-              <div className="counters lp-counters">
-                {counters.map((c, i) => (
-                  <div className="counter" key={i}>
-                    <div className="counter__num">
-                      {c.target}{c.suffix ? <sup>{c.suffix}</sup> : null}
-                    </div>
-                    <div className="counter__label">{c.label}</div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* ── The form: centre stage, one step ─────────────────────────── */}
-          <div className="lp-form" id="brief">
-            {sent ? (
-              <div className="form" style={{ textAlign: 'center', padding: 'clamp(40px, 6vw, 72px)' }}>
-                <p className="form__head-title" style={{ marginBottom: 12 }}>{t.sentTitle}</p>
-                <p style={{ color: 'rgba(245,245,242,.6)', fontSize: 15, lineHeight: 1.6 }}>{t.sentText}</p>
-                {contact.phone && <div style={{ marginTop: 28 }}>{phoneLink}</div>}
-              </div>
-            ) : (
-              <form className="form" onSubmit={submit} noValidate>
-                <div className="form__head">
-                  <p className="form__head-title">{t.formTitle}</p>
-                  <p className="form__head-meta">{t.formNote}</p>
-                </div>
-
-                {t.formHint && <p className="lp-form-hint">{t.formHint}</p>}
-
-                <div className="form__row">
-                  <div className="field">
-                    <label>{t.nameLabel} <span className="req">*</span></label>
-                    <input type="text" name="name" required placeholder={t.namePlaceholder} />
-                  </div>
-                  <div className="field">
-                    <label>{t.phoneLabel} <span className="req">*</span></label>
-                    <PhoneField locale={locale} placeholder={t.phonePlaceholder} />
-                  </div>
-                </div>
-
-                <div className="form__row">
-                  <div className="field">
-                    <label>{t.companyLabel}</label>
-                    <input type="text" name="company" placeholder={t.companyPlaceholder} />
-                  </div>
-                  <div className="field">
-                    <label>{t.expoLabel}</label>
-                    <input type="text" name="event" placeholder={t.expoPlaceholder} />
-                  </div>
-                </div>
-
-                {PILL_QUESTIONS.map((id) => (
-                  <div className="form__row" key={id}>
-                    <PillQuestion id={id} locale={locale} value={details[id] || ''} onChange={pick(id)} />
-                  </div>
-                ))}
-
-                <div className="form__row">
-                  <div className="field field--span">
-                    <label>{t.messageLabel}</label>
-                    <textarea name="message" rows={3} placeholder={t.messagePlaceholder} />
-                  </div>
-                </div>
-
-                {error && <p className="lp-error">{error}</p>}
-
-                <button type="submit" className="btn-submit" disabled={busy} style={{ marginTop: 28 }}>
-                  <span className="btn-submit__label">{t.submit}</span>
-                  <span className="btn-submit__circle" aria-hidden>
-                    <svg className="a1" viewBox="0 0 22 12" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M1 6 H20 M15 1 L20 6 L15 11" />
-                    </svg>
-                    <svg className="a2" viewBox="0 0 22 12" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M1 6 H20 M15 1 L20 6 L15 11" />
-                    </svg>
-                  </span>
-                </button>
-
-                <p className="mono lp-privacy">{t.privacy}</p>
-              </form>
-            )}
-          </div>
-
-          {/* ── Reassurance, after the ask ───────────────────────────────── */}
-          <div className="lp-after">
-            <h2 className="mono mono--bright lp-benefits-title">{t.benefitsTitle}</h2>
-            <ul className="lp-benefits">
-              {t.benefits.map((b, i) => (
-                <li key={i}>
-                  <span className="mono mono--accent">/{String(i + 1).padStart(2, '0')}</span>
-                  <span>{b}</span>
-                </li>
-              ))}
-            </ul>
-
-            {contact.phone && (
-              <div className="lp-call">
-                <p className="mono" style={{ marginBottom: 12 }}>{t.contactTitle}</p>
-                {phoneLink}
-              </div>
-            )}
-          </div>
+      <section className="lp-hero">
+        <div className="lp-badge">
+          <span className="lp-badge__item"><i className="lp-badge__dot" />{t.formNote}</span>
+          {badgeFacts.map((f) => (
+            <span className="lp-badge__item" key={f}>{f}</span>
+          ))}
         </div>
+        <h1 className="lp-title">{t.headline}</h1>
+        <p className="lp-lead">{t.lead}</p>
       </section>
 
-      <style>{`
-        /* landing.css hides the system cursor in favour of the custom one on
-           the main page, which this page does not render: bring it back.
-           Keep this block free of apostrophes and angle brackets: the server
-           escapes them as entities, the browser does not decode entities in
-           a style element, and the mismatch breaks hydration. */
-        .lp a, .lp button, .lp .tag { cursor: pointer; }
+      {/* ── The form: centre stage, one step ───────────────────────────── */}
+      {sent ? (
+        <div className="brief brief__sent">
+          <p className="brief__sent-title">{t.sentTitle}</p>
+          <p className="brief__sent-text">{t.sentText}</p>
+          {contact.phone && (
+            <a href={`tel:${contact.phoneRaw || contact.phone}`} className="lp-glass-btn" style={{ marginTop: 24 }}>
+              {contact.phone}
+            </a>
+          )}
+        </div>
+      ) : (
+        <form className="brief" onSubmit={submit} noValidate>
+          {t.formHint && <p className="brief__hint">{t.formHint}</p>}
 
-        .lp-header{
-          display:flex; align-items:center; justify-content:space-between;
-          gap:24px; flex-wrap:wrap;
-          padding:24px clamp(20px, 4vw, 80px);
-          border-bottom:1px solid var(--line);
-        }
-        .lp-section{ padding-top:clamp(40px, 6vw, 84px); padding-bottom:clamp(64px, 9vw, 140px); }
+          <div className="brief__grid">
+            <div className="brief__field">
+              <label className="brief__label" htmlFor="lp-name">{t.nameLabel} <b>*</b></label>
+              <input className="brief__input" id="lp-name" type="text" name="name" required
+                autoComplete="name" placeholder={t.namePlaceholder} />
+            </div>
+            <div className="brief__field">
+              <span className="brief__label">{t.phoneLabel} <b>*</b></span>
+              <div className="brief__phone">
+                <PhoneField locale={locale} placeholder={t.phonePlaceholder} />
+              </div>
+            </div>
+            <div className="brief__field">
+              <label className="brief__label" htmlFor="lp-company">{t.companyLabel}</label>
+              <input className="brief__input" id="lp-company" type="text" name="company"
+                autoComplete="organization" placeholder={t.companyPlaceholder} />
+            </div>
+            <div className="brief__field">
+              <label className="brief__label" htmlFor="lp-event">{t.expoLabel}</label>
+              <input className="brief__input" id="lp-event" type="text" name="event"
+                placeholder={t.expoPlaceholder} />
+            </div>
 
-        .lp-intro{ max-width:940px; margin:0 auto; text-align:center; }
-        .lp-title{ margin:18px 0 0; }
-        .lp-lead{ margin:22px auto 0; max-width:60ch; }
-        .lp-counters{ margin-top:40px; justify-content:center; }
+            {PILL_QUESTIONS.map((id) => (
+              <ChipQuestion key={id} id={id} locale={locale} value={details[id] || ''} onChange={pick(id)} />
+            ))}
 
-        /* The form is the page: wide, centred, and the first thing reachable. */
-        .lp-form{ max-width:900px; margin:clamp(40px, 6vw, 72px) auto 0; }
-        .lp-form .form{ padding:clamp(24px, 3.2vw, 52px); }
-        .lp-form-hint{
-          color:rgba(245,245,242,.5); font-size:14px; line-height:1.55;
-          margin:-14px 0 22px;
-        }
-        .lp-error{ color:#ff6b6b; font-size:14px; margin-top:18px; }
-        .lp-privacy{
-          margin-top:18px; text-transform:none; letter-spacing:0; line-height:1.5;
-        }
+            <div className="brief__field brief__field--wide">
+              <label className="brief__label" htmlFor="lp-message">{t.messageLabel}</label>
+              <textarea className="brief__input brief__textarea" id="lp-message" name="message" rows={4}
+                placeholder={t.messagePlaceholder} />
+            </div>
+          </div>
 
-        .lp-after{ max-width:1000px; margin:clamp(56px, 8vw, 104px) auto 0; }
-        .lp-benefits-title{ text-align:center; margin:0 0 26px; }
-        .lp-benefits{
-          list-style:none; margin:0; padding:0;
-          display:grid; gap:18px 32px;
-          grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));
-        }
-        .lp-benefits li{ display:flex; gap:14px; align-items:baseline; }
-        .lp-benefits li span:last-child{
-          color:rgba(245,245,242,.66); font-size:15px; line-height:1.6;
-        }
-        .lp-call{ margin-top:clamp(40px, 6vw, 64px); text-align:center; }
+          {error && <p className="brief__error">{error}</p>}
 
-        @media (max-width: 600px){
-          .lp-header{ padding:18px 20px; }
-          .lp-form .form{ padding:22px 18px; }
-          .lp-form-hint{ margin:-10px 0 18px; font-size:13px; }
-          /* Full-width tap targets beat a cramped two-up row on a phone. */
-          .lp .tags{ gap:8px; }
-          .lp .tag{ padding:11px 15px; }
-        }
-      `}</style>
+          <button type="submit" className="brief__submit" disabled={busy}>
+            {t.submit}
+          </button>
+          <p className="brief__privacy">{t.privacy}</p>
+        </form>
+      )}
+
+      {socials.length > 0 && (
+        <div className="lp-divider">
+          {socials.map((s) => (
+            <a key={s.key} href={s.href} className="lp-social" aria-label={s.label}
+              target={s.key === 'phone' ? undefined : '_blank'}
+              rel={s.key === 'phone' ? undefined : 'noopener noreferrer'}>
+              {ICONS[s.key]}
+            </a>
+          ))}
+        </div>
+      )}
+
+      <section className="lp-benefits">
+        <p className="lp-benefits__title">{t.benefitsTitle}</p>
+        <ul>
+          {t.benefits.map((b, i) => (
+            <li key={i}>
+              <span className="lp-benefits__n">/{String(i + 1).padStart(2, '0')}</span>
+              <span>{b}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <style dangerouslySetInnerHTML={{ __html: LP_CSS }} />
     </main>
   );
 }

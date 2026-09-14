@@ -155,10 +155,11 @@ answered, and is async because it performs that probe.
   in the component, and never rename a stored key — old leads carry it.
 - The API runs the answers through `sanitizeDetails()`: unknown questions and
   answers that are not one of the offered options are dropped, not stored.
-- The page's `<style>` block must stay free of apostrophes and angle brackets,
-  even in comments: React escapes them as entities, the browser does not
-  decode entities inside a style element, and the mismatch breaks hydration
-  (the whole page then re-renders on the client). This has bitten once.
+- The page's CSS is a string constant injected with `dangerouslySetInnerHTML`.
+  Do not turn it back into a JSX text child of `<style>`: React escapes
+  quotes, apostrophes and angle brackets in text, the browser does not decode
+  entities inside a style element, and the mismatch fails hydration for the
+  whole page. This bit twice (an apostrophe in a comment, then `content:""`).
 - `landing.css` sets `cursor:none` on every `button` for the main page's custom
   cursor, which this page does not render; the page restores `cursor:pointer`
   on its links, buttons and pills in its own style block.
