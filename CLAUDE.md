@@ -85,6 +85,17 @@ Leads must never go into Blob: blobs are public to anyone holding the URL.
 Without a Redis store on Vercel, lead writes throw and Telegram is the only
 record — the admin dashboard shows this as a red row.
 
+Telegram delivery goes through `lib/telegram.js` only: `sendTelegram(text)`
+never throws and returns the Bot API reason on failure, and
+`telegramDiagnose()` backs the «Проверить» button on the admin dashboard
+(`POST /api/admin/telegram`) — it validates the token with `getMe`, the chat
+with `getChat`, then sends a real test message, and turns Telegram's error
+strings into the fix an editor needs. Having both env vars set is not proof of
+delivery: a wrong chat id, a bot the owner never messaged, or a bot missing
+from the group all pass the env check and fail the send. Keep messages plain
+text (no `parse_mode`): visitor input with `*`, `_` or `[` would make Telegram
+reject the whole message.
+
 The Vercel Upstash integration prefixes the standard names with the store
 label, so this project has `UPSTASH_REDIS_REST_KV_REST_API_URL` rather than the
 documented `UPSTASH_REDIS_REST_URL`, and the retired Vercel KV store left bare

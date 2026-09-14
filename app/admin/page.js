@@ -2427,6 +2427,73 @@ function StatusRow({ ok, title, detail }) {
   );
 }
 
+/**
+ * Telegram is the one connector whose env vars can be present and still not
+ * deliver (wrong chat id, bot never started, bot not in the group), so the row
+ * offers a real test: token, chat, then an actual message — each step with
+ * the reason it failed.
+ */
+function TelegramRow({ configured }) {
+  const [busy, setBusy] = useState(false);
+  const [res, setRes]   = useState(null);
+
+  const runTest = async () => {
+    setBusy(true); setRes(null);
+    try {
+      const r = await fetch('/api/admin/telegram', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${getToken()}` },
+      });
+      const data = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(data.error || `HTTP ${r.status}`);
+      setRes(data);
+    } catch (e) {
+      setRes({ ok: false, steps: [{ key: 'net', ok: false, title: 'Проверка не выполнена', detail: e.message }] });
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const ok = res ? res.ok : configured;
+  const title = res
+    ? (res.ok ? `Telegram — доставляет в ${res.chat || 'чат'}` : 'Telegram — не доставляет')
+    : (configured ? 'Telegram — переменные заданы' : 'Telegram — не настроен');
+  const detail = res
+    ? null
+    : (configured
+      ? 'Нажмите «Проверить»: бот отправит тестовое сообщение и покажет, что не так, если оно не дойдёт.'
+      : 'Задайте TELEGRAM_BOT_TOKEN и TELEGRAM_CHAT_ID в Vercel, иначе уведомлений о заявках не будет.');
+
+  return (
+    <div className="flex items-start gap-3 py-2.5 border-b border-white/5 last:border-0">
+      <span className={`mt-0.5 w-2 h-2 rounded-full flex-shrink-0 ${ok ? 'bg-emerald-400' : 'bg-red-400'}`} />
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center justify-between gap-3 flex-wrap">
+          <p className="text-white/80 text-sm font-medium">{title}</p>
+          <button onClick={runTest} disabled={busy}
+            className="px-2.5 py-1 rounded-lg text-[11px] font-bold uppercase tracking-wider border border-white/10 text-white/60 hover:text-white hover:border-white/30 disabled:opacity-40 transition-colors">
+            {busy ? 'Проверяем…' : 'Проверить'}
+          </button>
+        </div>
+        {detail && <p className="text-white/40 text-xs mt-0.5 leading-relaxed">{detail}</p>}
+        {res && (
+          <ul className="mt-2 space-y-1.5">
+            {res.steps.map(st => (
+              <li key={st.key} className="flex items-start gap-2 text-xs">
+                <span className={`mt-1 w-1.5 h-1.5 rounded-full flex-shrink-0 ${st.ok ? 'bg-emerald-400' : 'bg-red-400'}`} />
+                <div>
+                  <span className="text-white/80">{st.title}</span>
+                  {st.detail && <span className="text-white/40"> — {st.detail}</span>}
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function SystemStatus() {
   const [s, setS] = useState(null);
   const [err, setErr] = useState(null);
@@ -2480,13 +2547,7 @@ function SystemStatus() {
           ? 'Загруженные картинки попадают в постоянное хранилище.'
           : 'Нет BLOB_READ_WRITE_TOKEN — загрузки не сохранятся.'}
       />
-      <StatusRow
-        ok={!!s.telegram}
-        title={s.telegram ? 'Telegram — подключён' : 'Telegram — не настроен'}
-        detail={s.telegram
-          ? 'Каждая заявка дублируется в чат.'
-          : 'Задайте TELEGRAM_BOT_TOKEN и TELEGRAM_CHAT_ID, иначе уведомлений о заявках не будет.'}
-      />
+      <TelegramRow configured={!!s.telegram} />
       <StatusRow
         ok={!!s.analytics?.metrika}
         title={s.analytics?.metrika ? 'Яндекс.Метрика — подключена' : 'Яндекс.Метрика — без токена'}

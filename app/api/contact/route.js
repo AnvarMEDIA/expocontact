@@ -2,7 +2,7 @@
  * POST /api/contact
  *
  * 1. Persists the lead (Vercel KV or JSON file — see lib/leads.js)
- * 2. Sends a Telegram notification (if TELEGRAM_BOT_TOKEN + TELEGRAM_CHAT_ID set)
+ * 2. Sends a Telegram notification through lib/telegram.js when configured
  *
  * Optional body fields:
  *   source    'contact' | 'modal' | 'ads'
@@ -16,6 +16,7 @@ import { NextResponse } from 'next/server';
 import { createLead } from '@/lib/leads';
 import { sanitizeMarketing, marketingSummary, clickIdLabel } from '@/lib/marketing';
 import { sanitizeDetails, qualifierLabel, qualifierValueLabel } from '@/lib/leadFields';
+import { sendTelegram, telegramConfigured } from '@/lib/telegram';
 
 const FORM_LABELS = {
   contact: 'форма контактов',
@@ -59,13 +60,7 @@ export async function POST(request) {
     console.error('[contact] Lead save failed:', err.message);
   }
 
-  const token  = process.env.TELEGRAM_BOT_TOKEN;
-  const chatId = process.env.TELEGRAM_CHAT_ID;
-
-  if (token && chatId) {
-    // Sent as plain text on purpose. With parse_mode a visitor name or message
-    // containing *, _, [ or ` makes Telegram reject the whole request with a
-    // 400 and the lead is lost without a trace.
+  if (telegramConfigured()) {
     const text = [
       '📬 Новая заявка с сайта ExpoContact',
       lead ? `🆔 ${lead.id}` : null,
@@ -89,20 +84,12 @@ export async function POST(request) {
       .filter(Boolean)
       .join('\n');
 
-    try {
-      const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ chat_id: chatId, text, disable_web_page_preview: true }),
-      });
-      if (!res.ok) {
-        // Surface the reason in the function logs; the visitor still sees a
-        // success because the lead itself was accepted.
-        console.error('[contact] Telegram rejected the message:',
-          res.status, (await res.text().catch(() => '')).slice(0, 300));
-      }
-    } catch (err) {
-      console.error('[contact] Telegram send failed:', err);
+    // The visitor still sees a success: the lead itself was accepted above.
+    // The reason lands in the function logs and, with the same wording, in
+    // the admin self-test.
+    const sent = await sendTelegram(text);
+    if (!sent.ok) {
+      console.error('[contact] Telegram delivery failed:', sent.status, sent.description, sent.hint || '');
     }
   } else {
     console.log('[contact] Form submission (Telegram not configured):', {
