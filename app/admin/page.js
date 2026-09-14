@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { CLICK_ID_PARAMS } from '@/lib/marketing';
 
 // ── API helper ────────────────────────────────────────────────────────────────
 const API = '/api/admin';
@@ -154,16 +155,30 @@ function fmtRelative(ts) {
   return fmtDate(ts);
 }
 
+const LEAD_FORM_LABELS = {
+  contact: 'форма контактов',
+  modal:   'попап',
+  ads:     'рекламная страница',
+};
+
 function escapeCsv(v) {
   if (v == null) return '';
   const s = String(v);
   return /[",\n;]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
 }
 
+// Campaign columns are flattened out of lead.marketing so the export can be
+// pivoted by source/campaign straight in a spreadsheet.
+const CSV_MARKETING = ['source', 'medium', 'campaign', 'content', 'term', 'clickType', 'clickId', 'landing', 'referrer'];
+
 function downloadCsv(leads) {
-  const headers = ['id','createdAt','status','name','company','phone','expo','message','source','locale'];
+  const headers = [
+    'id','createdAt','status','name','company','phone','expo','message','source','locale',
+    ...CSV_MARKETING.map(k => `utm_${k}`),
+  ];
   const rows = leads.map(l => headers.map(h => {
     if (h === 'createdAt') return fmtDate(l.createdAt);
+    if (h.startsWith('utm_')) return escapeCsv(l.marketing?.[h.slice(4)]);
     return escapeCsv(l[h]);
   }).join(','));
   const csv = '﻿' + [headers.join(','), ...rows].join('\n');
@@ -1473,9 +1488,32 @@ function LeadsManager({ toast }) {
               <Field k="Телефон" v={<a href={`tel:${selected.phone}`} className="text-[#D4A843] hover:underline">{selected.phone}</a>} />
               {selected.expo    && <Field k="Выставка" v={selected.expo} />}
               {selected.message && <Field k="Сообщение" v={<span className="whitespace-pre-wrap">{selected.message}</span>} />}
-              <Field k="Источник" v={selected.source === 'modal' ? 'попап' : 'форма контактов'} />
+              <Field k="Форма" v={LEAD_FORM_LABELS[selected.source] || selected.source || '—'} />
               {selected.locale  && <Field k="Локаль" v={selected.locale.toUpperCase()} />}
             </div>
+
+            {selected.marketing && (
+              <div className="pt-3 border-t border-white/5">
+                <p className="text-white/40 text-xs uppercase tracking-wider mb-2">Откуда пришёл лид</p>
+                <div className="space-y-2 text-sm">
+                  {selected.marketing.source   && <Field k="Источник (utm_source)"   v={selected.marketing.source} />}
+                  {selected.marketing.medium   && <Field k="Канал (utm_medium)"      v={selected.marketing.medium} />}
+                  {selected.marketing.campaign && <Field k="Кампания (utm_campaign)" v={selected.marketing.campaign} />}
+                  {selected.marketing.content  && <Field k="Объявление (utm_content)" v={selected.marketing.content} />}
+                  {selected.marketing.term     && <Field k="Запрос (utm_term)"       v={selected.marketing.term} />}
+                  {selected.marketing.clickId  && (
+                    <Field k={`Клик (${CLICK_ID_PARAMS[selected.marketing.clickType] || selected.marketing.clickType})`}
+                      v={<span className="break-all">{selected.marketing.clickId}</span>} />
+                  )}
+                  {selected.marketing.landing  && (
+                    <Field k="Страница входа" v={<span className="break-all">{selected.marketing.landing}</span>} />
+                  )}
+                  {selected.marketing.referrer && (
+                    <Field k="Переход с" v={<span className="break-all">{selected.marketing.referrer}</span>} />
+                  )}
+                </div>
+              </div>
+            )}
 
             <div>
               <p className="text-white/40 text-xs uppercase tracking-wider mb-2">Статус</p>

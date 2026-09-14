@@ -39,3 +39,6 @@ next-env.d.ts
 .env
 .env.local
 .env.production
+
+# local lead store: personal data, written by the dev fallback in lib/leads.js
+/content/data/leads.json

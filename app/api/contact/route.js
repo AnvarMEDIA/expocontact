@@ -4,14 +4,29 @@
  * 1. Persists the lead (Vercel KV or JSON file — see lib/leads.js)
  * 2. Sends a Telegram notification (if TELEGRAM_BOT_TOKEN + TELEGRAM_CHAT_ID set)
  *
- * Optional body fields: source ('contact' | 'modal'), locale ('ru' | 'en' | 'uz')
+ * Optional body fields:
+ *   source    'contact' | 'modal' | 'ads'
+ *   locale    'ru' | 'en' | 'uz'
+ *   marketing campaign attribution from the browser — see lib/marketing.js.
+ *             Never trusted as-is; sanitizeMarketing() whitelists and bounds it.
  */
 import { NextResponse } from 'next/server';
 import { createLead } from '@/lib/leads';
+import { sanitizeMarketing, marketingSummary, clickIdLabel } from '@/lib/marketing';
+
+const FORM_LABELS = {
+  contact: 'форма контактов',
+  modal:   'попап',
+  ads:     'рекламная страница',
+};
 
 export async function POST(request) {
   const body = await request.json().catch(() => ({}));
   const { name, company, phone, expo, event, message, source, locale } = body;
+
+  // Campaign data is whitelisted and bounded — it arrives from the browser and
+  // ends up in Telegram messages, the leads list and CSV exports.
+  const marketing = sanitizeMarketing(body.marketing);
 
   if (!name || !phone) {
     return NextResponse.json({ error: 'name and phone are required' }, { status: 400 });
@@ -32,7 +47,7 @@ export async function POST(request) {
   // delivery channel of record, so a failure here is logged and nothing more.
   let lead = null;
   try {
-    lead = await createLead({ ...safe, source, locale });
+    lead = await createLead({ ...safe, source, locale, marketing });
   } catch (err) {
     console.error('[contact] Lead save failed:', err.message);
   }
@@ -53,8 +68,13 @@ export async function POST(request) {
       `📞 Телефон: ${safe.phone}`,
       safe.expo    ? `🎪 Выставка: ${safe.expo}`    : null,
       safe.message ? `💬 Сообщение: ${safe.message}` : null,
-      source   ? `📍 Источник: ${source === 'modal' ? 'попап' : 'форма контактов'}` : null,
+      source   ? `📍 Форма: ${FORM_LABELS[source] || source}` : null,
       locale   ? `🌐 Локаль: ${locale.toUpperCase()}` : null,
+      marketingSummary(marketing) ? `🎯 Кампания: ${marketingSummary(marketing)}` : null,
+      marketing?.content ? `🧩 Объявление: ${marketing.content}` : null,
+      marketing?.term    ? `🔎 Запрос: ${marketing.term}` : null,
+      clickIdLabel(marketing) ? `🆔 Клик ${clickIdLabel(marketing)}: ${marketing.clickId}` : null,
+      (!marketingSummary(marketing) && marketing?.referrer) ? `🔗 Переход с: ${marketing.referrer}` : null,
     ]
       .filter(Boolean)
       .join('\n');
@@ -76,7 +96,7 @@ export async function POST(request) {
     }
   } else {
     console.log('[contact] Form submission (Telegram not configured):', {
-      id: lead?.id, ...safe, source, locale,
+      id: lead?.id, ...safe, source, locale, marketing,
     });
   }
 

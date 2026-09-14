@@ -136,6 +136,30 @@ answered, and is async because it performs that probe.
 - `components/sections/*` are leftovers from the pre-merge design and are not
   rendered anywhere. Do not update them when changing the live site.
 
+## Paid traffic landing
+
+- `/[locale]/lp` (`app/[locale]/lp/page.js` + `components/AdLanding.jsx`) is the
+  page ads point at. It has no navigation on purpose — one offer, one form — and
+  is `noindex, nofollow` so it never competes with the real site in search.
+  Keep it out of `app/sitemap.js`.
+- Its copy lives in the component as defaults and is overridden field by field
+  from `adLanding` in the locale content when that key exists. The defaults are
+  not decoration: `content.ru` is already stored in Blob, so a key added to
+  `content/ru.json` in the repository would never reach the live Russian page.
+- Attribution: `components/useMarketing.js` reads `utm_source`, `utm_medium`,
+  `utm_campaign`, `utm_content`, `utm_term` and the platform click ids
+  (`gclid`, `yclid`, `fbclid`, `ttclid`, `msclkid`, `twclid`) off the landing
+  URL, keeps them in `sessionStorage` for the rest of the visit, and hands them
+  to whichever form is submitted — the ad page and both forms on the main site.
+- `lib/marketing.js` holds the shared constants plus `sanitizeMarketing()`,
+  which whitelists and length-bounds the values server-side. Never store what
+  the browser posted without it: these strings reach Telegram, the admin panel
+  and CSV exports.
+- A lead carries the result as `lead.marketing`. It shows in the admin lead
+  card under «Откуда пришёл лид» and as `utm_*` columns in the CSV export.
+- The ad form fires the Yandex Metrika goal `lead_ads` on success, so campaigns
+  can optimise on real leads. Create that goal in Metrika for it to count.
+
 ## Environment
 
 See `.env.example`. `ADMIN_PASSWORD` guards every admin and analytics endpoint

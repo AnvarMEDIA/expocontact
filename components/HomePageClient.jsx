@@ -7,6 +7,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import BrandLogo from './BrandLogo';
 import HeroLogo3D from './HeroLogo3D';
 import PhoneField from './PhoneField';
+import useMarketing from './useMarketing';
 import '@/app/landing.css';
 
 /* ════════════════════════════════════════════════════════════════════════════
@@ -114,6 +115,9 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
 
   const services = tServices.raw('items') || [];
   const faqItems = tFAQ.raw('items') || [];
+
+  // Campaign attribution for whichever of the two forms the visitor submits.
+  const getMarketing = useMarketing();
 
   // Translation-driven data (replaces module-level constants)
   const heroSlides = tHero.raw('slides') || [];
@@ -411,7 +415,10 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
       await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...Object.fromEntries(fd.entries()), source: 'contact', locale }),
+        body: JSON.stringify({
+          ...Object.fromEntries(fd.entries()),
+          source: 'contact', locale, marketing: getMarketing(),
+        }),
       });
     } catch {/* fall through */}
     setLeadSent(true);
@@ -425,7 +432,10 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
       await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...Object.fromEntries(fd.entries()), source: 'modal', locale }),
+        body: JSON.stringify({
+          ...Object.fromEntries(fd.entries()),
+          source: 'modal', locale, marketing: getMarketing(),
+        }),
       });
     } catch {/* fall through */}
     setModalSent(true);
