@@ -180,7 +180,7 @@ const LP_CSS = `
         .lp{
           position:relative; overflow:hidden; isolation:isolate;
           min-height:100vh; padding-bottom:clamp(72px, 10vw, 140px);
-          background:#0a0a0d; color:var(--text-primary);
+          background:var(--bg-void); color:var(--text-primary);
           font-family:var(--f-body);
         }
         /* landing.css hides the system cursor on every button for the custom
@@ -192,7 +192,8 @@ const LP_CSS = `
         .lp-bg::before{
           content:""; position:absolute; inset:0;
           background:
-            radial-gradient(ellipse 70% 55% at 50% 0%, rgba(255,255,255,.075), transparent 70%),
+            radial-gradient(ellipse 70% 55% at 50% 0%, rgba(232,101,28,.16), transparent 70%),
+            radial-gradient(ellipse 45% 40% at 88% 18%, rgba(42,107,196,.14), transparent 70%),
             radial-gradient(1px 1px at 12% 18%, rgba(255,255,255,.5), transparent 100%),
             radial-gradient(1px 1px at 26% 41%, rgba(255,255,255,.35), transparent 100%),
             radial-gradient(1.5px 1.5px at 71% 22%, rgba(255,255,255,.45), transparent 100%),
@@ -200,7 +201,7 @@ const LP_CSS = `
             radial-gradient(1px 1px at 58% 12%, rgba(255,255,255,.3), transparent 100%),
             radial-gradient(1.5px 1.5px at 38% 8%, rgba(255,255,255,.4), transparent 100%),
             repeating-linear-gradient(90deg, rgba(255,255,255,.035) 0 1px, transparent 1px 22vw);
-          background-position:0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 11vw 0;
+          background-position:0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 11vw 0;
           -webkit-mask-image:linear-gradient(180deg, #000 0%, #000 55%, transparent 100%);
           mask-image:linear-gradient(180deg, #000 0%, #000 55%, transparent 100%);
         }
@@ -208,9 +209,9 @@ const LP_CSS = `
           content:""; position:absolute; left:50%; top:clamp(640px, 78vh, 900px);
           width:max(230vw, 2200px); aspect-ratio:1; border-radius:50%;
           transform:translateX(-50%);
-          background:#060608;
-          border:1px solid rgba(255,255,255,.14);
-          box-shadow:0 -40px 120px rgba(255,255,255,.07), 0 -1px 0 rgba(255,255,255,.08);
+          background:#070708;
+          border:1px solid rgba(232,101,28,.38);
+          box-shadow:0 -40px 120px rgba(232,101,28,.12), 0 -1px 0 rgba(232,101,28,.2);
         }
 
         /* ── Header ─────────────────────────────────────────────────────── */
@@ -275,7 +276,7 @@ const LP_CSS = `
           display:block; margin-bottom:8px;
           font-size:15px; font-weight:500; color:#f5f5f2; letter-spacing:-.005em;
         }
-        .brief__label b{ font-weight:500; color:rgba(245,245,242,.45); }
+        .brief__label b{ font-weight:500; color:var(--accent-primary); }
 
         .brief__input, .brief__phone{
           width:100%; min-height:48px; padding:0 16px;
@@ -290,9 +291,9 @@ const LP_CSS = `
         .brief__input::placeholder{ color:rgba(245,245,242,.28); }
         .brief__input:hover, .brief__phone:hover{ border-color:rgba(255,255,255,.18); }
         .brief__input:focus, .brief__phone:focus-within{
-          border-color:rgba(255,255,255,.34);
+          border-color:rgba(232,101,28,.65);
           background:rgba(255,255,255,.05);
-          box-shadow:0 0 0 4px rgba(255,255,255,.05);
+          box-shadow:0 0 0 4px rgba(232,101,28,.14);
         }
         .brief__textarea{ min-height:124px; padding:13px 16px; resize:vertical; }
 
@@ -320,11 +321,10 @@ const LP_CSS = `
           font-family:var(--f-body); font-size:14px; line-height:1;
           transition:all .2s;
         }
-        .chip:hover{ color:#fff; border-color:rgba(255,255,255,.3); }
+        .chip:hover{ color:#fff; border-color:rgba(232,101,28,.55); }
         .chip.is-active{
-          background:linear-gradient(180deg, rgba(255,255,255,.2), rgba(255,255,255,.1));
-          border-color:rgba(255,255,255,.4); color:#fff;
-          box-shadow:0 1px 0 rgba(255,255,255,.18) inset, 0 8px 24px -12px rgba(255,255,255,.35);
+          background:var(--accent-primary); border-color:var(--accent-primary); color:#fff;
+          box-shadow:0 8px 20px -10px var(--accent-glow);
         }
 
         .brief__error{ margin:16px 0 0; font-size:14px; color:#ff7b6b; text-align:center; }
@@ -332,13 +332,13 @@ const LP_CSS = `
           display:block; width:100%; height:54px; margin-top:26px;
           border-radius:14px;
           font-family:var(--f-body); font-size:16px; font-weight:500; color:#fff;
-          background:linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,255,255,.06));
-          border:1px solid rgba(255,255,255,.2);
-          box-shadow:0 1px 0 rgba(255,255,255,.16) inset, 0 18px 48px -16px rgba(255,255,255,.35);
-          transition:background .25s, border-color .25s, transform .15s, opacity .2s;
+          background:var(--accent-primary);
+          border:1px solid rgba(255,255,255,.12);
+          box-shadow:0 1px 0 rgba(255,255,255,.18) inset, 0 22px 50px -22px rgba(232,101,28,.6);
+          transition:transform .35s cubic-bezier(.7,0,.2,1), box-shadow .35s, opacity .2s;
         }
-        .brief__submit:hover{ background:linear-gradient(180deg, rgba(255,255,255,.26), rgba(255,255,255,.1)); border-color:rgba(255,255,255,.3); }
-        .brief__submit:active{ transform:translateY(1px); }
+        .brief__submit:hover{ transform:translateY(-2px); box-shadow:0 1px 0 rgba(255,255,255,.18) inset, 0 28px 60px -22px rgba(232,101,28,.9); }
+        .brief__submit:active{ transform:translateY(0); }
         .brief__submit:disabled{ opacity:.55; cursor:default; }
         .brief__privacy{
           margin:14px 0 0; text-align:center;
@@ -364,7 +364,7 @@ const LP_CSS = `
         }
         .lp-divider::after{ background:linear-gradient(90deg, rgba(255,255,255,.16), transparent); }
         .lp-social{ color:rgba(245,245,242,.5); display:inline-flex; transition:color .2s; }
-        .lp-social:hover{ color:#fff; }
+        .lp-social:hover{ color:var(--accent-primary); }
 
         .lp-benefits{ max-width:880px; margin:clamp(48px, 7vw, 80px) auto 0; padding:0 20px; }
         .lp-benefits__title{
@@ -377,7 +377,7 @@ const LP_CSS = `
           display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:14px 32px;
         }
         .lp-benefits li{ display:flex; gap:12px; align-items:baseline; font-size:14px; line-height:1.55; color:rgba(245,245,242,.6); }
-        .lp-benefits__n{ font-family:var(--f-mono); font-size:11px; color:rgba(245,245,242,.35); flex-shrink:0; }
+        .lp-benefits__n{ font-family:var(--f-mono); font-size:11px; color:var(--accent-primary); flex-shrink:0; }
 
         @media (max-width: 640px){
           .lp-header{ padding:16px 18px; }
@@ -466,7 +466,7 @@ export default function AdLanding({ locale = 'ru', settings = {}, overrides = {}
           extra link is a way out of the funnel. Logo and phone only. */}
       <header className="lp-header">
         <Image src={LOGO_URL} alt="ExpoContact" width={150} height={36}
-          style={{ height: 26, width: 'auto' }} unoptimized priority />
+          style={{ height: 39, width: 'auto' }} unoptimized priority />
         {contact.phone && (
           <a href={`tel:${contact.phoneRaw || contact.phone}`} className="lp-glass-btn">
             {contact.phone}
