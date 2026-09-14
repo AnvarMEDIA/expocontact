@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { CLICK_ID_PARAMS } from '@/lib/marketing';
 import { QUALIFIER_KEYS, qualifierLabel, qualifierValueLabel } from '@/lib/leadFields';
+import { formatPhone } from '@/lib/phone';
 
 // ── API helper ────────────────────────────────────────────────────────────────
 const API = '/api/admin';
@@ -1345,6 +1346,19 @@ function LeadsManager({ toast }) {
 
   useEffect(() => { load(); }, [load]);
 
+  useEffect(() => {
+    if (loading) return;
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('lead');
+    if (!id) return;
+    const hit = leads.find(l => l.id === id);
+    if (hit) { setSelected(hit); setFilter('all'); }
+    else toast('Заявка из ссылки не найдена — возможно, удалена', 'error');
+    params.delete('lead');
+    const qs = params.toString();
+    window.history.replaceState(null, '', window.location.pathname + (qs ? `?${qs}` : ''));
+  }, [loading, leads, toast]);
+
   const counts = {
     all:         leads.length,
     new:         leads.filter(l => l.status === 'new').length,
@@ -1459,7 +1473,7 @@ function LeadsManager({ toast }) {
                   </span>
                 </div>
                 <div className="flex items-center gap-3 text-xs text-white/40">
-                  <span>{l.phone}</span>
+                  <span>{formatPhone(l.phone)}</span>
                   {l.locale && <span className="uppercase">{l.locale}</span>}
                   <span className="ml-auto">{fmtRelative(l.createdAt)}</span>
                 </div>
@@ -1491,7 +1505,7 @@ function LeadsManager({ toast }) {
 
             <div className="space-y-2 text-sm">
               {selected.company && <Field k="Компания" v={selected.company} />}
-              <Field k="Телефон" v={<a href={`tel:${selected.phone}`} className="text-[#D4A843] hover:underline">{selected.phone}</a>} />
+              <Field k="Телефон" v={<a href={`tel:${selected.phone}`} className="text-[#D4A843] hover:underline">{formatPhone(selected.phone)}</a>} />
               {selected.expo    && <Field k="Выставка" v={selected.expo} />}
               {selected.message && <Field k="Сообщение" v={<span className="whitespace-pre-wrap">{selected.message}</span>} />}
               <Field k="Форма" v={LEAD_FORM_LABELS[selected.source] || selected.source || '—'} />
@@ -2824,6 +2838,9 @@ export default function AdminPage() {
   useEffect(() => {
     const token = sessionStorage.getItem('cms_token');
     if (token) apiFetch('portfolio', {}, 'ru').then(() => setAuthed(true)).catch(() => {});
+    // The Telegram notification links to /admin?lead=<id>; the section is
+    // chosen here so it survives the login screen.
+    if (new URLSearchParams(window.location.search).has('lead')) setSection('leads');
   }, []);
 
   // Poll new-lead count every 60s so badge stays fresh

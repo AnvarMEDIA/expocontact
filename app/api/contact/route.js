@@ -17,6 +17,20 @@ import { createLead } from '@/lib/leads';
 import { sanitizeMarketing, marketingSummary, clickIdLabel } from '@/lib/marketing';
 import { sanitizeDetails, qualifierLabel, qualifierValueLabel } from '@/lib/leadFields';
 import { sendTelegram, telegramConfigured } from '@/lib/telegram';
+import { formatPhone } from '@/lib/phone';
+
+/** "https://www.google.com/search?q=…" -> "google.com": the manager needs the source, not the URL. */
+function refererHost(url) {
+  try { return new URL(url).hostname.replace(/^www\./, ''); } catch { return url; }
+}
+
+/** Public origin the visitor used, so the admin link opens on the same host (www or not). */
+function siteOrigin(request) {
+  const host  = request.headers.get('x-forwarded-host') || request.headers.get('host');
+  const proto = request.headers.get('x-forwarded-proto') || 'https';
+  if (host && !/^(localhost|127\.0\.0\.1)(:|$)/.test(host)) return `${proto}://${host}`;
+  return process.env.NEXT_PUBLIC_SITE_URL || (host ? `http://${host}` : 'https://expocontact.uz');
+}
 
 const FORM_LABELS = {
   contact: 'форма контактов',
@@ -67,7 +81,7 @@ export async function POST(request) {
       '',
       `👤 Имя: ${safe.name}`,
       safe.company ? `🏢 Компания: ${safe.company}` : null,
-      `📞 Телефон: ${safe.phone}`,
+      `📞 Телефон: ${formatPhone(safe.phone)}`,
       safe.expo    ? `🎪 Выставка: ${safe.expo}`    : null,
       ...(details
         ? Object.entries(details).map(([k, v]) => `📐 ${qualifierLabel(k)}: ${qualifierValueLabel(k, v)}`)
@@ -79,7 +93,8 @@ export async function POST(request) {
       marketing?.content ? `🧩 Объявление: ${marketing.content}` : null,
       marketing?.term    ? `🔎 Запрос: ${marketing.term}` : null,
       clickIdLabel(marketing) ? `🆔 Клик ${clickIdLabel(marketing)}: ${marketing.clickId}` : null,
-      (!marketingSummary(marketing) && marketing?.referrer) ? `🔗 Переход с: ${marketing.referrer}` : null,
+      (!marketingSummary(marketing) && marketing?.referrer) ? `🔗 Переход с: ${refererHost(marketing.referrer)}` : null,
+      lead ? `\n🔧 Открыть в админке: ${siteOrigin(request)}/admin?lead=${lead.id}` : null,
     ]
       .filter(Boolean)
       .join('\n');
