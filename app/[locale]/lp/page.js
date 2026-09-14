@@ -21,10 +21,12 @@ import { routing } from '@/i18n/routing';
 
 export const revalidate = 60;
 
+// The locale layout appends "| ExpoContact" through its title template, so
+// these must not carry the brand themselves.
 const TITLES = {
-  ru: 'Выставочные стенды под ключ — заявка на расчёт | ExpoContact',
-  en: 'Turnkey exhibition stands — request a quote | ExpoContact',
-  uz: 'Ko’rgazma stendlari — hisob-kitob uchun ariza | ExpoContact',
+  ru: 'Выставочные стенды под ключ — заявка на расчёт',
+  en: 'Turnkey exhibition stands — request a quote',
+  uz: 'Ko’rgazma stendlari — hisob-kitob uchun ariza',
 };
 
 export function generateStaticParams() {
