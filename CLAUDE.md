@@ -142,6 +142,38 @@ Rules worth keeping:
   (`lead.projectId`, `project.leadId`) and the lead moves to «в работе».
 - Projects are in the backup (`data.crm`), like leads. They hold personal data,
   so Redis only — never Blob.
+- `lib/countries.js` is the single country list, shared by `PhoneField` and the
+  CRM. A project stores `client.country` as the two-letter code, never the
+  display name, so renaming a country cannot orphan old records.
+- `money.method` is the payment method (`PAYMENT_METHODS` in the model).
+  «Перечисление с НДС» is its own option because in Uzbekistan it changes the
+  invoiced amount.
+- Country and payment method follow the same rule: an empty string clears the
+  field, anything unrecognised keeps what was stored, so a malformed payload
+  cannot silently wipe a real value.
+- `links.client` is a link to the client's own material (logos, brandbook),
+  not an upload — it usually already lives in their Drive, and copying it here
+  would only create a second version to keep in sync.
+- `url()` in the model is what makes a link safe to render as an `href` in the
+  admin: it accepts absolute http(s) and same-site paths such as the
+  `/uploads/...` a local upload returns, and drops `javascript:`, `data:` and
+  protocol-relative `//host`. Attachments go through it too.
+
+### Project files
+
+- `POST /api/admin/crm/upload` stores attachments under `projects/` in Blob —
+  deliberately not `uploads/`, which the site's media library lists. Quotes and
+  contracts must never appear in the site's image picker.
+- **Blob serves every object publicly to anyone holding the URL.** A quote
+  carries prices and a client name, so the stored filename is random and
+  reveals nothing, and the admin panel says plainly that the link is a secret.
+  This is obscurity, not access control; real protection needs a private store
+  with signed URLs.
+- Allowed: pdf, doc(x), xls(x), ppt(x), png, jpg, webp, zip, rar, dwg, up to
+  20 MB. HTML and executables are refused — an .html on our own origin would
+  run with the site's privileges.
+- Deleting an attachment unlinks it from the project and leaves the blob in
+  place: an orphan costs storage, a wrong delete costs a quote.
 
 ## Daily digest to Telegram
 

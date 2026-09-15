@@ -14,7 +14,7 @@ import { NextResponse } from 'next/server';
 import {
   listProjects, getProject, createProject, updateProject, deleteProject,
   addTask, updateTask, deleteTask, resetPlan,
-  addPayment, deletePayment, addNote, crmDashboard,
+  addPayment, deletePayment, addNote, addFile, deleteFile, crmDashboard,
 } from '@/lib/crm/store';
 import { getLead, patchLead, updateLeadStatus } from '@/lib/leads';
 import { qualifierValueLabel } from '@/lib/leadFields';
@@ -114,6 +114,8 @@ const ACTIONS = {
   'plan.reset':  (id)    => resetPlan(id),
   'payment.add': (id, b) => addPayment(id, b.payment || {}),
   'payment.delete': (id, b) => deletePayment(id, b.paymentId),
+  'file.add':    (id, b) => addFile(id, b.file || {}),
+  'file.delete': (id, b) => deleteFile(id, b.fileId),
   note:          (id, b) => addNote(id, b.text),
 };
 

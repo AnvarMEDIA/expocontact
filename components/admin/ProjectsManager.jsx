@@ -16,8 +16,9 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   STAGES, BOARD_STAGES, stageLabel, isClosed, CURRENCIES,
   formatMoney, formatDate, daysWord, todayISO, daysBetween, balanceOf, paidShare,
-  scheduleFromSetup, MIN_LEAD_DAYS, isDate,
+  scheduleFromSetup, MIN_LEAD_DAYS, isDate, PAYMENT_METHODS,
 } from '@/lib/crm/model';
+import { COUNTRIES, countryLabel } from '@/lib/countries';
 
 /* ── API ─────────────────────────────────────────────────────────────────── */
 
@@ -66,6 +67,112 @@ function SetupCountdown({ date, level = 'ok', compact = false }) {
   );
 }
 
+function CountryPicker({ value, onChange }) {
+  return (
+    <select className={inputCls} value={value || ''} onChange={e => onChange(e.target.value)}>
+      <option value="">— не указана —</option>
+      {COUNTRIES.map(c => <option key={c.code} value={c.code}>{c.flag} {c.name}</option>)}
+    </select>
+  );
+}
+
+function PaymentPicker({ value, onChange }) {
+  return (
+    <select className={inputCls} value={value || ''} onChange={e => onChange(e.target.value)}>
+      <option value="">— не указана —</option>
+      {PAYMENT_METHODS.map(m => <option key={m.key} value={m.key}>{m.label}</option>)}
+    </select>
+  );
+}
+
+const fmtSize = (b) => (!b ? '' : b < 1024 * 1024 ? `${Math.round(b / 1024)} КБ` : `${(b / 1048576).toFixed(1)} МБ`);
+
+const FILE_KINDS = [
+  { key: 'quote',    label: 'КП' },
+  { key: 'contract', label: 'Договор' },
+  { key: 'drawing',  label: 'Чертёж' },
+  { key: 'other',    label: 'Прочее' },
+];
+const fileKindLabel = (k) => FILE_KINDS.find(x => x.key === k)?.label || 'Файл';
+
+/**
+ * Attachments. The upload goes to Blob, which serves objects publicly to
+ * anyone holding the URL — the note under the list says so, because a quote
+ * carries prices and a client name.
+ */
+function Files({ project, onAction, busy }) {
+  const [kind, setKind] = useState('quote');
+  const [uploading, setUploading] = useState(false);
+  const [err, setErr] = useState('');
+
+  const upload = async (file) => {
+    if (!file) return;
+    setUploading(true); setErr('');
+    try {
+      const form = new FormData();
+      form.append('file', file);
+      const res = await fetch('/api/admin/crm/upload', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token()}` },
+        body: form,
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || `Ошибка ${res.status}`);
+      await onAction({ action: 'file.add', file: { ...data, kind } });
+    } catch (e) {
+      setErr(e.message);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const files = project.files || [];
+
+  return (
+    <div className="space-y-3">
+      <p className="text-white/40 text-xs uppercase tracking-wider">Файлы проекта</p>
+
+      {files.length > 0 ? (
+        <div className="space-y-1.5">
+          {files.map(f => (
+            <div key={f.id} className="flex items-center gap-2.5 group bg-[#0d1220] border border-white/5 rounded-lg px-3 py-2">
+              <span className={`text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded flex-shrink-0 ${
+                f.kind === 'quote' ? 'bg-[#D4A843]/15 text-[#D4A843]' : 'bg-white/5 text-white/40'}`}>
+                {fileKindLabel(f.kind)}
+              </span>
+              <a href={f.url} target="_blank" rel="noopener noreferrer"
+                className="text-white/85 text-sm truncate hover:text-[#D4A843] transition-colors">{f.name}</a>
+              <span className="text-white/25 text-[11px] flex-shrink-0">{fmtSize(f.size)}</span>
+              <button onClick={() => onAction({ action: 'file.delete', fileId: f.id })} disabled={busy}
+                className="ml-auto opacity-0 group-hover:opacity-100 text-white/25 hover:text-red-400 text-xs transition-all flex-shrink-0">✕</button>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className="text-white/25 text-sm">Файлов пока нет.</p>
+      )}
+
+      <div className="flex gap-2 flex-wrap items-center">
+        <div className="w-36">
+          <select className={inputCls} value={kind} onChange={e => setKind(e.target.value)}>
+            {FILE_KINDS.map(k => <option key={k.key} value={k.key}>{k.label}</option>)}
+          </select>
+        </div>
+        <label className={`${btnCls} border-white/10 text-white/60 hover:text-white cursor-pointer ${uploading ? 'opacity-40' : ''}`}>
+          {uploading ? 'Загружаем…' : 'Прикрепить файл'}
+          <input type="file" className="hidden" disabled={uploading || busy}
+            onChange={e => { upload(e.target.files?.[0]); e.target.value = ''; }} />
+        </label>
+      </div>
+      {err && <p className="text-red-300 text-xs">{err}</p>}
+      <p className="text-white/25 text-[11px] leading-relaxed">
+        До 20 МБ: pdf, doc, docx, xls, xlsx, ppt, pptx, png, jpg, zip, rar, dwg.
+        Ссылка на файл не угадывается, но открыть её сможет любой, у кого она есть — не пересылайте её посторонним.
+      </p>
+    </div>
+  );
+}
+
 function StagePicker({ value, onChange, disabled }) {
   return (
     <select value={value} onChange={e => onChange(e.target.value)} disabled={disabled}
@@ -108,11 +215,12 @@ function BoardCard({ p, onOpen }) {
 
 const EMPTY = {
   title: '', manager: '',
-  client: { company: '', contact: '', phone: '', email: '' },
+  client: { company: '', contact: '', phone: '', email: '', country: '' },
   expo: { name: '', city: '', venue: '' },
   stand: { area: '', type: '', number: '', hall: '' },
   dates: { setup: '', openFrom: '', openTo: '', teardown: '' },
-  money: { total: '', currency: 'UZS' },
+  money: { total: '', currency: 'UZS', method: '' },
+  links: { client: '' },
   brief: '',
 };
 
@@ -137,6 +245,7 @@ function NewProject({ onCreate, onCancel, busy }) {
         <Field label="Клиент — компания"><input className={inputCls} value={f.client.company} onChange={e => set('client.company', e.target.value)} /></Field>
         <Field label="Контактное лицо"><input className={inputCls} value={f.client.contact} onChange={e => set('client.contact', e.target.value)} /></Field>
         <Field label="Телефон"><input className={inputCls} value={f.client.phone} onChange={e => set('client.phone', e.target.value)} /></Field>
+        <Field label="Страна клиента"><CountryPicker value={f.client.country} onChange={v => set('client.country', v)} /></Field>
         <Field label="Выставка"><input className={inputCls} value={f.expo.name} onChange={e => set('expo.name', e.target.value)} placeholder="UzBuild 2026" /></Field>
         <Field label="Город"><input className={inputCls} value={f.expo.city} onChange={e => set('expo.city', e.target.value)} /></Field>
         <Field label="Площадка"><input className={inputCls} value={f.expo.venue} onChange={e => set('expo.venue', e.target.value)} /></Field>
@@ -166,7 +275,13 @@ function NewProject({ onCreate, onCancel, busy }) {
             {Object.keys(CURRENCIES).map(c => <option key={c} value={c}>{c}</option>)}
           </select>
         </Field>
+        <Field label="Форма оплаты"><PaymentPicker value={f.money.method} onChange={v => set('money.method', v)} /></Field>
       </div>
+
+      <Field label="Ссылка на файлы клиента">
+        <input className={inputCls} type="url" value={f.links.client} onChange={e => set('links.client', e.target.value)}
+          placeholder="https://drive.google.com/… — логотипы, брендбук, фото" />
+      </Field>
 
       <Field label="Бриф"><textarea rows={3} className={inputCls} value={f.brief} onChange={e => set('brief', e.target.value)} /></Field>
 
@@ -243,7 +358,7 @@ function Tasks({ project, onAction, busy }) {
 
       <div className="flex gap-2">
         <input className={inputCls} value={title} onChange={e => setTitle(e.target.value)} placeholder="Новая задача" />
-        <input type="date" className={`${inputCls} w-40`} value={due} onChange={e => setDue(e.target.value)} />
+        <div className="w-40 flex-shrink-0"><input type="date" className={inputCls} value={due} onChange={e => setDue(e.target.value)} /></div>
         <button disabled={busy || !title.trim()}
           onClick={() => { onAction({ action: 'task.add', task: { title, due } }); setTitle(''); setDue(''); }}
           className={`${btnCls} border-white/10 text-white/60 hover:text-white whitespace-nowrap`}>Добавить</button>
@@ -262,6 +377,16 @@ function Money({ project, onAction, busy }) {
   return (
     <div className="space-y-3">
       <p className="text-white/40 text-xs uppercase tracking-wider">Деньги</p>
+
+      {/* Editable here as well as on the Данные tab: this is the screen someone
+          opens when they are dealing with an invoice. */}
+      <div className="flex items-center gap-2 flex-wrap">
+        <span className="text-white/45 text-xs">Форма оплаты:</span>
+        <div className="w-56">
+          <PaymentPicker value={project.money?.method}
+            onChange={v => onAction({ action: 'update', project: { money: { ...project.money, method: v } } })} />
+        </div>
+      </div>
 
       <div className="grid grid-cols-3 gap-3 text-center">
         {[
@@ -297,8 +422,8 @@ function Money({ project, onAction, busy }) {
       )}
 
       <div className="flex gap-2">
-        <input type="number" min="0" className={`${inputCls} w-32`} value={amount} onChange={e => setAmount(e.target.value)} placeholder="Сумма" />
-        <input type="date" className={`${inputCls} w-40`} value={date} onChange={e => setDate(e.target.value)} />
+        <div className="w-32 flex-shrink-0"><input type="number" min="0" className={inputCls} value={amount} onChange={e => setAmount(e.target.value)} placeholder="Сумма" /></div>
+        <div className="w-40 flex-shrink-0"><input type="date" className={inputCls} value={date} onChange={e => setDate(e.target.value)} /></div>
         <input className={inputCls} value={note} onChange={e => setNote(e.target.value)} placeholder="Комментарий" />
         <button disabled={busy || !(Number(amount) > 0)}
           onClick={() => { onAction({ action: 'payment.add', payment: { amount: Number(amount), date, note } }); setAmount(''); setNote(''); }}
@@ -358,6 +483,14 @@ function ProjectCard({ id, onClose, onChanged, toast }) {
             {p.leadId && <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/5 text-white/40">из заявки</span>}
           </div>
           <h3 className="text-white font-bold text-lg mt-0.5 break-words">{p.title}</h3>
+          <div className="flex items-center gap-2 flex-wrap text-xs text-white/40 mt-0.5">
+            {p.client?.company && <span>{p.client.company}</span>}
+            {p.client?.country && <span>{countryLabel(p.client.country)}</span>}
+            {p.links?.client && (
+              <a href={p.links.client} target="_blank" rel="noopener noreferrer"
+                className="text-[#D4A843]/80 hover:text-[#D4A843] transition-colors">файлы клиента ↗</a>
+            )}
+          </div>
           <div className="mt-1"><SetupCountdown date={p.dates?.setup} /></div>
         </div>
         <div className="flex items-center gap-2">
@@ -369,7 +502,7 @@ function ProjectCard({ id, onClose, onChanged, toast }) {
       {err && <p className="px-5 py-2 text-red-300 text-xs bg-red-500/5">{err}</p>}
 
       <div className="flex gap-1 px-4 sm:px-5 pt-3 flex-wrap">
-        {[['plan', 'План и задачи'], ['info', 'Данные'], ['money', 'Деньги'], ['history', 'История']].map(([k, label]) => (
+        {[['plan', 'План и задачи'], ['info', 'Данные'], ['money', 'Деньги'], ['files', `Файлы${(p.files || []).length ? ` (${p.files.length})` : ''}`], ['history', 'История']].map(([k, label]) => (
           <button key={k} onClick={() => setTab(k)}
             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
               tab === k ? 'bg-[#D4A843]/15 text-[#D4A843]' : 'text-white/45 hover:text-white hover:bg-white/5'}`}>
@@ -390,6 +523,7 @@ function ProjectCard({ id, onClose, onChanged, toast }) {
               <Field label="Контакт"><input className={inputCls} value={draft.client?.contact || ''} onChange={e => set('client.contact', e.target.value)} /></Field>
               <Field label="Телефон"><input className={inputCls} value={draft.client?.phone || ''} onChange={e => set('client.phone', e.target.value)} /></Field>
               <Field label="Email"><input className={inputCls} value={draft.client?.email || ''} onChange={e => set('client.email', e.target.value)} /></Field>
+              <Field label="Страна клиента"><CountryPicker value={draft.client?.country} onChange={v => set('client.country', v)} /></Field>
               <Field label="Выставка"><input className={inputCls} value={draft.expo?.name || ''} onChange={e => set('expo.name', e.target.value)} /></Field>
               <Field label="Город"><input className={inputCls} value={draft.expo?.city || ''} onChange={e => set('expo.city', e.target.value)} /></Field>
               <Field label="Площадка"><input className={inputCls} value={draft.expo?.venue || ''} onChange={e => set('expo.venue', e.target.value)} /></Field>
@@ -413,7 +547,14 @@ function ProjectCard({ id, onClose, onChanged, toast }) {
                   {Object.keys(CURRENCIES).map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
               </Field>
+              <Field label="Форма оплаты"><PaymentPicker value={draft.money?.method} onChange={v => set('money.method', v)} /></Field>
             </div>
+
+            <Field label="Ссылка на файлы клиента">
+              <input className={inputCls} value={draft.links?.client || ''} type="url"
+                onChange={e => set('links.client', e.target.value)}
+                placeholder="https://drive.google.com/… — логотипы, брендбук, фото" />
+            </Field>
 
             <Field label="Бриф"><textarea rows={4} className={inputCls} value={draft.brief || ''} onChange={e => set('brief', e.target.value)} /></Field>
 
@@ -425,6 +566,8 @@ function ProjectCard({ id, onClose, onChanged, toast }) {
         )}
 
         {tab === 'money' && <Money project={p} onAction={act} busy={busy} />}
+
+        {tab === 'files' && <Files project={p} onAction={act} busy={busy} />}
 
         {tab === 'history' && (
           <div className="space-y-4">
