@@ -30,6 +30,7 @@ import { revalidatePath } from 'next/cache';
 import { readDoc, writeDoc } from '@/lib/store';
 import { LOCALES } from '@/lib/seed';
 import { listLeads, restoreLeads } from '@/lib/leads';
+import { exportProjects, restoreProjects } from '@/lib/crm/store';
 
 function checkAuth(request) {
   const token = (request.headers.get('Authorization') || '').replace('Bearer ', '');
@@ -51,6 +52,15 @@ export async function GET(request) {
   } catch (err) {
     data.leads = [];
     data.leadsError = err.message;
+  }
+
+  // Projects share that store, and the same rule applies: a backup without
+  // them would quietly look complete.
+  try {
+    data.crm = await exportProjects();
+  } catch (err) {
+    data.crm = null;
+    data.crmError = err.message;
   }
 
   for (const locale of LOCALES) {
@@ -118,6 +128,9 @@ export async function POST(request) {
 
   if (isList(d.leads))
     await trySave('leads', () => restoreLeads(d.leads));
+
+  if (isObject(d.crm) && Array.isArray(d.crm.projects))
+    await trySave('projects', () => restoreProjects(d.crm));
 
   try {
     revalidatePath('/[locale]', 'layout');

@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { CLICK_ID_PARAMS } from '@/lib/marketing';
 import { QUALIFIER_KEYS, qualifierLabel, qualifierValueLabel } from '@/lib/leadFields';
 import { formatPhone } from '@/lib/phone';
+import ProjectsManager from '@/components/admin/ProjectsManager';
 
 // ── API helper ────────────────────────────────────────────────────────────────
 const API = '/api/admin';
@@ -88,9 +89,12 @@ const IC_MEDIA = <svg className="w-4 h-4" fill="none" stroke="currentColor" view
 
 const IC_BACKUP = <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>;
 
+const IC_PROJECTS = <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>;
+
 const NAV = [
   { key: 'dashboard',       label: 'Дашборд',           icon: IC.dashboard    },
   { key: 'leads',           label: 'Заявки',            icon: IC_LEADS        },
+  { key: 'projects',        label: 'Проекты',           icon: IC_PROJECTS     },
   { key: 'analytics',       label: 'Аналитика',         icon: IC_ANALYTICS    },
   { key: 'landingSettings', label: 'Настройки сайта',   icon: IC_LANDING      },
   { key: 'seo',             label: 'SEO',               icon: IC_SEO          },
@@ -106,7 +110,8 @@ const NAV = [
 ];
 
 const SECTION_TITLES = {
-  dashboard: 'Дашборд', leads: 'Заявки с сайта', analytics: 'Аналитика посетителей',
+  dashboard: 'Дашборд', leads: 'Заявки с сайта', projects: 'Проекты — выставки в работе',
+  analytics: 'Аналитика посетителей',
   landingSettings: 'Настройки главной страницы',
   seo: 'SEO — meta-теги и индексация',
   media: 'Медиа-библиотека',
@@ -1328,7 +1333,7 @@ function AnalyticsPage() {
 
 // ── Dashboard ─────────────────────────────────────────────────────────────────
 // ── LeadsManager ──────────────────────────────────────────────────────────────
-function LeadsManager({ toast }) {
+function LeadsManager({ toast, onNavigate }) {
   const [leads,    setLeads]    = useState([]);
   const [loading,  setLoading]  = useState(true);
   const [filter,   setFilter]   = useState('all');
@@ -1399,6 +1404,27 @@ function LeadsManager({ toast }) {
         toast('Комментарий добавлен');
       }
     } catch { toast('Ошибка', 'error'); }
+  };
+
+  const [makingProject, setMakingProject] = useState(false);
+  const makeProject = async (lead) => {
+    setMakingProject(true);
+    try {
+      const res = await fetch('/api/admin/crm', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${getToken()}` },
+        body: JSON.stringify({ fromLeadId: lead.id }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || `Ошибка ${res.status}`);
+      toast(`Проект ${data.code} создан`);
+      load();
+      onNavigate?.('projects');
+    } catch (e) {
+      toast(e.message, 'error');
+    } finally {
+      setMakingProject(false);
+    }
   };
 
   const remove = async (id) => {
@@ -1545,6 +1571,24 @@ function LeadsManager({ toast }) {
                 </div>
               </div>
             )}
+
+            <div className="pt-3 border-t border-white/5">
+              <p className="text-white/40 text-xs uppercase tracking-wider mb-2">Проект</p>
+              {selected.projectId ? (
+                <button onClick={() => onNavigate?.('projects')}
+                  className="w-full px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wider border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/15 transition-colors">
+                  Проект создан — открыть раздел
+                </button>
+              ) : (
+                <button onClick={() => makeProject(selected)} disabled={makingProject}
+                  className="w-full px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wider border border-[#D4A843]/40 bg-[#D4A843]/10 text-[#D4A843] hover:bg-[#D4A843]/20 transition-colors disabled:opacity-40">
+                  {makingProject ? 'Создаём…' : 'Создать проект из заявки'}
+                </button>
+              )}
+              <p className="text-white/25 text-[11px] mt-1.5 leading-relaxed">
+                Клиент, выставка и бриф перенесутся автоматически. Заявка перейдёт в работу.
+              </p>
+            </div>
 
             <div>
               <p className="text-white/40 text-xs uppercase tracking-wider mb-2">Статус</p>
@@ -2875,7 +2919,8 @@ export default function AdminPage() {
 
         <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-x-hidden">
           {section === 'dashboard'    && <Dashboard onNavigate={navigate} />}
-          {section === 'leads'        && <LeadsManager toast={toast} />}
+          {section === 'leads'        && <LeadsManager toast={toast} onNavigate={navigate} />}
+          {section === 'projects'     && <ProjectsManager toast={toast} />}
           {section === 'analytics'    && <AnalyticsPage />}
           {section === 'landingSettings' && <LandingSettingsManager toast={toast} />}
           {section === 'seo'          && <SeoManager toast={toast} />}

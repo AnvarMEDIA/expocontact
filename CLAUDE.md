@@ -105,6 +105,44 @@ bare ones, and probes each with a read before using it — do not replace that
 with hardcoded variable names. `leadsStatus()` reports which variable actually
 answered, and is async because it performs that probe.
 
+## CRM — projects
+
+`/admin` → Проекты. An exhibition project is not a generic deal: the build-up
+date does not move, so the whole plan is counted backwards from the day the
+crew drives in. Three files, each testable on its own:
+
+- `lib/kv.js` — the one connection to Redis, shared by leads and the CRM. The
+  credential discovery described above lives here now; `lib/leads.js` is just
+  the leads collection on top of it. Local development falls back to JSON files
+  under `content/data/`, and `leads:all` keeps its historical path.
+- `lib/crm/model.js` — pure rules, no I/O: the stages (the company's own
+  seven-step process plus `done`/`lost`), `scheduleFromSetup()` which derives
+  every deadline backwards from build-up, `planTasks()` (20-item checklist),
+  `projectHealth()` (why a project needs attention today) and
+  `sanitizeProject()`. Import it from anywhere — it has no React and no Node
+  APIs.
+- `lib/crm/store.js` — `crm:index` holds **only ids**, one document per project
+  under `crm:project:<id>`. Do not denormalise summary fields into the index:
+  it would have to be rewritten on every edit and the board would eventually
+  disagree with the card. The list is one index read plus one `mget`.
+
+Rules worth keeping:
+
+- Dates are calendar strings `YYYY-MM-DD`, never timestamps — build-up on the
+  5th is the 5th in Tashkent regardless of the viewer's timezone. `isDate()`
+  checks the date really exists: a format-only check let `2026-13-99` through
+  and every day count against it came back `NaN`.
+- Moving `dates.setup` moves the plan: if the project has no tasks yet (one
+  created from a lead has none, because a lead carries no dates) the checklist
+  is generated; if it already has tasks, every open deadline shifts by the same
+  number of days. Finished tasks keep their real dates.
+- Money is per project, `UZS` or `USD`, and the dashboard reports currencies
+  side by side — never summed into one number.
+- A lead becomes a project from the lead card. Both records link to each other
+  (`lead.projectId`, `project.leadId`) and the lead moves to «в работе».
+- Projects are in the backup (`data.crm`), like leads. They hold personal data,
+  so Redis only — never Blob.
+
 ## SEO and AI discoverability
 
 - Titles, descriptions, keywords and the social image come from
