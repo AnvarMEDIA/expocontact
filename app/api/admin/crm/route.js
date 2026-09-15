@@ -14,7 +14,7 @@ import { NextResponse } from 'next/server';
 import {
   listProjects, getProject, createProject, updateProject, deleteProject,
   addTask, updateTask, deleteTask, resetPlan,
-  addPayment, deletePayment, addNote, addFile, deleteFile, crmDashboard,
+  addPayment, deletePayment, addNote, addFile, deleteFile, crmDashboard, cashbook,
 } from '@/lib/crm/store';
 import { getLead, patchLead, updateLeadStatus } from '@/lib/leads';
 import { qualifierValueLabel } from '@/lib/leadFields';
@@ -38,6 +38,9 @@ export async function GET(request) {
     }
     if (searchParams.get('view') === 'dashboard') {
       return NextResponse.json(await crmDashboard());
+    }
+    if (searchParams.get('view') === 'cash') {
+      return NextResponse.json(await cashbook(searchParams.get('range') || 'month'));
     }
     return NextResponse.json(await listProjects());
   } catch (err) {

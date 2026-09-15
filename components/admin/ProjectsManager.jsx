@@ -16,7 +16,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   STAGES, BOARD_STAGES, stageLabel, isClosed, CURRENCIES,
   formatMoney, formatDate, daysWord, todayISO, daysBetween, balanceOf, paidShare,
-  scheduleFromSetup, MIN_LEAD_DAYS, isDate, PAYMENT_METHODS,
+  scheduleFromSetup, MIN_LEAD_DAYS, isDate, PAYMENT_METHODS, paymentLabel,
 } from '@/lib/crm/model';
 import { COUNTRIES, countryLabel } from '@/lib/countries';
 
@@ -371,6 +371,8 @@ function Money({ project, onAction, busy }) {
   const [amount, setAmount] = useState('');
   const [date, setDate] = useState(todayISO());
   const [note, setNote] = useState('');
+  const [method, setMethod] = useState('');
+  const [receivedBy, setReceivedBy] = useState('');
   const cur = project.money?.currency || 'UZS';
   const share = paidShare(project);
 
@@ -410,9 +412,11 @@ function Money({ project, onAction, busy }) {
       {(project.payments || []).length > 0 && (
         <div className="space-y-1">
           {project.payments.map(p => (
-            <div key={p.id} className="flex items-center gap-2 text-xs group">
+            <div key={p.id} className="flex items-center gap-2 text-xs group flex-wrap">
               <span className="text-white/30 w-20 flex-shrink-0">{formatDate(p.date)}</span>
-              <span className="text-emerald-300 font-medium">{formatMoney(p.amount, cur)}</span>
+              <span className="text-emerald-300 font-medium">{formatMoney(p.amount, p.currency || cur)}</span>
+              {p.method && <span className="text-white/30">{paymentLabel(p.method)}</span>}
+              {p.receivedBy && <span className="text-white/30">принял {p.receivedBy}</span>}
               <span className="text-white/35 truncate">{p.note}</span>
               <button onClick={() => onAction({ action: 'payment.delete', paymentId: p.id })}
                 className="ml-auto opacity-0 group-hover:opacity-100 text-white/25 hover:text-red-400 transition-all">✕</button>
@@ -421,13 +425,31 @@ function Money({ project, onAction, busy }) {
         </div>
       )}
 
-      <div className="flex gap-2">
-        <div className="w-32 flex-shrink-0"><input type="number" min="0" className={inputCls} value={amount} onChange={e => setAmount(e.target.value)} placeholder="Сумма" /></div>
-        <div className="w-40 flex-shrink-0"><input type="date" className={inputCls} value={date} onChange={e => setDate(e.target.value)} /></div>
-        <input className={inputCls} value={note} onChange={e => setNote(e.target.value)} placeholder="Комментарий" />
-        <button disabled={busy || !(Number(amount) > 0)}
-          onClick={() => { onAction({ action: 'payment.add', payment: { amount: Number(amount), date, note } }); setAmount(''); setNote(''); }}
-          className={`${btnCls} border-white/10 text-white/60 hover:text-white whitespace-nowrap`}>Платёж</button>
+      {/* Accepting money: the form the manager fills the moment it arrives. */}
+      <div className="bg-[#0d1220] border border-white/5 rounded-lg p-3 space-y-2">
+        <p className="text-white/40 text-[11px] uppercase tracking-wider">Принять оплату</p>
+        <div className="flex gap-2 flex-wrap">
+          <div className="w-36 flex-shrink-0"><input type="number" min="0" className={inputCls} value={amount} onChange={e => setAmount(e.target.value)} placeholder={`Сумма, ${cur}`} /></div>
+          <div className="w-40 flex-shrink-0"><input type="date" className={inputCls} value={date} onChange={e => setDate(e.target.value)} /></div>
+          <div className="w-48 flex-shrink-0">
+            <PaymentPicker value={method || project.money?.method || ''} onChange={setMethod} />
+          </div>
+          <div className="w-40 flex-shrink-0"><input className={inputCls} value={receivedBy} onChange={e => setReceivedBy(e.target.value)} placeholder="Кто принял" /></div>
+        </div>
+        <div className="flex gap-2">
+          <input className={inputCls} value={note} onChange={e => setNote(e.target.value)} placeholder="Комментарий: аванс, доплата, счёт №…" />
+          <button disabled={busy || !(Number(amount) > 0)}
+            onClick={() => {
+              onAction({ action: 'payment.add', payment: {
+                amount: Number(amount), date, note,
+                method: method || project.money?.method || '', receivedBy,
+              } });
+              setAmount(''); setNote('');
+            }}
+            className={`${btnCls} bg-[#D4A843] text-[#0A0F1E] border-[#D4A843] hover:bg-[#E8C06E] whitespace-nowrap`}>
+            Принять
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -614,6 +636,113 @@ function ProjectCard({ id, onClose, onChanged, toast }) {
   );
 }
 
+/* ── Cashbook ────────────────────────────────────────────────────────────── */
+
+const CASH_RANGES = [
+  ['today', 'Сегодня'], ['week', 'Неделя'], ['month', 'Месяц'],
+  ['quarter', 'Квартал'], ['year', 'Год'], ['all', 'Всё время'],
+];
+
+/** One money figure per currency; currencies are never added together. */
+function MoneyStack({ map, tone = 'text-white', empty = '—' }) {
+  // Fixed currency order, so the same figure does not jump between cards
+  // depending on which currency happened to be seen first.
+  const order = Object.keys(CURRENCIES);
+  const entries = Object.entries(map || {})
+    .filter(([, v]) => v > 0)
+    .sort((a, b) => order.indexOf(a[0]) - order.indexOf(b[0]));
+  if (!entries.length) return <p className={`${tone} text-2xl font-bold mt-0.5`}>{empty}</p>;
+  return (
+    <div className="mt-0.5 space-y-0.5">
+      {entries.map(([cur, value]) => (
+        <p key={cur} className={`${tone} text-xl font-bold leading-tight break-words`}>{formatMoney(value, cur)}</p>
+      ))}
+    </div>
+  );
+}
+
+function Cashbook({ onOpenProject, toast }) {
+  const [range, setRange] = useState('month');
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [err, setErr] = useState('');
+
+  useEffect(() => {
+    setLoading(true);
+    crmFetch('GET', null, `?view=cash&range=${range}`)
+      .then(d => { setData(d); setErr(''); })
+      .catch(e => { setErr(e.message); toast?.(e.message, 'error'); })
+      .finally(() => setLoading(false));
+  }, [range, toast]);
+
+  if (err) return <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 text-red-200 text-sm">{err}</div>;
+  if (!data) return <div className="bg-[#141929] border border-white/10 rounded-xl p-5 text-white/30 text-sm">Считаем кассу…</div>;
+
+  const periodLabel = CASH_RANGES.find(([k]) => k === range)?.[1] || '';
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center gap-2 flex-wrap">
+        {CASH_RANGES.map(([k, label]) => (
+          <button key={k} onClick={() => setRange(k)}
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors border ${
+              range === k ? 'bg-[#D4A843]/15 text-[#D4A843] border-[#D4A843]/40' : 'bg-white/5 text-white/50 border-transparent hover:text-white'}`}>
+            {label}
+          </button>
+        ))}
+        {loading && <span className="text-white/30 text-xs">обновляем…</span>}
+      </div>
+
+      <div className="grid sm:grid-cols-3 gap-3">
+        <div className="bg-[#141929] border border-emerald-500/20 rounded-xl p-4">
+          <p className="text-white/35 text-[10px] uppercase tracking-wider">Приход · {periodLabel}</p>
+          <MoneyStack map={data.totals} tone="text-emerald-300" empty="0" />
+          <p className="text-white/25 text-[11px] mt-1">{data.count} поступлений</p>
+        </div>
+        <div className="bg-[#141929] border border-white/10 rounded-xl p-4">
+          <p className="text-white/35 text-[10px] uppercase tracking-wider">Общая касса · за всё время</p>
+          <MoneyStack map={data.allTime} tone="text-white" empty="0" />
+        </div>
+        <div className="bg-[#141929] border border-white/10 rounded-xl p-4">
+          <p className="text-white/35 text-[10px] uppercase tracking-wider">Ждём по активным проектам</p>
+          <MoneyStack map={data.owed} tone="text-amber-300" empty="0" />
+        </div>
+      </div>
+
+      {Object.keys(data.byMethod).length > 0 && (
+        <div className="bg-[#141929] border border-white/10 rounded-xl p-4">
+          <p className="text-white/40 text-xs uppercase tracking-wider mb-2">Чем платили · {periodLabel}</p>
+          <div className="flex flex-wrap gap-x-6 gap-y-2">
+            {Object.entries(data.byMethod).map(([cur, methods]) =>
+              Object.entries(methods).map(([m, value]) => (
+                <div key={`${cur}-${m}`}>
+                  <p className="text-white/35 text-[10px] uppercase tracking-wider">{m === 'unknown' ? 'Не указана' : paymentLabel(m)}</p>
+                  <p className="text-white/85 text-sm font-bold">{formatMoney(value, cur)}</p>
+                </div>
+              )))}
+          </div>
+        </div>
+      )}
+
+      <div className="space-y-1.5">
+        <p className="text-white/40 text-xs uppercase tracking-wider">Поступления</p>
+        {data.payments.map(r => (
+          <button key={r.id} onClick={() => onOpenProject(r.projectId)}
+            className="w-full text-left bg-[#141929] border border-white/10 rounded-xl px-3 py-2.5 hover:border-[#D4A843]/40 transition-colors flex items-center gap-3 flex-wrap">
+            <span className="text-white/30 text-[11px] w-20 flex-shrink-0">{formatDate(r.date)}</span>
+            <span className="text-emerald-300 text-sm font-bold">{formatMoney(r.amount, r.currency)}</span>
+            {r.method && <span className="text-white/35 text-[11px]">{paymentLabel(r.method)}</span>}
+            {r.receivedBy && <span className="text-white/35 text-[11px]">принял {r.receivedBy}</span>}
+            <span className="text-white/55 text-xs truncate min-w-0 flex-1">{r.note}</span>
+            <span className="text-white/30 text-[11px] truncate hidden sm:block">{r.projectCode} · {r.client || r.projectTitle}</span>
+          </button>
+        ))}
+        {!data.payments.length && <p className="text-white/25 text-sm">За этот период поступлений не было.</p>}
+      </div>
+    </div>
+  );
+}
+
 /* ── Screen ──────────────────────────────────────────────────────────────── */
 
 export default function ProjectsManager({ toast }) {
@@ -697,7 +826,7 @@ export default function ProjectsManager({ toast }) {
       )}
 
       <div className="flex items-center gap-2 flex-wrap">
-        {[['board', `Доска (${active.length})`], ['today', `Сегодня (${dash?.tasks.length || 0})`], ['archive', `Архив (${archived.length})`]].map(([k, label]) => (
+        {[['board', `Доска (${active.length})`], ['today', `Сегодня (${dash?.tasks.length || 0})`], ['cash', 'Касса'], ['archive', `Архив (${archived.length})`]].map(([k, label]) => (
           <button key={k} onClick={() => setView(k)}
             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors border ${
               view === k ? 'bg-[#D4A843]/15 text-[#D4A843] border-[#D4A843]/40' : 'bg-white/5 text-white/50 border-transparent hover:text-white'}`}>
@@ -779,6 +908,8 @@ export default function ProjectsManager({ toast }) {
           </div>
         </div>
       )}
+
+      {view === 'cash' && <Cashbook onOpenProject={setOpenId} toast={toast} />}
 
       {view === 'archive' && (
         <div className="space-y-2">

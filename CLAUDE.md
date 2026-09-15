@@ -159,6 +159,23 @@ Rules worth keeping:
   `/uploads/...` a local upload returns, and drops `javascript:`, `data:` and
   protocol-relative `//host`. Attachments go through it too.
 
+### Money and the cashbook
+
+- A payment records its own `method` and `currency`, not only the project's: a
+  contract can say «перечисление» while the deposit came in cash, and the
+  cashbook has to show where the money really landed. When `method` is omitted
+  it falls back to the project's. `receivedBy` is who took it — the first
+  question asked when a sum does not match the bank statement.
+- `cashbook(range)` in the store (`GET /api/admin/crm?view=cash&range=…`)
+  reports, per currency and never summed across them: `totals` received in the
+  selected period, `byMethod` for that period, `allTime` received ever, and
+  `owed` — what is still due on projects that are **not** closed. A lost
+  project stops counting as money owed but keeps whatever it already paid.
+- Payments predating the per-payment currency field fall back to the project's
+  currency, so old records still add up correctly.
+- The Касса screen fixes the currency order from `CURRENCIES`, so a figure does
+  not jump between cards depending on which currency was seen first.
+
 ### Project files
 
 - `POST /api/admin/crm/upload` stores attachments under `projects/` in Blob —
