@@ -2491,6 +2491,75 @@ function StatusRow({ ok, title, detail }) {
  * offers a real test: token, chat, then an actual message — each step with
  * the reason it failed.
  */
+/**
+ * The daily "what is burning" digest. Shows whether the schedule can actually
+ * authenticate, when it last ran, and offers a send-now button — the only way
+ * to find out the wording and the delivery work without waiting until 09:00.
+ */
+const DIGEST_REASONS = {
+  ok: 'Сводка отправлена',
+  quiet: 'Нечего отправлять — ничего не горит',
+  'quiet-manual': 'Отправлено подтверждение: ничего не горит',
+  'already-sent-today': 'Сегодня уже отправляли',
+  'telegram-not-configured': 'Telegram не настроен',
+  'telegram-failed': 'Telegram отклонил сообщение',
+  'crm-unavailable': 'Не удалось прочитать проекты',
+};
+
+function DigestRow({ status, telegramReady }) {
+  const [busy, setBusy] = useState(false);
+  const [res, setRes] = useState(null);
+  const last = res || status?.last;
+  const secretSet = !!status?.secretSet;
+
+  const run = async () => {
+    setBusy(true); setRes(null);
+    try {
+      const r = await fetch('/api/cron/digest?force=1', { headers: { Authorization: `Bearer ${getToken()}` } });
+      const data = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(data.error || `HTTP ${r.status}`);
+      setRes(data);
+    } catch (e) {
+      setRes({ sent: false, reason: 'error', error: e.message });
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const ok = secretSet && telegramReady;
+  const detail = !telegramReady
+    ? 'Сначала настройте Telegram — сводку некуда отправлять.'
+    : !secretSet
+      ? 'Задайте CRON_SECRET в Vercel → Settings → Environment Variables и сделайте redeploy, иначе расписание не сможет вызвать рассылку.'
+      : 'Каждый день в 09:00 по Ташкенту, если есть просроченные задачи, задачи на сегодня или проекты под риском. Когда всё спокойно — сообщений нет.';
+
+  return (
+    <div className="flex items-start gap-3 py-2.5 border-b border-white/5 last:border-0">
+      <span className={`mt-0.5 w-2 h-2 rounded-full flex-shrink-0 ${ok ? 'bg-emerald-400' : 'bg-red-400'}`} />
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center justify-between gap-3 flex-wrap">
+          <p className="text-white/80 text-sm font-medium">
+            {ok ? 'Сводка о горящем — по расписанию' : 'Сводка о горящем — не работает'}
+          </p>
+          <button onClick={run} disabled={busy || !telegramReady}
+            className="px-2.5 py-1 rounded-lg text-[11px] font-bold uppercase tracking-wider border border-white/10 text-white/60 hover:text-white hover:border-white/30 disabled:opacity-40 transition-colors">
+            {busy ? 'Отправляем…' : 'Отправить сейчас'}
+          </button>
+        </div>
+        <p className="text-white/40 text-xs mt-0.5 leading-relaxed">{detail}</p>
+        {last && (
+          <p className={`text-xs mt-1 ${last.sent ? 'text-emerald-300/80' : last.error ? 'text-red-300/80' : 'text-white/35'}`}>
+            {DIGEST_REASONS[last.reason] || last.reason}
+            {last.counts ? ` — просрочено ${last.counts.overdue}, на сегодня ${last.counts.today}, под риском ${last.counts.risks}` : ''}
+            {last.error ? ` — ${last.error}` : ''}
+            {last.ranAt ? ` · ${new Date(last.ranAt).toLocaleString('ru-RU')}` : ''}
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function TelegramRow({ configured }) {
   const [busy, setBusy] = useState(false);
   const [res, setRes]   = useState(null);
@@ -2606,6 +2675,7 @@ function SystemStatus() {
           : 'Нет BLOB_READ_WRITE_TOKEN — загрузки не сохранятся.'}
       />
       <TelegramRow configured={!!s.telegram} />
+      <DigestRow status={s.digest} telegramReady={!!s.telegram} />
       <StatusRow
         ok={!!s.analytics?.metrika}
         title={s.analytics?.metrika ? 'Яндекс.Метрика — подключена' : 'Яндекс.Метрика — без токена'}

@@ -143,6 +143,34 @@ Rules worth keeping:
 - Projects are in the backup (`data.crm`), like leads. They hold personal data,
   so Redis only — never Blob.
 
+## Daily digest to Telegram
+
+`vercel.json` declares one cron: `GET /api/cron/digest` at `0 4 * * *` — 04:00
+UTC, which is 09:00 in Tashkent, the start of the working day while there is
+still time to act on what is overdue.
+
+- Authorisation: Vercel attaches `Authorization: Bearer $CRON_SECRET` to
+  scheduled calls **only when `CRON_SECRET` is set**. Without it the call
+  carries no credentials and the endpoint refuses it — deliberately, since an
+  open endpoint would let anyone spam the company chat. `ADMIN_PASSWORD` is
+  also accepted, which is what the «Отправить сейчас» button in the dashboard
+  uses (`?force=1`).
+- `lib/crm/digest.js` builds the text and is pure, so the wording is tested
+  without sending anything. It returns `null` when nothing is overdue, due
+  today or at risk, and then **no message goes out**. A bot that reports "всё
+  спокойно" every morning trains everyone to swipe it away, including on the
+  morning it matters. The manual button is the exception: it always sends
+  something, so pressing it proves delivery works.
+- Only `risk`-level projects make the digest; `warn` would double the length of
+  a message read on a phone between two site visits.
+- `crm:digest:state` records the last run; a second scheduled call on the same
+  day sends nothing (the scheduler can retry). The manual button ignores that
+  guard.
+- Messages are capped at 3800 characters and announce the truncation — Telegram
+  rejects anything over 4096.
+- Internal imports inside `lib/crm/` carry the `.js` extension so the modules
+  can be run directly by Node in tests, not only through the bundler.
+
 ## SEO and AI discoverability
 
 - Titles, descriptions, keywords and the social image come from

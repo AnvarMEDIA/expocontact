@@ -31,6 +31,7 @@ import { NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { readList, readObject, writeDoc, storeStatus, listStoredDocs } from '@/lib/store';
 import { leadsStatus } from '@/lib/leads';
+import { kvGet } from '@/lib/kv';
 import { LOCALES, DOC_NAMES } from '@/lib/seed';
 
 const LOCALE_DATA_COLLECTIONS      = ['portfolio', 'testimonials'];
@@ -82,6 +83,12 @@ export async function GET(request) {
         local:   process.env.VERCEL !== '1',
       },
       telegram:  !!(process.env.TELEGRAM_BOT_TOKEN && process.env.TELEGRAM_CHAT_ID),
+      // The daily digest needs CRON_SECRET: without it Vercel's scheduled call
+      // carries no credentials and the endpoint refuses it.
+      digest: {
+        secretSet: !!process.env.CRON_SECRET,
+        last: (await kvGet('crm:digest:state')) || null,
+      },
       adminPasswordSet: !!process.env.ADMIN_PASSWORD,
     });
   }
