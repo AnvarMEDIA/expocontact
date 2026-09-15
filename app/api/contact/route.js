@@ -17,6 +17,7 @@ import { createLead } from '@/lib/leads';
 import { sanitizeMarketing, marketingSummary, clickIdLabel } from '@/lib/marketing';
 import { sanitizeDetails, qualifierLabel, qualifierValueLabel } from '@/lib/leadFields';
 import { sendTelegram, telegramConfigured } from '@/lib/telegram';
+import { recordLead } from '@/lib/analytics/store';
 import { formatPhone } from '@/lib/phone';
 
 /** "https://www.google.com/search?q=…" -> "google.com": the manager needs the source, not the URL. */
@@ -73,6 +74,10 @@ export async function POST(request) {
   } catch (err) {
     console.error('[contact] Lead save failed:', err.message);
   }
+
+  // Counted server-side, so the conversion rate does not depend on whether an
+  // ad blocker let a browser tracker through.
+  await recordLead();
 
   if (telegramConfigured()) {
     const text = [

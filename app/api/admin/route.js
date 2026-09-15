@@ -78,10 +78,9 @@ export async function GET(request) {
       documents: saved === null ? null : { saved, total: DOC_NAMES.length },
       leads:     await leadsStatus(),
       media:     { backend: process.env.BLOB_READ_WRITE_TOKEN ? 'blob' : 'local', persistent: !!process.env.BLOB_READ_WRITE_TOKEN },
-      analytics: {
-        metrika: !!process.env.YANDEX_METRIKA_TOKEN,
-        local:   process.env.VERCEL !== '1',
-      },
+      // Statistics are collected by the site itself now; they work wherever
+      // the key-value store works.
+      analytics: { own: true },
       telegram:  !!(process.env.TELEGRAM_BOT_TOKEN && process.env.TELEGRAM_CHAT_ID),
       // The daily digest needs CRON_SECRET: without it Vercel's scheduled call
       // carries no credentials and the endpoint refuses it.

@@ -5,6 +5,7 @@ import { CLICK_ID_PARAMS } from '@/lib/marketing';
 import { QUALIFIER_KEYS, qualifierLabel, qualifierValueLabel } from '@/lib/leadFields';
 import { formatPhone } from '@/lib/phone';
 import ProjectsManager from '@/components/admin/ProjectsManager';
+import StatsPage from '@/components/admin/StatsPage';
 
 // ── API helper ────────────────────────────────────────────────────────────────
 const API = '/api/admin';
@@ -95,7 +96,7 @@ const NAV = [
   { key: 'dashboard',       label: 'Дашборд',           icon: IC.dashboard    },
   { key: 'leads',           label: 'Заявки',            icon: IC_LEADS        },
   { key: 'projects',        label: 'Проекты',           icon: IC_PROJECTS     },
-  { key: 'analytics',       label: 'Аналитика',         icon: IC_ANALYTICS    },
+  { key: 'analytics',       label: 'Статистика',        icon: IC_ANALYTICS    },
   { key: 'landingSettings', label: 'Настройки сайта',   icon: IC_LANDING      },
   { key: 'seo',             label: 'SEO',               icon: IC_SEO          },
   { key: 'media',           label: 'Медиа-библиотека',  icon: IC_MEDIA        },
@@ -111,7 +112,7 @@ const NAV = [
 
 const SECTION_TITLES = {
   dashboard: 'Дашборд', leads: 'Заявки с сайта', projects: 'Проекты — выставки в работе',
-  analytics: 'Аналитика посетителей',
+  analytics: 'Статистика сайта',
   landingSettings: 'Настройки главной страницы',
   seo: 'SEO — meta-теги и индексация',
   media: 'Медиа-библиотека',
@@ -1047,289 +1048,6 @@ function ServicesManager({ toast }) {
   );
 }
 
-// ── AnalyticsPage ─────────────────────────────────────────────────────────────
-function AnalyticsPage() {
-  const [data, setData]       = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError]     = useState(null);
-
-  const [leadsBuckets, setLeadsBuckets] = useState({ today: 0, week: 0, month: 0, total: 0 });
-
-  const load = useCallback(async () => {
-    try {
-      const token = getToken();
-      const [statsRes, leadsRes] = await Promise.all([
-        fetch('/api/analytics/metrika', { headers: { Authorization: `Bearer ${token}` } }),
-        fetch('/api/admin/leads',       { headers: { Authorization: `Bearer ${token}` } }).catch(() => null),
-      ]);
-      if (statsRes.status === 401) throw new Error('Неверный пароль — попробуйте выйти и войти заново');
-      if (!statsRes.ok) {
-        const body = await statsRes.json().catch(() => ({}));
-        throw new Error(body.error || `Ошибка сервера (${statsRes.status})`);
-      }
-      const json = await statsRes.json();
-      setData(json);
-      setError(null);
-
-      if (leadsRes?.ok) {
-        const leads = await leadsRes.json();
-        if (Array.isArray(leads)) {
-          const now = Date.now();
-          const startDay   = new Date(); startDay.setHours(0, 0, 0, 0);
-          const startWeek  = new Date(); const dow = startWeek.getDay() || 7; startWeek.setDate(startWeek.getDate() - dow + 1); startWeek.setHours(0, 0, 0, 0);
-          const startMonth = new Date(); startMonth.setDate(1); startMonth.setHours(0, 0, 0, 0);
-          const valid = leads.filter(l => l.status !== 'spam');
-          setLeadsBuckets({
-            today: valid.filter(l => l.createdAt >= startDay.getTime()).length,
-            week:  valid.filter(l => l.createdAt >= startWeek.getTime()).length,
-            month: valid.filter(l => l.createdAt >= startMonth.getTime()).length,
-            total: valid.length,
-          });
-        }
-      }
-    } catch (e) {
-      setError(e.message);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    load();
-    const id = setInterval(load, 30_000);
-    return () => clearInterval(id);
-  }, [load]);
-
-  if (loading) return <p className="text-white/30 text-sm py-16 text-center">Загрузка статистики...</p>;
-  if (error)   return <p className="text-red-400 text-sm py-16 text-center">Ошибка: {error}</p>;
-  if (!data)   return null;
-
-  const isMetrika = data.source === 'yandex_metrika';
-  const maxChart  = Math.max(...(data.chart   || []).map(d => d.count), 1);
-  const maxDev    = Math.max(...(data.devices || []).map(d => d.count), 1);
-  const maxOs     = Math.max(...(data.os      || []).map(d => d.count), 1);
-  const maxBr     = Math.max(...(data.browsers|| []).map(d => d.count), 1);
-  const maxAge    = Math.max(...(data.age     || []).map(d => d.count), 1);
-  const maxGender = Math.max(...(data.gender  || []).map(d => d.count), 1);
-
-  const DEVICE_COLORS = { desktop: 'bg-blue-400', mobile: 'bg-emerald-400', tablet: 'bg-purple-400', tv: 'bg-pink-400' };
-  const DEVICE_LABELS = { desktop: 'Компьютер', mobile: 'Телефон', tablet: 'Планшет', tv: 'Телевизор' };
-
-  function BarRow({ label, count, max, color = 'bg-[#D4A843]' }) {
-    const pct = max > 0 ? Math.round((count / max) * 100) : 0;
-    return (
-      <div className="flex items-center gap-3">
-        <span className="w-28 text-white/50 text-xs truncate flex-shrink-0">{label}</span>
-        <div className="flex-1 bg-white/5 rounded-full h-1.5">
-          <div className={`${color} h-1.5 rounded-full transition-all duration-500`} style={{ width: `${pct}%` }} />
-        </div>
-        <span className="text-white/60 text-xs w-8 text-right flex-shrink-0">{count}</span>
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-6">
-      {/* Metrika fallback warning */}
-      {data.metrikaError && (
-        <div className="bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 text-red-400 text-xs">
-          Яндекс.Метрика недоступна, показаны локальные данные. Ошибка: {data.metrikaError}
-        </div>
-      )}
-
-      {/* Source badge */}
-      <div className="flex items-center gap-2">
-        {isMetrika ? (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FFCC00]/10 border border-[#FFCC00]/30 text-[#FFCC00] text-xs font-semibold">
-            <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-            Яндекс.Метрика · счётчик {/* */}108497871
-          </span>
-        ) : (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-white/40 text-xs">
-            Локальный трекер · добавьте YANDEX_METRIKA_TOKEN для полной аналитики
-          </span>
-        )}
-        <button onClick={load} className="p-1 text-white/20 hover:text-white/60 transition-colors" title="Обновить">
-          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-        </button>
-      </div>
-
-      {/* Conversion: visitors → leads */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        {[
-          { label: 'Конверсия сегодня',  visitors: data.today, leads: leadsBuckets.today  },
-          { label: 'Конверсия за 7 дней', visitors: data.week,  leads: leadsBuckets.week   },
-          { label: 'Конверсия за месяц',  visitors: data.month, leads: leadsBuckets.month  },
-        ].map(({ label, visitors, leads }) => {
-          const pct = visitors > 0 ? ((leads / visitors) * 100) : 0;
-          return (
-            <div key={label} className="bg-[#141929] border border-white/10 rounded-xl p-4">
-              <p className="text-white/40 text-xs uppercase tracking-wider mb-2">{label}</p>
-              <div className="flex items-baseline gap-2">
-                <span className="text-2xl font-black text-[#D4A843]">{pct.toFixed(pct < 10 ? 2 : 1)}%</span>
-                <span className="text-white/40 text-xs">{leads} / {visitors}</span>
-              </div>
-              <div className="mt-2 bg-white/5 rounded-full h-1 overflow-hidden">
-                <div className="h-full bg-[#D4A843] transition-all duration-500" style={{ width: `${Math.min(pct * 5, 100)}%` }} />
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Stat cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-        {[
-          { label: 'Онлайн сейчас', value: data.onlineNow, color: 'text-emerald-400', pulse: true },
-          { label: 'Сегодня',        value: data.today,     color: 'text-blue-400'                },
-          { label: 'За 7 дней',      value: data.week,      color: 'text-purple-400'              },
-          { label: 'За 30 дней',     value: data.month,     color: 'text-[#D4A843]'               },
-          { label: 'Всего',          value: data.total,     color: 'text-white'                   },
-        ].map(({ label, value, color, pulse }) => (
-          <div key={label} className="bg-[#141929] border border-white/10 rounded-xl p-4">
-            <div className="flex items-center gap-2 mb-1">
-              {pulse && (
-                <span className="relative flex h-2 w-2 flex-shrink-0">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
-                </span>
-              )}
-              <p className={`text-2xl font-black ${color}`}>{value}</p>
-            </div>
-            <p className="text-white/40 text-xs">{label}</p>
-          </div>
-        ))}
-      </div>
-
-      {/* 7-day chart */}
-      <div className="bg-[#141929] border border-white/10 rounded-xl p-5">
-        <h3 className="text-white font-bold mb-5 text-sm">Посещений за 7 дней</h3>
-        <div className="flex items-end gap-1.5 h-28">
-          {(data.chart || []).map(({ label, count }) => (
-            <div key={label} className="flex-1 flex flex-col items-center gap-1">
-              <span className="text-white/40 text-[10px] h-4 flex items-end">{count > 0 ? count : ''}</span>
-              <div className="w-full flex items-end justify-center" style={{ height: '80px' }}>
-                <div
-                  className="w-full bg-[#D4A843] rounded-t opacity-80 hover:opacity-100 transition-opacity"
-                  style={{ height: `${Math.max((count / maxChart) * 80, count > 0 ? 3 : 0)}px` }}
-                />
-              </div>
-              <span className="text-white/30 text-[9px] text-center leading-tight whitespace-nowrap">{label}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Countries */}
-        <div className="bg-[#141929] border border-white/10 rounded-xl p-5">
-          <h3 className="text-white font-bold mb-4 text-sm">Страны</h3>
-          {(data.countries || []).length === 0
-            ? <p className="text-white/30 text-sm">Нет данных</p>
-            : <div className="space-y-3">
-                {data.countries.map(({ code, name, count }) => (
-                  <BarRow key={code} label={name} count={count} max={data.countries[0].count} />
-                ))}
-              </div>
-          }
-        </div>
-
-        {/* Top pages */}
-        <div className="bg-[#141929] border border-white/10 rounded-xl p-5">
-          <h3 className="text-white font-bold mb-4 text-sm">Топ страниц</h3>
-          {(data.pages || []).length === 0
-            ? <p className="text-white/30 text-sm">Нет данных</p>
-            : <div className="space-y-3">
-                {data.pages.map(({ key, count }) => (
-                  <BarRow key={key} label={key} count={count} max={data.pages[0].count} color="bg-blue-400" />
-                ))}
-              </div>
-          }
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-        {/* Devices */}
-        <div className="bg-[#141929] border border-white/10 rounded-xl p-5">
-          <h3 className="text-white font-bold mb-4 text-sm">Устройства</h3>
-          <div className="space-y-3">
-            {(data.devices || []).map(({ key, count }) => (
-              <BarRow key={key} label={DEVICE_LABELS[key] || key} count={count} max={maxDev} color={DEVICE_COLORS[key] || 'bg-white/40'} />
-            ))}
-          </div>
-        </div>
-
-        {/* OS */}
-        <div className="bg-[#141929] border border-white/10 rounded-xl p-5">
-          <h3 className="text-white font-bold mb-4 text-sm">Операционные системы</h3>
-          <div className="space-y-3">
-            {(data.os || []).map(({ key, count }) => (
-              <BarRow key={key} label={key} count={count} max={maxOs} color="bg-purple-400" />
-            ))}
-          </div>
-        </div>
-
-        {/* Browsers */}
-        <div className="bg-[#141929] border border-white/10 rounded-xl p-5">
-          <h3 className="text-white font-bold mb-4 text-sm">Браузеры</h3>
-          <div className="space-y-3">
-            {(data.browsers || []).map(({ key, count }) => (
-              <BarRow key={key} label={key} count={count} max={maxBr} color="bg-orange-400" />
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Demographics — shown only when Metrika provides real data */}
-      {isMetrika && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          {/* Age */}
-          <div className="bg-[#141929] border border-white/10 rounded-xl p-5">
-            <h3 className="text-white font-bold mb-4 text-sm">Возраст</h3>
-            {(data.age || []).length === 0
-              ? <p className="text-white/30 text-sm">Недостаточно данных — нужно больше Яндекс-аккаунтов среди посетителей</p>
-              : <div className="space-y-3">
-                  {data.age.map(({ key, count }) => (
-                    <BarRow key={key} label={key} count={count} max={maxAge} color="bg-[#D4A843]" />
-                  ))}
-                </div>
-            }
-          </div>
-
-          {/* Gender */}
-          <div className="bg-[#141929] border border-white/10 rounded-xl p-5">
-            <h3 className="text-white font-bold mb-4 text-sm">Пол</h3>
-            {(data.gender || []).length === 0
-              ? <p className="text-white/30 text-sm">Недостаточно данных</p>
-              : <div className="space-y-3">
-                  {data.gender.map(({ key, count }) => (
-                    <BarRow key={key} label={key} count={count} max={maxGender}
-                      color={key === 'Мужчины' ? 'bg-blue-400' : 'bg-pink-400'} />
-                  ))}
-                </div>
-            }
-          </div>
-        </div>
-      )}
-
-      {/* Token setup hint — shown only when not connected */}
-      {!isMetrika && (
-        <div className="bg-[#141929] border border-[#D4A843]/20 rounded-xl p-5">
-          <h3 className="text-[#D4A843] font-semibold mb-2 text-sm">Подключить Яндекс.Метрику</h3>
-          <p className="text-white/50 text-sm mb-3 leading-relaxed">
-            Для возраста, пола и точной статистики добавьте OAuth-токен в переменные окружения Vercel.
-          </p>
-          <ol className="space-y-1.5 text-white/40 text-sm list-decimal list-inside">
-            <li>Откройте <code className="text-white/60">oauth.yandex.ru</code> → создайте приложение с правом <code className="text-white/60">metrika:read</code></li>
-            <li>Получите OAuth-токен</li>
-            <li>В Vercel: Settings → Environment Variables → добавьте <code className="text-white/60">YANDEX_METRIKA_TOKEN</code></li>
-            <li>Сделайте редеплой проекта</li>
-          </ol>
-        </div>
-      )}
-    </div>
-  );
-}
 
 // ── Dashboard ─────────────────────────────────────────────────────────────────
 // ── LeadsManager ──────────────────────────────────────────────────────────────
@@ -2677,11 +2395,11 @@ function SystemStatus() {
       <TelegramRow configured={!!s.telegram} />
       <DigestRow status={s.digest} telegramReady={!!s.telegram} />
       <StatusRow
-        ok={!!s.analytics?.metrika}
-        title={s.analytics?.metrika ? 'Яндекс.Метрика — подключена' : 'Яндекс.Метрика — без токена'}
-        detail={s.analytics?.metrika
-          ? 'Аналитика берётся из Метрики.'
-          : 'Без YANDEX_METRIKA_TOKEN вкладка аналитики покажет только локальные данные, а на сервере их нет.'}
+        ok={!!s.analytics?.own && !!s.leads?.persistent}
+        title="Статистика — собственная"
+        detail={s.leads?.persistent
+          ? 'Сайт считает посетителей сам и пишет в ту же базу, что и заявки. Внешних счётчиков нет.'
+          : 'Счётчик пишет в ту же базу, что и заявки, — без неё статистика не сохраняется.'}
       />
       <StatusRow
         ok={!!s.adminPasswordSet}
@@ -2991,7 +2709,7 @@ export default function AdminPage() {
           {section === 'dashboard'    && <Dashboard onNavigate={navigate} />}
           {section === 'leads'        && <LeadsManager toast={toast} onNavigate={navigate} />}
           {section === 'projects'     && <ProjectsManager toast={toast} />}
-          {section === 'analytics'    && <AnalyticsPage />}
+          {section === 'analytics'    && <StatsPage />}
           {section === 'landingSettings' && <LandingSettingsManager toast={toast} />}
           {section === 'seo'          && <SeoManager toast={toast} />}
           {section === 'media'        && <MediaLibrary toast={toast} />}

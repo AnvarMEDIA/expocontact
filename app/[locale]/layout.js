@@ -255,12 +255,6 @@ export default async function LocaleLayout({ children, params }) {
           rel="stylesheet"
         />
 
-        {/* Yandex.Metrika */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};m[i].l=1*new Date();for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})(window,document,'script','https://mc.yandex.ru/metrika/tag.js?id=108497871','ym');ym(108497871,'init',{ssr:true,webvisor:true,clickmap:true,ecommerce:"dataLayer",referrer:document.referrer,url:location.href,accurateTrackBounce:true,trackLinks:true});`,
-          }}
-        />
 
         {/* Meta Pixel — ExpoContact Pixel. Not on /admin: that has its own
             layout, and there is nothing to measure behind the password. */}
@@ -275,8 +269,6 @@ export default async function LocaleLayout({ children, params }) {
       <body>
         <noscript>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="https://mc.yandex.ru/watch/108497871" style={{ position: 'absolute', left: '-9999px' }} alt="" />
-          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img height="1" width="1" style={{ display: 'none' }} alt=""
             src={`https://www.facebook.com/tr?id=${META_PIXEL_ID}&ev=PageView&noscript=1`} />
         </noscript>
@@ -284,7 +276,7 @@ export default async function LocaleLayout({ children, params }) {
           {children}
         </NextIntlClientProvider>
         <Analytics />
-        <AnalyticsTracker />
+        <AnalyticsTracker locale={locale} />
         <MetaPixel />
       </body>
     </html>

@@ -100,8 +100,6 @@ const DEFAULTS = {
   },
 };
 
-const METRIKA_ID = 108497871;
-
 /** The three qualifying questions, in the order they are asked. */
 const PILL_QUESTIONS = ['area', 'standType', 'timing'];
 
@@ -445,8 +443,8 @@ export default function AdLanding({ locale = 'ru', settings = {}, overrides = {}
       });
       if (!res.ok) throw new Error('bad response');
 
-      // Conversion goals, so the ad platforms can optimise on real leads.
-      try { window.ym?.(METRIKA_ID, 'reachGoal', 'lead_ads'); } catch { /* blocked */ }
+      // Conversion signal for the ad platform. Our own statistics count the
+      // lead server-side, so nothing here is needed for the admin dashboard.
       trackLead(`LP expocontact.uz/${locale}/lp`);
       setSent(true);
     } catch {

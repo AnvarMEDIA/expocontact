@@ -78,7 +78,7 @@ fallback — it put unrelated stock photos on the front page.
 | Site content, portfolio, testimonials, clients, settings, SEO | Vercel Blob `cms/` | `BLOB_READ_WRITE_TOKEN` |
 | Uploaded images | Vercel Blob `uploads/` | `BLOB_READ_WRITE_TOKEN` |
 | Leads (personal data) | Upstash Redis | any variable pair ending in `KV_REST_API_URL`+`KV_REST_API_TOKEN` (or `UPSTASH_REDIS_REST_URL`+`_TOKEN`) |
-| Visitor analytics | Yandex Metrika API | `YANDEX_METRIKA_TOKEN` |
+| Visitor statistics | Upstash Redis (`stats:*`) | the same Redis pair as leads |
 | Lead notifications | Telegram | `TELEGRAM_BOT_TOKEN`+`TELEGRAM_CHAT_ID` |
 
 Leads must never go into Blob: blobs are public to anyone holding the URL.
@@ -300,14 +300,60 @@ still time to act on what is overdue.
   and CSV exports.
 - A lead carries the result as `lead.marketing`. It shows in the admin lead
   card under «Откуда пришёл лид» and as `utm_*` columns in the CSV export.
-- The ad form fires the Yandex Metrika goal `lead_ads` on success, so campaigns
-  can optimise on real leads. Create that goal in Metrika for it to count.
+- Ad-platform reporting is the Meta Pixel `Lead` event (below) plus our own
+  Статистика screen, which breaks leads down by campaign. There is no
+  Yandex.Metrika goal any more — the counter was removed entirely.
+
+## Visitor statistics
+
+`/admin` → Статистика. The site counts its own visitors; there is no external
+account to keep access to, and the numbers survive a lost password to somebody
+else's dashboard. Two modules, both testable on their own:
+
+- `lib/analytics/model.js` — pure classification, no I/O: `parseDevice()`,
+  `isBot()`, and `classifySource()`, which turns a referrer plus utm tags into
+  `{source, channel, campaign}` over the channels ads / campaign / search /
+  social / referral / direct. Also the field-name codec: a day is one Redis hash
+  whose fields are prefixed (`p:` page, `s:` source, `ch:` channel, `c:`
+  campaign, `d:` device, `b:` browser, `l:` locale, `g:` country, `h:` hour).
+  `explodeDay()` matches the longest prefix first — otherwise `ch:` is read as
+  `c:` and every channel lands in the campaign list.
+- `lib/analytics/store.js` — the counters. `stats:d:<date>` is that hash,
+  `stats:u:<date>` the set of visitor hashes, `stats:on:<minute>` a set with a
+  six-minute TTL that «сейчас на сайте» is read from. Days keep 400 days.
+
+Rules worth keeping:
+
+- **Nothing identifying is stored.** A visitor is a 16-character hash of
+  IP + user agent + a salt derived from the date, so the same person is a
+  different hash tomorrow and no visit can be linked across days. The IP and the
+  user agent are read from the request headers and thrown away; they never reach
+  Redis. `ANALYTICS_SALT` sets the secret; without it `ADMIN_PASSWORD` is used.
+- `beat: true` means «the tab is still open», not a page view. The tracker sends
+  one real view on mount and a heartbeat every 60 seconds, and a heartbeat only
+  touches the online set. Counting them as views would have tripled the numbers
+  of anyone who leaves a tab open.
+- `POST /api/analytics/track` is public and **always answers 200**: a tracker
+  must never break a page, and a browser retrying a failed beacon double-counts.
+  `GET /api/analytics/stats` needs `ADMIN_PASSWORD`.
+- Crawlers are dropped by `isBot()` before anything is written — including
+  GPTBot and ClaudeBot, which `app/robots.js` deliberately lets in.
+- Leads are counted server-side in `app/api/contact/route.js` (`recordLead()`),
+  not in the browser, so the conversion rate cannot be inflated by a form that
+  never reached us.
+- The screen before this one wrote JSON to `content/data/analytics.json` with
+  `fs`. On Vercel that write fails silently, so it had been collecting nothing
+  in production — the same trap as the CMS and the SEO files. Everything here
+  goes through `lib/kv.js`.
 
 ## Advertising pixels
 
-- Yandex.Metrika (counter 108497871) and the Meta Pixel (ExpoContact Pixel,
-  id 2224423588452859) both load from `app/[locale]/layout.js`. `/admin` has
-  its own layout and is deliberately untracked.
+- The Meta Pixel (ExpoContact Pixel, id 2224423588452859) loads from
+  `app/[locale]/layout.js`. `/admin` has its own layout and is deliberately
+  untracked. It is the only third-party counter on the site; Yandex.Metrika was
+  removed in favour of the statistics below. The `yandex` verification string in
+  the layout's metadata is Yandex **Webmaster** (search console) and has nothing
+  to do with it — keep it.
 - `lib/metaPixel.js` holds the id, the snippet and `trackLead()`;
   `components/MetaPixel.jsx` repeats `PageView` on client-side navigation.
   Most links on the site are plain anchors, which reload the page and are

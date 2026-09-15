@@ -43,3 +43,6 @@ next-env.d.ts
 # local lead store: personal data, written by the dev fallback in lib/leads.js
 /content/data/leads.json
 /content/data/kv/
+
+# Local upload fallback: real client files, never the repository
+public/uploads/
