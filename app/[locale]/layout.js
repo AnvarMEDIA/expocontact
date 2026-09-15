@@ -4,6 +4,8 @@ import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import { Analytics } from '@vercel/analytics/next';
 import AnalyticsTracker from '@/components/AnalyticsTracker';
+import MetaPixel from '@/components/MetaPixel';
+import { META_PIXEL_ID, META_PIXEL_SNIPPET } from '@/lib/metaPixel';
 import '@/app/globals.css';
 import { readObject } from '@/lib/store';
 
@@ -260,6 +262,10 @@ export default async function LocaleLayout({ children, params }) {
           }}
         />
 
+        {/* Meta Pixel — ExpoContact Pixel. Not on /admin: that has its own
+            layout, and there is nothing to measure behind the password. */}
+        <script dangerouslySetInnerHTML={{ __html: META_PIXEL_SNIPPET }} />
+
         {/* JSON-LD: Organization, service catalogue and FAQ as one linked graph */}
         <script
           type="application/ld+json"
@@ -270,12 +276,16 @@ export default async function LocaleLayout({ children, params }) {
         <noscript>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="https://mc.yandex.ru/watch/108497871" style={{ position: 'absolute', left: '-9999px' }} alt="" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img height="1" width="1" style={{ display: 'none' }} alt=""
+            src={`https://www.facebook.com/tr?id=${META_PIXEL_ID}&ev=PageView&noscript=1`} />
         </noscript>
         <NextIntlClientProvider messages={messages}>
           {children}
         </NextIntlClientProvider>
         <Analytics />
         <AnalyticsTracker />
+        <MetaPixel />
       </body>
     </html>
   );

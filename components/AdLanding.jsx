@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import PhoneField from './PhoneField';
 import useMarketing from './useMarketing';
+import { trackLead } from '@/lib/metaPixel';
 import { QUALIFIERS } from '@/lib/leadFields';
 import '@/app/landing.css';
 
@@ -444,8 +445,9 @@ export default function AdLanding({ locale = 'ru', settings = {}, overrides = {}
       });
       if (!res.ok) throw new Error('bad response');
 
-      // Conversion goal, so the ad platforms can optimise on real leads.
+      // Conversion goals, so the ad platforms can optimise on real leads.
       try { window.ym?.(METRIKA_ID, 'reachGoal', 'lead_ads'); } catch { /* blocked */ }
+      trackLead(`LP expocontact.uz/${locale}/lp`);
       setSent(true);
     } catch {
       setError(

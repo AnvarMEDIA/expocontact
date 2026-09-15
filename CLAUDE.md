@@ -188,6 +188,27 @@ answered, and is async because it performs that probe.
 - The ad form fires the Yandex Metrika goal `lead_ads` on success, so campaigns
   can optimise on real leads. Create that goal in Metrika for it to count.
 
+## Advertising pixels
+
+- Yandex.Metrika (counter 108497871) and the Meta Pixel (ExpoContact Pixel,
+  id 2224423588452859) both load from `app/[locale]/layout.js`. `/admin` has
+  its own layout and is deliberately untracked.
+- `lib/metaPixel.js` holds the id, the snippet and `trackLead()`;
+  `components/MetaPixel.jsx` repeats `PageView` on client-side navigation.
+  Most links on the site are plain anchors, which reload the page and are
+  counted by the snippet — but the locale switcher uses `router.push()`, and
+  that switch moves between two `[locale]` layout instances, so the component
+  remounts. The last counted path therefore lives at module scope, not in a
+  ref: a per-instance flag resets on that remount and swallows exactly the
+  PageView it exists to send.
+- `Lead` fires only after the API confirms the lead (`res.ok`), never on the
+  button click, from all three forms: the ad landing, the contact section and
+  the popup. `content_name` says which one. Counting clicks would teach the ad
+  platform to find people who abandon forms.
+- Conversions API is not connected, so there is no event deduplication and no
+  `eventID` to send. If it is added later, the same id must be sent from both
+  sides for each event.
+
 ## Environment
 
 See `.env.example`. `ADMIN_PASSWORD` guards every admin and analytics endpoint

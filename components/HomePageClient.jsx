@@ -8,6 +8,7 @@ import BrandLogo from './BrandLogo';
 import HeroLogo3D from './HeroLogo3D';
 import PhoneField from './PhoneField';
 import useMarketing from './useMarketing';
+import { trackLead } from '@/lib/metaPixel';
 import '@/app/landing.css';
 
 /* ════════════════════════════════════════════════════════════════════════════
@@ -411,8 +412,9 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
     const form = e.currentTarget;
     if (!form.checkValidity()) { form.reportValidity(); return; }
     const fd = new FormData(form);
+    let accepted = false;
     try {
-      await fetch('/api/contact', {
+      const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -420,7 +422,11 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
           source: 'contact', locale, marketing: getMarketing(),
         }),
       });
+      accepted = res.ok;
     } catch {/* fall through */}
+    // Only a lead the server actually took is a conversion: counting the
+    // click would teach the ad platform to find people who abandon forms.
+    if (accepted) trackLead('Site contact form');
     setLeadSent(true);
   };
   const submitModal = async (e) => {
@@ -428,8 +434,9 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
     const form = e.currentTarget;
     if (!form.checkValidity()) { form.reportValidity(); return; }
     const fd = new FormData(form);
+    let accepted = false;
     try {
-      await fetch('/api/contact', {
+      const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -437,7 +444,9 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
           source: 'modal', locale, marketing: getMarketing(),
         }),
       });
+      accepted = res.ok;
     } catch {/* fall through */}
+    if (accepted) trackLead('Site popup form');
     setModalSent(true);
     setTimeout(() => {
       closeModal();
