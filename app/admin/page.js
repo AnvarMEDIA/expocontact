@@ -2278,6 +2278,73 @@ function DigestRow({ status, telegramReady }) {
   );
 }
 
+/**
+ * The nightly statistics report. Same secret and the same chat as the digest,
+ * so the two rows sit together; this one always sends, because the numbers are
+ * the message.
+ */
+const REPORT_REASONS = {
+  ok: 'Отчёт отправлен',
+  'already-sent': 'За этот день уже отправляли',
+  'telegram-not-configured': 'Telegram не настроен',
+  'telegram-failed': 'Telegram отклонил сообщение',
+  'stats-unavailable': 'Не удалось прочитать статистику',
+};
+
+function StatsReportRow({ status, telegramReady }) {
+  const [busy, setBusy] = useState(false);
+  const [res, setRes] = useState(null);
+  const last = res || status?.last;
+  const secretSet = !!status?.secretSet;
+
+  const run = async () => {
+    setBusy(true); setRes(null);
+    try {
+      const r = await fetch('/api/cron/stats?force=1', { headers: { Authorization: `Bearer ${getToken()}` } });
+      const data = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(data.error || `HTTP ${r.status}`);
+      setRes(data);
+    } catch (e) {
+      setRes({ sent: false, reason: 'error', error: e.message });
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const ok = secretSet && telegramReady;
+  const detail = !telegramReady
+    ? 'Сначала настройте Telegram — отчёт некуда отправлять.'
+    : !secretSet
+      ? 'Задайте CRON_SECRET в Vercel → Settings → Environment Variables и сделайте redeploy, иначе расписание не сможет вызвать рассылку.'
+      : 'Каждую ночь в 00:05 по Ташкенту — посетители, заявки и конверсия за прошедший день, туда же, куда приходят заявки.';
+
+  return (
+    <div className="flex items-start gap-3 py-2.5 border-b border-white/5 last:border-0">
+      <span className={`mt-0.5 w-2 h-2 rounded-full flex-shrink-0 ${ok ? 'bg-emerald-400' : 'bg-red-400'}`} />
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center justify-between gap-3 flex-wrap">
+          <p className="text-white/80 text-sm font-medium">
+            {ok ? 'Статистика за день — по расписанию' : 'Статистика за день — не работает'}
+          </p>
+          <button onClick={run} disabled={busy || !telegramReady}
+            className="px-2.5 py-1 rounded-lg text-[11px] font-bold uppercase tracking-wider border border-white/10 text-white/60 hover:text-white hover:border-white/30 disabled:opacity-40 transition-colors">
+            {busy ? 'Отправляем…' : 'Отправить сейчас'}
+          </button>
+        </div>
+        <p className="text-white/40 text-xs mt-0.5 leading-relaxed">{detail}</p>
+        {last && (
+          <p className={`text-xs mt-1 ${last.sent ? 'text-emerald-300/80' : last.error ? 'text-red-300/80' : 'text-white/35'}`}>
+            {REPORT_REASONS[last.reason] || last.reason}
+            {last.counts ? ` — ${last.counts.visitors} посетителей, ${last.counts.leads} заявок` : ''}
+            {last.error ? ` — ${last.error}` : ''}
+            {last.ranAt ? ` · ${new Date(last.ranAt).toLocaleString('ru-RU')}` : ''}
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function TelegramRow({ configured }) {
   const [busy, setBusy] = useState(false);
   const [res, setRes]   = useState(null);
@@ -2394,6 +2461,7 @@ function SystemStatus() {
       />
       <TelegramRow configured={!!s.telegram} />
       <DigestRow status={s.digest} telegramReady={!!s.telegram} />
+      <StatsReportRow status={s.statsReport} telegramReady={!!s.telegram} />
       <StatusRow
         ok={!!s.analytics?.own && !!s.leads?.persistent}
         title="Статистика — собственная"

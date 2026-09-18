@@ -192,11 +192,26 @@ Rules worth keeping:
 - Deleting an attachment unlinks it from the project and leaves the blob in
   place: an orphan costs storage, a wrong delete costs a quote.
 
-## Daily digest to Telegram
+## Scheduled Telegram messages
 
-`vercel.json` declares one cron: `GET /api/cron/digest` at `0 4 * * *` — 04:00
-UTC, which is 09:00 in Tashkent, the start of the working day while there is
-still time to act on what is overdue.
+`vercel.json` declares two crons, both sending to the chat the leads go to:
+
+| Cron | UTC | Tashkent | What |
+|---|---|---|---|
+| `/api/cron/digest` | `0 4 * * *` | 09:00 | what is burning in the projects |
+| `/api/cron/stats` | `5 19 * * *` | 00:05 next day | yesterday's visitor numbers |
+
+Cron schedules on Vercel are always UTC, so a Tashkent time is written five
+hours earlier and the statistics run sits on the **previous** calendar day in
+UTC — `5 19 * * *` fires at 00:05 Tashkent, when the day it reports has just
+ended and nothing is still being counted into it. On the Hobby plan a cron is
+only guaranteed to start within the hour of its slot, so treat the minute as a
+wish, not a promise; both endpoints are safe to run late.
+
+Both take the same authorisation and both are also wired to an «Отправить
+сейчас» button on the admin dashboard (`?force=1`).
+
+### The digest — what is burning
 
 - Authorisation: Vercel attaches `Authorization: Bearer $CRON_SECRET` to
   scheduled calls **only when `CRON_SECRET` is set**. Without it the call
@@ -219,6 +234,22 @@ still time to act on what is overdue.
   rejects anything over 4096.
 - Internal imports inside `lib/crm/` carry the `.js` extension so the modules
   can be run directly by Node in tests, not only through the bundler.
+
+### The nightly statistics report
+
+- `lib/analytics/report.js` builds the text and is pure, like the digest, so
+  the wording is tested without sending anything. `GET /api/cron/stats` reads
+  nine days in one call: the reported day, the one before it for the «ко
+  вчера» comparison, and the seven that end on the reported day — the weekly
+  line must not include today, which has barely started.
+- **It always sends**, unlike the digest. The numbers are the message, and a
+  day with no visits at all is the loudest thing it can report: that usually
+  means the site or the counter stopped, so the text says so and suggests
+  checking the site rather than staying silent.
+- `stats:report:state` records the day already reported, so a retried run
+  sends nothing; the manual button ignores that guard.
+- The message is plain text and deliberately free of `*`, `_` and `[` — see
+  the Telegram rules above.
 
 ## SEO and AI discoverability
 

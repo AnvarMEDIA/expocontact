@@ -88,6 +88,11 @@ export async function GET(request) {
         secretSet: !!process.env.CRON_SECRET,
         last: (await kvGet('crm:digest:state')) || null,
       },
+      // The nightly statistics report rides on the same secret.
+      statsReport: {
+        secretSet: !!process.env.CRON_SECRET,
+        last: (await kvGet('stats:report:state')) || null,
+      },
       adminPasswordSet: !!process.env.ADMIN_PASSWORD,
     });
   }
