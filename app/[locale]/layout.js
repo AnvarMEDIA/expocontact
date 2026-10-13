@@ -213,8 +213,13 @@ export async function generateMetadata({ params }) {
       index:  seo.robotsIndex  !== false,
       follow: seo.robotsFollow !== false,
     },
+    // Search-console ownership tags. They must stay in place after the first
+    // successful check: the consoles re-verify, and removing one drops the site.
     verification: {
       yandex: '714b82733747b78a',
+      // Bing Webmaster Tools has no named field in Next.js, so it goes through
+      // `other` and renders <meta name="msvalidate.01" content="…">.
+      other: { 'msvalidate.01': '67159B4339466FBE68D55F6898C22872' },
     },
     alternates: {
       canonical: `/${locale}`,
