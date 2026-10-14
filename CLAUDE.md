@@ -20,14 +20,13 @@ the Vercel production build.
   stale design. This has happened once already: the approved site sat on
   `claude/review-project-planning-xqBle`, 31 commits ahead of the default
   branch, and was merged into production only afterwards.
-- Branch inventory as of the merge above. `claude/expocontact-website-vGZXk` is
+- Branch inventory as of October 2026, after the /offer landing was approved
+  and fast-forwarded into production. `claude/expocontact-website-vGZXk` is
   the only live branch — build on it and deploy from it. These are fully
   contained in it and are dead; do not start work on them or deploy them:
-  `claude/review-project-planning-xqBle`,
-  `claude/dazzling-johnson-t53him`. `claude/project-review-ov8uju` was
-  fast-forwarded in October 2026 to carry the /offer landing as a Vercel
-  preview pending approval; until that is merged it is ahead of production,
-  not dead. One branch is NOT merged and is not dead:
+  `claude/review-project-planning-xqBle`, `claude/project-review-ov8uju`
+  (carried /offer as a preview until approval),
+  `claude/dazzling-johnson-t53him`. One branch is NOT merged and is not dead:
   `claude/analyze-project-status-Gttja` carries a Hero refactor (fullscreen
   auto-playing 5-slide slider) that production does not have.
 - Before deploying, run `npx next lint` and `npx next build`; both must pass.
