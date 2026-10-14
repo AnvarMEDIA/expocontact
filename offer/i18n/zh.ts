@@ -18,6 +18,8 @@ export const zh: OfferDict = {
     close: "关闭",
     included: "包含",
     notIncluded: "不包含",
+    pauseMotion: "暂停滚动",
+    playMotion: "继续滚动",
   },
   nav: {
     services: "服务",

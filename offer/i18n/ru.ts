@@ -23,6 +23,8 @@ const master = {
     close: "Закрыть",
     included: "входит",
     notIncluded: "не входит",
+    pauseMotion: "Остановить прокрутку",
+    playMotion: "Продолжить прокрутку",
   },
   nav: {
     services: "Услуги",

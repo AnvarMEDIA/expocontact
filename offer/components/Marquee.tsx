@@ -1,7 +1,8 @@
 /**
  * An endless row of plates. CSS only: the list is rendered twice and slides
- * by exactly one copy, so the loop has no seam. Pauses on hover and on
- * keyboard focus; under prefers-reduced-motion it becomes a static,
+ * by exactly one copy, so the loop has no seam. Pauses on hover, on
+ * keyboard focus and inside a [data-paused] container (MotionToggle); under
+ * prefers-reduced-motion it becomes a static,
  * wrapping list. The duplicate copy is hidden from screen readers.
  */
 import s from "./Marquee.module.css";

@@ -18,6 +18,8 @@ export const tr: OfferDict = {
     close: "Kapat",
     included: "dahil",
     notIncluded: "dahil değil",
+    pauseMotion: "Kaydırmayı durdur",
+    playMotion: "Kaydırmayı sürdür",
   },
   nav: {
     services: "Hizmetler",

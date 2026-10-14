@@ -44,7 +44,7 @@ export default function OfferPage({ params }: { params: { lang: string } }) {
         <Visitors visitors={dict.visitors} />
         <Report report={dict.report} intl={info.intl} />
         <Plan plan={dict.plan} />
-        <Experience experience={dict.experience} intl={info.intl} />
+        <Experience experience={dict.experience} a11y={dict.a11y} intl={info.intl} />
         <Formats formats={dict.formats} a11y={dict.a11y} />
         <Contact lang={lang} dict={dict} countries={countryOptions(info.intl)} months={monthNames(info.intl)}
           startYear={new Date().getFullYear()} defaultDial={info.dial} />

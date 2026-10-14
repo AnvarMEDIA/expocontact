@@ -71,6 +71,9 @@ export function generateMetadata({ params }: Params): Metadata {
 
 export const viewport: Viewport = {
   themeColor: "#0A1F45",
+  // The palette is drawn for light only. Without this, Chrome's automatic
+  // dark mode on Android inverts it into muddy greys and kills the orange.
+  colorScheme: "only light",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",

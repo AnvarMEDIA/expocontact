@@ -51,6 +51,7 @@
 }
 .line {
   display: block;
+  text-wrap: balance;
   animation: rise 0.9s var(--ease-out) both;
   animation-delay: calc(0.15s + var(--i) * 0.1s);
 }

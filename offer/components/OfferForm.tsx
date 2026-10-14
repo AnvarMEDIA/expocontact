@@ -11,12 +11,18 @@
  *   click or a second Enter cannot send the enquiry twice.
  * - The Meta Pixel / GA4 / LinkedIn conversion fires only after the server
  *   has confirmed the lead.
+ * - A failed submit puts a summary at the top of the form, one link per
+ *   problem, and moves focus there; the errors under the fields stay too.
+ *   Before that, a field is only checked when the visitor leaves it with
+ *   something typed in, so tabbing through an empty form raises nothing.
+ * - Answers survive a reload as a draft in sessionStorage — this tab only,
+ *   never the consent box, gone once the enquiry is sent.
  */
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent, type MouseEvent } from "react";
 import useMarketing from "@/components/useMarketing";
 import CountrySelect from "./CountrySelect";
-import { IconArrow, IconTelegram, IconWhatsApp } from "./Icons";
-import { AREA_KEYS, FIELDS, PACKAGE_NAMES, validateOrganiser, type Field, type FieldError, type FormatKey } from "../lib/lead";
+import { IconArrow, IconCheck, IconTelegram, IconWhatsApp } from "./Icons";
+import { AREA_KEYS, PACKAGE_NAMES, validateOrganiser, type Field, type FieldError, type FormatKey } from "../lib/lead";
 import { CHOOSE_FORMAT } from "../lib/events";
 import { openPrivacy } from "../lib/privacy";
 import { trackLeadSubmit } from "../lib/track";
@@ -44,6 +50,43 @@ type Values = {
 
 const FORMAT_OPTIONS: FormatKey[] = ["local_partner", "turnkey_build", "full_house", "consult"];
 
+const DRAFT_KEY = "offer-form-draft";
+/** What a draft may hold: the visitor's answers, never consent or the honeypot. */
+const DRAFT_FIELDS = [
+  "name", "company", "country", "email", "phone", "showName", "month", "year", "area", "format", "message",
+] as const satisfies readonly (keyof Values)[];
+type Draft = Partial<Pick<Values, (typeof DRAFT_FIELDS)[number]>>;
+
+function readDraft(): Draft | null {
+  try {
+    const raw = window.sessionStorage.getItem(DRAFT_KEY);
+    const data: unknown = raw ? JSON.parse(raw) : null;
+    if (!data || typeof data !== "object") return null;
+    const draft: Draft = {};
+    for (const key of DRAFT_FIELDS) {
+      const v = (data as Record<string, unknown>)[key];
+      if (typeof v === "string") draft[key] = v.slice(0, 2000);
+    }
+    return draft;
+  } catch {
+    return null;
+  }
+}
+
+function writeDraft(values: Values | null) {
+  try {
+    if (!values) { window.sessionStorage.removeItem(DRAFT_KEY); return; }
+    const draft: Draft = {};
+    for (const key of DRAFT_FIELDS) draft[key] = values[key];
+    window.sessionStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+  } catch {
+    // Private mode or storage switched off: the form works, it just forgets.
+  }
+}
+
+/** Fields the validator can complain about, in the order they appear. */
+const CHECKED: readonly Field[] = ["name", "company", "country", "email", "phone", "consent"];
+
 export default function OfferForm({
   lang, form, chosenTemplate, countries, months, startYear, defaultDial,
 }: OfferFormProps) {
@@ -54,12 +97,28 @@ export default function OfferForm({
     message: "", consent: false, website: "",
   });
   const [errors, setErrors] = useState<Partial<Record<Field, FieldError>>>({});
+  const [summary, setSummary] = useState(false);
   const [state, setState] = useState<"idle" | "sending" | "done" | "error">("idle");
   const [announce, setAnnounce] = useState("");
   const [year0, setYear0] = useState(startYear);
   const sending = useRef(false);
+  const restored = useRef(false);
+  const countryTyped = useRef(false);
   const formRef = useRef<HTMLFormElement>(null);
   const doneRef = useRef<HTMLHeadingElement>(null);
+  const summaryRef = useRef<HTMLDivElement>(null);
+
+  // Bring back what this tab typed before a reload. After mount, so the
+  // server and the first client render agree.
+  useEffect(() => {
+    const draft = readDraft();
+    if (draft) setValues((v) => ({ ...v, ...draft }));
+    restored.current = true;
+  }, []);
+
+  useEffect(() => {
+    if (restored.current && state !== "done") writeDraft(values);
+  }, [values, state]);
 
   // A static page can outlive New Year; the list starts at the visitor's year.
   useEffect(() => {
@@ -82,6 +141,14 @@ export default function OfferForm({
   useEffect(() => {
     if (state === "done") doneRef.current?.focus();
   }, [state]);
+
+  const failed = (found: Partial<Record<Field, FieldError>>) => {
+    setErrors(found);
+    setSummary(true);
+    setAnnounce("");
+    // After the summary has rendered.
+    window.requestAnimationFrame(() => summaryRef.current?.focus());
+  };
 
   const set = <K extends keyof Values>(key: K, value: Values[K]) => {
     setValues((v) => ({ ...v, [key]: value }));
@@ -111,10 +178,10 @@ export default function OfferForm({
     };
     const check = validateOrganiser(payload);
     if (!check.ok) {
-      setErrors(check.errors);
-      setAnnounce(form.errors.summary);
-      const first = FIELDS.find((f) => check.errors[f]);
-      if (first) formRef.current?.querySelector<HTMLElement>(`#of-${first}`)?.focus();
+      // Text in the country box that matched nothing reads better as «choose
+      // from the list» than as «fill in the field».
+      if (check.errors.country === "required" && countryTyped.current) check.errors.country = "country";
+      failed(check.errors);
       return;
     }
 
@@ -129,14 +196,14 @@ export default function OfferForm({
       if (res.status === 400) {
         const data: { fields?: Partial<Record<Field, FieldError>> } = await res.json().catch(() => ({}));
         if (data.fields) {
-          setErrors(data.fields);
-          setAnnounce(form.errors.summary);
           setState("idle");
+          failed(data.fields);
           return;
         }
       }
       if (!res.ok) throw new Error(String(res.status));
       setState("done");
+      writeDraft(null);
       trackLeadSubmit(lang);
     } catch {
       setState("error");
@@ -149,7 +216,7 @@ export default function OfferForm({
     return (
       <div className={s.card}>
         <div className={s.success} role="status">
-          <span className={s.successIcon} aria-hidden="true">✓</span>
+          <span className={s.successIcon} aria-hidden="true"><IconCheck /></span>
           <h3 ref={doneRef} tabIndex={-1} className={s.successTitle}>{form.successTitle}</h3>
           <p className={s.successText}>{form.successText}</p>
           <p className={s.successAlt}>{form.successAlt}</p>
@@ -173,7 +240,33 @@ export default function OfferForm({
     id: `of-${field}`,
     "aria-invalid": err(field) ? true : undefined,
     "aria-describedby": err(field) ? `of-${field}-error` : undefined,
+    onBlur: () => checkOnBlur(field),
   });
+
+  // Leaving a field with something typed in checks that one field. An empty
+  // field is left alone until submit: nobody wants «required» for a box they
+  // simply have not reached yet.
+  function checkOnBlur(field: Field) {
+    if (field === "consent") return;
+    // The phone starts out holding a dial code; that alone is still empty.
+    const raw = field === "phone"
+      ? values.phone.replace(/^\+\d{1,4}\s*$/, "")
+      : values[field as "name" | "company" | "email"];
+    if (!raw.trim()) return;
+    const check = validateOrganiser({ ...values, consent: true });
+    const found = check.ok ? undefined : check.errors[field];
+    if (found && found !== "required") setErrors((e) => ({ ...e, [field]: found }));
+  }
+
+  const summaryLabel = (field: Field) =>
+    field === "consent" ? "" : `${form[field as "name" | "company" | "country" | "email" | "phone"]} — `;
+  const summaryItems = summary ? CHECKED.filter((f) => errors[f]) : [];
+  const toField = (field: Field) => (event: MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
+    const el = formRef.current?.querySelector<HTMLElement>(`#of-${field}`);
+    el?.focus();
+    el?.scrollIntoView({ block: "center", behavior: "smooth" });
+  };
   const errorLine = (field: Field) =>
     err(field) ? <p id={`of-${field}-error`} className={s.error}>{errText(field)}</p> : null;
   const req = <span className={s.req} aria-hidden="true">*</span>;
@@ -182,6 +275,19 @@ export default function OfferForm({
     <div className={s.card}>
       <form ref={formRef} noValidate onSubmit={onSubmit} className={s.form} aria-labelledby="of-form-title">
         <h3 id="of-form-title" className={s.title}>{form.title}</h3>
+
+        {summaryItems.length > 0 && (
+          <div ref={summaryRef} tabIndex={-1} className={s.summary} role="group" aria-labelledby="of-summary-title">
+            <p id="of-summary-title" className={s.summaryTitle}>{form.errors.summary}</p>
+            <ul className={s.summaryList}>
+              {summaryItems.map((field) => (
+                <li key={field}>
+                  <a href={`#of-${field}`} onClick={toField(field)}>{summaryLabel(field)}{errText(field)}</a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         {/* Off-screen trap for bots. Not focusable, not announced. */}
         <div className={s.trap} aria-hidden="true">
@@ -211,6 +317,10 @@ export default function OfferForm({
             <label htmlFor="of-country" className={s.label}>{form.country}{req}</label>
             <CountrySelect id="of-country" label={form.country} placeholder={form.countryPlaceholder}
               empty={form.countryEmpty} options={countries} value={values.country} onChange={pickCountry}
+              onUnresolved={(typed) => {
+                countryTyped.current = typed;
+                if (typed) setErrors((e) => ({ ...e, country: "country" }));
+              }}
               invalid={Boolean(err("country"))} describedBy={err("country") ? "of-country-error" : undefined} />
             {errorLine("country")}
           </div>
@@ -231,6 +341,9 @@ export default function OfferForm({
               value={values.phone} onChange={(e) => set("phone", e.target.value)} />
             {errorLine("phone")}
           </div>
+
+          {/* Who is asking above the line, what the show is below it. */}
+          <hr className={`${s.divider} ${s.full}`} />
 
           <div className={`${s.field} ${s.full}`}>
             <label htmlFor="of-showName" className={s.label}>{form.showName}</label>

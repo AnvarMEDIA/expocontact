@@ -5,7 +5,7 @@
   padding: clamp(18px, 2.4vw, 28px);
   border-radius: calc(var(--radius) + 4px);
   background: #fff;
-  box-shadow: 0 1px 0 var(--line), 0 40px 80px -48px rgba(14, 42, 90, 0.45);
+  box-shadow: 0 1px 0 var(--line), var(--elev-3);
 }
 .dashHead {
   display: flex;

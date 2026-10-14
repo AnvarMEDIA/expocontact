@@ -31,6 +31,12 @@ export const IconArrow = () => (
 export const IconCheck = () => (
   <svg {...common} strokeWidth={2.4}><path d="m5 12.5 4.5 4.5L19 7.5" /></svg>
 );
+export const IconPause = () => (
+  <svg {...common} strokeWidth={2.4}><path d="M9 6v12M15 6v12" /></svg>
+);
+export const IconPlay = () => (
+  <svg {...common} fill="currentColor" strokeWidth={1.4}><path d="M8 5.5v13l10.5-6.5z" /></svg>
+);
 export const IconDash = () => (
   <svg {...common} strokeWidth={2}><path d="M7 12h10" /></svg>
 );

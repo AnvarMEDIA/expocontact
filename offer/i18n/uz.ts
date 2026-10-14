@@ -17,6 +17,8 @@ export const uz: OfferDict = {
     close: "Yopish",
     included: "kiradi",
     notIncluded: "kirmaydi",
+    pauseMotion: "Aylantirishni toʻxtatish",
+    playMotion: "Aylantirishni davom ettirish",
   },
   nav: {
     services: "Xizmatlar",

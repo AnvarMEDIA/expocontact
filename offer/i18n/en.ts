@@ -18,6 +18,8 @@ export const en: OfferDict = {
     close: "Close",
     included: "included",
     notIncluded: "not included",
+    pauseMotion: "Pause scrolling",
+    playMotion: "Resume scrolling",
   },
   nav: {
     services: "Services",

@@ -15,6 +15,9 @@
 @media (prefers-reduced-motion: reduce) {
   .html { scroll-behavior: auto; }
 }
+@media (max-width: 767px) {
+  .html { scroll-padding-bottom: 96px; }
+}
 
 .body {
   /* Colours from the vector logo and the ExpoContact proposal deck. */
@@ -40,6 +43,17 @@
   --container: 1240px;
   --gutter: clamp(16px, 4vw, 40px);
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.5, 0, 0.75, 0);
+  /* Motion: things arrive at --dur-base and leave faster, at --dur-fast. */
+  --dur-fast: 0.2s;
+  --dur-base: 0.35s;
+  --dur-slow: 0.6s;
+  /* Elevation, three levels and nothing in between:
+     1 — chips, tabs, small round buttons; 2 — cards and dropdowns;
+     3 — the big panels (dashboard, ExpoContact card, form, dialog). */
+  --elev-1: 0 1px 0 var(--line), 0 8px 20px -14px rgba(14, 42, 90, 0.45);
+  --elev-2: 0 18px 40px -24px rgba(14, 42, 90, 0.4);
+  --elev-3: 0 40px 80px -40px rgba(10, 31, 69, 0.55);
 
   margin: 0;
   min-width: 320px;
@@ -71,6 +85,10 @@
 .body :where(button, input, select, textarea) { font: inherit; color: inherit; }
 .body :where(button) { cursor: pointer; }
 .body :where(svg) { display: block; }
+.body :where(p, li) { text-wrap: pretty; }
+.body :where(h3) { text-wrap: balance; }
+/* No 300 ms tap delay on controls. */
+.body :where(a, button, input, select, textarea, label, summary) { touch-action: manipulation; }
 .body :where(img) { max-width: 100%; display: block; }
 
 .body :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {

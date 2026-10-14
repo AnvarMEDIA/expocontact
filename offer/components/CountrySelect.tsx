@@ -3,7 +3,9 @@
 /**
  * Country picker with search — an ARIA 1.2 combobox over a listbox. Typing
  * filters by the localised name or the ISO code ("tr", "Türk", "土耳其"),
- * arrows move, Enter picks, Escape closes.
+ * arrows move, Enter picks, Escape closes. Leaving the box with text that
+ * names no country is reported through onUnresolved, so the form can say so
+ * right away instead of on submit.
  */
 import { useId, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import type { CountryOption } from "../lib/countries";
@@ -17,6 +19,8 @@ interface CountrySelectProps {
   options: CountryOption[];
   value: string;
   onChange: (code: string) => void;
+  /** true: the visitor left typed text that matched nothing; false: resolved or cleared. */
+  onUnresolved?: (typed: boolean) => void;
   invalid: boolean;
   describedBy?: string;
 }
@@ -25,7 +29,7 @@ interface CountrySelectProps {
 const norm = (v: string) => v.normalize("NFD").replace(/\p{M}/gu, "").toLocaleLowerCase();
 
 export default function CountrySelect({
-  id, label, placeholder, empty, options, value, onChange, invalid, describedBy,
+  id, label, placeholder, empty, options, value, onChange, onUnresolved, invalid, describedBy,
 }: CountrySelectProps) {
   const listId = useId();
   const selected = options.find((o) => o.code === value);
@@ -55,6 +59,7 @@ export default function CountrySelect({
 
   const pick = (option: CountryOption) => {
     onChange(option.code);
+    onUnresolved?.(false);
     setQuery(null);
     setOpen(false);
   };
@@ -89,7 +94,13 @@ export default function CountrySelect({
     if (query === null) return;
     const exact = options.find((o) => norm(o.name) === norm(query.trim()));
     if (exact) pick(exact);
-    else if (!query.trim()) { onChange(""); setQuery(null); }
+    else if (!query.trim()) { onChange(""); onUnresolved?.(false); setQuery(null); }
+    else {
+      // Keep what was typed on screen, but do not let an earlier pick stand
+      // behind text that now says something else.
+      onChange("");
+      onUnresolved?.(true);
+    }
   };
 
   const activeId = open && matches[cursor] ? `${listId}-${matches[cursor].code}` : undefined;

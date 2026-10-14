@@ -10,7 +10,8 @@
 }
 .reverse .track { animation-direction: reverse; animation-duration: 46s; }
 .marquee:hover .track,
-.marquee:focus-within .track { animation-play-state: paused; }
+.marquee:focus-within .track,
+[data-paused] .track { animation-play-state: paused; }
 
 .list { display: flex; gap: 12px; padding-right: 12px; }
 .plate {

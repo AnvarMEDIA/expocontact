@@ -18,7 +18,7 @@
 собирается ровно из иероглифов словаря. Этот файл пересобирается командой
 `node offer/scripts/translations-review.mjs`.
 
-Всего строк: 214 × 5 языков.
+Всего строк: 216 × 5 языков.
 
 ## Мета-теги и соцсети
 
@@ -127,6 +127,22 @@
 - TR: dahil değil
 - ZH: 不包含
 - UZ: kirmaydi
+
+**`a11y.pauseMotion`**
+
+- RU: Остановить прокрутку
+- EN: Pause scrolling
+- TR: Kaydırmayı durdur
+- ZH: 暂停滚动
+- UZ: Aylantirishni toʻxtatish
+
+**`a11y.playMotion`**
+
+- RU: Продолжить прокрутку
+- EN: Resume scrolling
+- TR: Kaydırmayı sürdür
+- ZH: 继续滚动
+- UZ: Aylantirishni davom ettirish
 
 ## Шапка
 

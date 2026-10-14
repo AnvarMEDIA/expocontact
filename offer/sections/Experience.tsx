@@ -1,13 +1,18 @@
 import CountUp from "../components/CountUp";
 import LogoMark from "../components/LogoMark";
 import Marquee from "../components/Marquee";
+import MotionToggle from "../components/MotionToggle";
 import Title from "../components/Title";
 import { PARTNERS, VENUES } from "../lib/content";
 import type { OfferDict } from "../i18n";
 import base from "../styles/base.module.css";
 import s from "./Experience.module.css";
 
-export default function Experience({ experience, intl }: { experience: OfferDict["experience"]; intl: string }) {
+export default function Experience({ experience, a11y, intl }: {
+  experience: OfferDict["experience"];
+  a11y: OfferDict["a11y"];
+  intl: string;
+}) {
   const n = (v: number) => new Intl.NumberFormat(intl).format(v);
   const small = [
     { value: 500, display: n(500), suffix: "+", label: experience.clients },
@@ -39,7 +44,7 @@ export default function Experience({ experience, intl }: { experience: OfferDict
           ))}
         </div>
 
-        <div className={s.rows}>
+        <MotionToggle className={s.rows} pauseLabel={a11y.pauseMotion} playLabel={a11y.playMotion}>
           <div data-reveal="">
             <p className={s.rowTitle}>{experience.venuesTitle}</p>
             <Marquee items={VENUES} label={experience.venuesTitle} />
@@ -49,7 +54,7 @@ export default function Experience({ experience, intl }: { experience: OfferDict
             <p className={s.partnersText}>{experience.partnersText}</p>
             <Marquee items={PARTNERS} label={experience.partnersTitle} reverse />
           </div>
-        </div>
+        </MotionToggle>
       </div>
     </section>
   );

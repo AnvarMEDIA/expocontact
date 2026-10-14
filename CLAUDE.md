@@ -417,7 +417,7 @@ Motion and performance:
   re-run after editing `zh.ts`), served from `public/fonts/` and preloaded on
   `/offer/zh` only. The full Noto Sans SC through next/font put 187 KB of
   render-blocking CSS on every language and ~900 KB of slices on zh.
-- Measured on the production build with mobile Lighthouse: performance 91–98
+- Measured on the production build with mobile Lighthouse: performance 93–98
   across the five languages, accessibility and SEO 100.
 - Small orange text uses `--orange-ink` on light and `--orange-glow` on dark
   backgrounds, and orange buttons carry navy text: the brand orange is 3.2:1 on
@@ -436,6 +436,33 @@ Motion and performance:
   missing capitals fall back to the heavy weight.
 - The portfolio images in Blob are generated, not photos of real stands, so
   the landing shows none. Use real photos only.
+
+Design tokens and interaction rules:
+
+- Shadows come from three levels in `offer/styles/base.module.css`:
+  `--elev-1` (chips, tabs, small round buttons), `--elev-2` (cards,
+  dropdowns), `--elev-3` (dashboard, ExpoContact card, form, dialog). Do not
+  add a one-off `box-shadow`; pick a level. Durations are `--dur-fast` (0.2s),
+  `--dur-base` (0.35s) and `--dur-slow` (0.6s): things arrive at base and leave
+  at fast with `--ease-in` (the mobile CTA bar).
+- The two scrolling rows in «Опыт» have a visible pause button
+  (`MotionToggle`, WCAG 2.2.2) and stop on their own off screen. A phone has
+  no hover, so pausing on hover alone is not enough. Under reduced motion the
+  rows are static and the button is hidden.
+- The form, on a failed submit, puts an error summary at the top, one link per
+  problem, and moves focus to it; the error under each field stays. Before a
+  submit, a field is checked only when the visitor leaves it with something
+  typed in — never «required» for a box they have not reached. Country text
+  that names no country is reported on leaving the box.
+- The form keeps a draft in `sessionStorage` (`offer-form-draft`): this tab
+  only, never the consent box or the honeypot, removed once the enquiry is
+  sent. It is restored after mount so server and client render agree.
+- Over the hero the header CTA is an outline, so it does not compete with the
+  hero's own orange button; it fills in once the header turns solid.
+- `color-scheme: only light` in the viewport keeps Chrome's automatic dark
+  mode on Android from inverting the palette.
+- On phones `scroll-padding-bottom: 96px` keeps a focused element above the
+  sticky CTA bar.
 
 ## Visitor statistics
 
