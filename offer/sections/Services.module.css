@@ -1,0 +1,53 @@
+.grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 1fr;
+}
+.card {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  min-height: 220px;
+  padding: 28px;
+  border-radius: var(--radius);
+  background: var(--card);
+  transition: transform 0.35s var(--ease-out), box-shadow 0.35s var(--ease-out);
+}
+.card:hover { transform: translateY(-4px); box-shadow: 0 18px 40px -24px rgba(14, 42, 90, 0.35); }
+
+.icon {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 18px;
+  border-radius: 14px;
+  background: #fff;
+  color: var(--navy);
+  box-shadow: 0 1px 0 var(--line);
+}
+.num {
+  position: absolute;
+  top: 26px;
+  right: 28px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--faint);
+}
+.title { font-size: 21px; font-weight: 700; line-height: 1.2; letter-spacing: -0.01em; }
+.text { font-size: 16px; color: var(--muted); }
+
+.cardAccent { background: var(--orange); color: var(--deeper); }
+.cardAccent .icon { background: rgba(255, 255, 255, 0.92); color: var(--orange-ink); box-shadow: none; }
+.cardAccent .num,
+.cardAccent .text { color: rgba(10, 31, 69, 0.82); }
+
+@media (min-width: 640px) {
+  .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 1024px) {
+  .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+  .card { min-height: 250px; padding: 32px; }
+}

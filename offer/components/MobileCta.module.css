@@ -1,0 +1,17 @@
+.bar {
+  position: fixed;
+  z-index: 40;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+  background: linear-gradient(180deg, transparent, rgba(7, 23, 51, 0.55) 40%);
+  transition: transform 0.35s var(--ease-out), opacity 0.35s;
+}
+.hidden { transform: translate3d(0, 110%, 0); opacity: 0; pointer-events: none; }
+.button { width: 100%; min-height: 54px; font-size: 17px; }
+.button svg { width: 20px; height: 20px; }
+
+@media (min-width: 768px) {
+  .bar { display: none; }
+}

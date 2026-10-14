@@ -1,0 +1,26 @@
+/*
+ * Chinese for /offer/zh: Noto Sans SC subset to the characters of the Chinese
+ * dictionary (offer/scripts/build-zh-font.mjs). Onest stays first in the stack
+ * and draws Latin and digits; these faces cover only the CJK ranges.
+ *
+ * The family is switched on by .of-zh on <body>, so other languages never
+ * download it — not even for the "中文" label in their language switcher.
+ */
+@font-face {
+  font-family: "Noto Sans SC Offer";
+  src: url("/fonts/noto-sans-sc-offer-400.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+2000-206F, U+3000-303F, U+4E00-9FFF, U+FF00-FFEF;
+}
+@font-face {
+  font-family: "Noto Sans SC Offer";
+  src: url("/fonts/noto-sans-sc-offer-700.woff2") format("woff2");
+  font-weight: 700 900;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+2000-206F, U+3000-303F, U+4E00-9FFF, U+FF00-FFEF;
+}
+
+.of-zh { --font-sc: "Noto Sans SC Offer"; }

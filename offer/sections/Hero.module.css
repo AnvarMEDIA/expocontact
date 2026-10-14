@@ -1,0 +1,105 @@
+.hero {
+  min-height: min(100svh, 980px);
+  display: flex;
+  align-items: flex-end;
+  padding-top: 120px;
+  padding-bottom: clamp(40px, 6vw, 72px);
+  isolation: isolate;
+}
+
+.markWrap {
+  position: absolute;
+  z-index: -1;
+  right: -38vw;
+  top: 4%;
+  width: max(620px, 92vw);
+  will-change: transform;
+}
+.mark {
+  --mark-accent: rgba(236, 105, 31, 0.3);
+  width: 100%;
+  height: auto;
+  color: rgba(255, 255, 255, 0.075);
+}
+
+.glow {
+  position: absolute;
+  z-index: -2;
+  right: -10%;
+  bottom: -30%;
+  width: 70vw;
+  height: 70vw;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(236, 105, 31, 0.16), transparent);
+  pointer-events: none;
+}
+
+.inner { position: relative; }
+
+.kicker,
+.lead,
+.ctas,
+.stats {
+  animation: rise 0.8s var(--ease-out) both;
+}
+.kicker { animation-delay: 0.05s; }
+
+.title {
+  display: grid;
+  margin: 22px 0 24px;
+  max-width: 15.5em;
+}
+.line {
+  display: block;
+  animation: rise 0.9s var(--ease-out) both;
+  animation-delay: calc(0.15s + var(--i) * 0.1s);
+}
+
+.lead {
+  max-width: 34em;
+  animation-delay: 0.5s;
+}
+
+.ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 36px;
+  animation-delay: 0.6s;
+}
+.ctas svg { width: 20px; height: 20px; }
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px 16px;
+  margin-top: clamp(48px, 7vw, 88px);
+  padding-top: clamp(24px, 3vw, 32px);
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
+  animation-delay: 0.75s;
+}
+.stat { display: grid; gap: 4px; }
+.statValue {
+  font-size: clamp(34px, 1.4rem + 2.6vw, 56px);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+.statLabel { font-size: 14px; line-height: 1.35; color: rgba(255, 255, 255, 0.72); max-width: 16em; }
+
+/* 0.01, not 0: Chrome does not count an element first painted fully
+   transparent as Largest Contentful Paint, and the hero headline is it. */
+@keyframes rise {
+  from { opacity: 0.01; transform: translate3d(0, 0.5em, 0); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (max-width: 639px) {
+  .ctas a { width: 100%; }
+}
+
+@media (min-width: 768px) {
+  .stats { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .markWrap { right: -18vw; top: 6%; width: min(78vw, 1040px); }
+}

@@ -1,0 +1,38 @@
+.mark { overflow: visible; }
+
+.ring {
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: butt;
+}
+.ringInner { opacity: 0.8; }
+/* Decorative copies tone the orange down (or drop it) through --mark-accent:
+   full-strength orange behind orange headline text makes the letters vanish. */
+.orange { fill: var(--mark-accent, var(--orange, #ec691f)); }
+.square { fill: currentColor; }
+
+.spin {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+}
+
+.animate .ring {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: draw 1.6s cubic-bezier(0.65, 0, 0.35, 1) 0.15s forwards;
+}
+.animate .ringInner { animation-delay: 0.45s; }
+.animate .pieces {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: pop 0.7s cubic-bezier(0.16, 1, 0.3, 1) 1.35s forwards;
+}
+.animate .spin { animation: spin 160s linear 1.8s infinite; }
+
+@keyframes draw { to { stroke-dashoffset: 0; } }
+@keyframes pop {
+  from { opacity: 0; transform: scale(0.6); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes spin { to { transform: rotate(360deg); } }

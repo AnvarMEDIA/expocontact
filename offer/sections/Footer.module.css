@@ -1,0 +1,48 @@
+.footer {
+  padding: 48px 0 calc(40px + env(safe-area-inset-bottom));
+  background: #071733;
+  color: rgba(255, 255, 255, 0.78);
+}
+.inner { display: grid; gap: 28px; }
+.logo { width: 168px; height: auto; }
+.contacts { display: flex; flex-wrap: wrap; gap: 8px 28px; }
+.contacts a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: 17px;
+  font-weight: 600;
+  color: #fff;
+}
+.contacts a:hover { color: var(--orange-glow); }
+.bottom {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 24px;
+  padding-top: 22px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: 14px;
+}
+.privacy {
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #fff;
+  font-size: 14px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Room for the sticky mobile CTA, so it never covers the last line. */
+@media (max-width: 767px) {
+  .footer { padding-bottom: calc(104px + env(safe-area-inset-bottom)); }
+}
+
+@media (min-width: 900px) {
+  .inner { grid-template-columns: auto 1fr; align-items: center; }
+  .contacts { justify-content: flex-end; }
+  .bottom { grid-column: 1 / -1; }
+}

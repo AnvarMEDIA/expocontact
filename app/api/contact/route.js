@@ -11,6 +11,11 @@
  *             Never trusted as-is; sanitizeMarketing() whitelists and bounds it.
  *   details   answers to the qualifying questions on the ad landing — see
  *             lib/leadFields.js. Only known questions with known answers survive.
+ *
+ * source 'offer' is the organiser enquiry from the /offer landing. It has its
+ * own fields (e-mail, country, dates, area, format, consent), validation and
+ * message, all defined in offer/lib/lead.ts; every other form takes the
+ * original path below unchanged.
  */
 import { NextResponse } from 'next/server';
 import { createLead } from '@/lib/leads';
@@ -19,6 +24,8 @@ import { sanitizeDetails, qualifierLabel, qualifierValueLabel } from '@/lib/lead
 import { sendTelegram, telegramConfigured } from '@/lib/telegram';
 import { recordLead } from '@/lib/analytics/store';
 import { formatPhone } from '@/lib/phone';
+import { validateOrganiser, organiserSummary, organiserTelegram } from '@/offer/lib/lead';
+import { isOfferLang } from '@/offer/i18n/langs';
 
 /** "https://www.google.com/search?q=…" -> "google.com": the manager needs the source, not the URL. */
 function refererHost(url) {
@@ -37,10 +44,74 @@ const FORM_LABELS = {
   contact: 'форма контактов',
   modal:   'попап',
   ads:     'рекламная страница',
+  offer:   'лендинг для организаторов',
 };
+
+/**
+ * The /offer organiser enquiry. Same storage, same counter and same Telegram
+ * chat as every other form; only the fields and the message differ.
+ */
+async function organiserEnquiry(request, body) {
+  // Honeypot: a field people never see. Bots fill every input; answer as if
+  // all went well, so there is nothing to retry and nothing is stored.
+  if (typeof body.website === 'string' && body.website.trim()) {
+    return NextResponse.json({ ok: true });
+  }
+
+  const check = validateOrganiser(body);
+  if (!check.ok) {
+    return NextResponse.json({ error: 'invalid', fields: check.errors }, { status: 400 });
+  }
+  const enquiry = check.value;
+  const lang = isOfferLang(body.lang) ? body.lang : 'en';
+  const marketing = sanitizeMarketing(body.marketing);
+  const at = new Date();
+
+  let lead = null;
+  try {
+    lead = await createLead({
+      name:    enquiry.name,
+      company: enquiry.company,
+      phone:   enquiry.phone,
+      expo:    enquiry.showName,
+      // Every answer in readable Russian, so the lead card and the CSV export
+      // show the whole enquiry without knowing about this form.
+      message: [...organiserSummary(enquiry), enquiry.message ? `\n${enquiry.message}` : null]
+        .filter(Boolean).join('\n'),
+      source:  'offer',
+      locale:  lang,
+      marketing,
+      organiser: { ...enquiry, lang, receivedAt: at.toISOString() },
+    });
+  } catch (err) {
+    console.error('[contact] Organiser lead save failed:', err.message);
+  }
+
+  await recordLead();
+
+  if (telegramConfigured()) {
+    const sent = await sendTelegram(organiserTelegram({
+      lead: enquiry,
+      id: lead?.id,
+      lang,
+      marketing,
+      at,
+      adminUrl: lead ? `${siteOrigin(request)}/admin?lead=${lead.id}` : null,
+    }));
+    if (!sent.ok) {
+      console.error('[contact] Telegram delivery failed:', sent.status, sent.description, sent.hint || '');
+    }
+  } else {
+    console.log('[contact] Organiser enquiry (Telegram not configured):', { id: lead?.id, lang, ...enquiry });
+  }
+
+  return NextResponse.json({ ok: true, id: lead?.id });
+}
 
 export async function POST(request) {
   const body = await request.json().catch(() => ({}));
+  if (body.source === 'offer') return organiserEnquiry(request, body);
+
   const { name, company, phone, expo, event, message, source, locale } = body;
 
   // Campaign data is whitelisted and bounded — it arrives from the browser and
