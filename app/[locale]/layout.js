@@ -102,7 +102,7 @@ function buildJsonLd({ locale, meta, seo, messages }) {
       logo:    LOGO_URL,
       image:   seo.ogImage || OG_IMAGE,
       telephone: '+998977111711',
-      email:   'hello@expocontact.uz',
+      email:   'info@expocontact.uz',
       foundingDate: '2004',
       address: {
         '@type':         'PostalAddress',
@@ -138,11 +138,11 @@ function buildJsonLd({ locale, meta, seo, messages }) {
       contactPoint: {
         '@type':           'ContactPoint',
         telephone:         '+998977111711',
-        email:             'hello@expocontact.uz',
+        email:             'info@expocontact.uz',
         contactType:       'sales',
         availableLanguage: ['ru', 'en', 'uz'],
       },
-      sameAs: ['https://instagram.com/expocontact', 'https://t.me/expocontact'],
+      sameAs: ['https://instagram.com/expo.contact', 'https://t.me/expocontact'],
     },
     {
       '@type':     'WebSite',

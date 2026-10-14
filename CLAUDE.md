@@ -72,6 +72,13 @@ fallback — it put unrelated stock photos on the front page.
 - `/admin` writes through the same store and then calls `revalidatePath`, so an
   edit reaches the live site within a minute without a redeploy. Pages carry
   `export const revalidate = 60`.
+- Contacts confirmed by the owner (October 2026): e-mail
+  `info@expocontact.uz` and Instagram `https://instagram.com/expo.contact`.
+  `hello@expocontact.uz` and `instagram.com/expocontact` are wrong and must
+  not come back — not in the settings seeds, the JSON-LD in
+  `app/[locale]/layout.js`, the form fallbacks or `offer/lib/content.ts`.
+  A settings document already saved in Blob keeps whatever it holds, so a
+  wrong value there is fixed in /admin, not in the repository.
 
 ## Storage map
 

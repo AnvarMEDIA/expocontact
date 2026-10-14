@@ -911,8 +911,8 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
                 </div>
                 <div className="contact-block">
                   <span className="contact-block__label">{tContact('labelEmail')}</span>
-                  <a className="contact-block__val magnetic" data-hover href={`mailto:${sContact.email || 'hello@expocontact.uz'}`}>
-                    {sContact.email || 'hello@expocontact.uz'}
+                  <a className="contact-block__val magnetic" data-hover href={`mailto:${sContact.email || 'info@expocontact.uz'}`}>
+                    {sContact.email || 'info@expocontact.uz'}
                   </a>
                 </div>
               </div>
@@ -1017,7 +1017,7 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
                 <li>
                   <div className="footer__contact-item">
                     <span className="lbl">{tFooter('labelEmail')}</span>
-                    <a className="val" href={`mailto:${sContact.email || 'hello@expocontact.uz'}`}>{sContact.email || 'hello@expocontact.uz'}</a>
+                    <a className="val" href={`mailto:${sContact.email || 'info@expocontact.uz'}`}>{sContact.email || 'info@expocontact.uz'}</a>
                   </div>
                 </li>
                 <li>
