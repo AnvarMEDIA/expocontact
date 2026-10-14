@@ -422,9 +422,18 @@ Motion and performance:
 - Small orange text uses `--orange-ink` on light and `--orange-glow` on dark
   backgrounds, and orange buttons carry navy text: the brand orange is 3.2:1 on
   white and fails AA below heading size.
+- Uzbek is the longest language and sets the limits. The full header bar
+  needs 1280px («Tashrif buyuruvchilar», «Koʻrgazmani muhokama qilish»);
+  below that the burger carries sections and languages, and header items never
+  wrap. On phones the hero H1 is sized by viewport width so its longest
+  unbreakable piece («Koʻrgazmangiz —», 312px at 40px) fits a 320px screen,
+  and button labels wrap inside the button. After any text change, check every
+  language from 320 to 1920px — a long word that fits in Russian may not.
 - Open Graph images (`opengraph-image.tsx`, next/og) cannot use opacity on SVG
   strokes and must uppercase text with `toLocaleUpperCase(lang)` (Turkish
-  `i → İ`), not CSS.
+  `i → İ`), not CSS. Their font is subset to the exact characters drawn, so
+  uppercase text must be passed to the subset in uppercase — otherwise the
+  missing capitals fall back to the heavy weight.
 - The portfolio images in Blob are generated, not photos of real stands, so
   the landing shows none. Use real photos only.
 

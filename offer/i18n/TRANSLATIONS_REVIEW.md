@@ -28,7 +28,7 @@
 - EN: Trade Show Organiser in Uzbekistan — Turnkey, Full Halls | ExpoContact
 - TR: Özbekistan'da Fuar Organizatörü — Anahtar Teslim, Dolu Salonlar | ExpoContact
 - ZH: 乌兹别克斯坦展会本地主办伙伴——一站式交付，观众满馆 | ExpoContact
-- UZ: Oʻzbekistonda koʻrgazma tashkilotchisi — kalit topshirish asosida, toʻla zallar bilan | ExpoContact
+- UZ: Oʻzbekistonda koʻrgazmalarni toʻliq tashkil etish — tashrif buyuruvchilarga toʻla zallar | ExpoContact
 
 **`meta.description`**
 
@@ -36,7 +36,7 @@
 - EN: ExpoContact is your local organising partner in Tashkent and Uzbekistan: permits, venue, pavilion build, promotion and a steady flow of visitors — each one registered. One contract.
 - TR: ExpoContact, Taşkent ve Özbekistan'daki yerel organizasyon ortağınız: izinler, mekân, pavyon kurulumu, tanıtım ve her ziyaretçinin kayıtlı olduğu ziyaretçi akışı. Tek sözleşme.
 - ZH: ExpoContact 是您在塔什干和乌兹别克斯坦的本地主办合作伙伴：许可审批、场馆、展馆搭建、宣传推广，以及每位观众实名登记的观众引流。一份合同全部搞定。
-- UZ: ExpoContact — Toshkent va Oʻzbekistonda koʻrgazmalar boʻyicha mahalliy hamkor-tashkilotchi: ruxsatnomalar, maydon, qurilish, reklama va har bir mehmon roʻyxatga olinadigan tashriflar oqimi. Bitta shartnoma.
+- UZ: ExpoContact — Toshkent va Oʻzbekistonda koʻrgazmangizni joyida tashkil etuvchi hamkoringiz: ruxsatnomalar, maydoncha, pavilyon qurilishi, reklama va har biri roʻyxatga olinadigan tashrif buyuruvchilar oqimi. Hammasi bitta shartnoma asosida.
 
 **`meta.ogTitle`**
 
@@ -44,7 +44,7 @@
 - EN: Your trade show in Uzbekistan. Turnkey. With full halls.
 - TR: Özbekistan'da fuarınız. Anahtar teslim. Dolu salonlarla.
 - ZH: 您在乌兹别克斯坦的展会。一站式交付。观众满馆。
-- UZ: Koʻrgazmangiz Oʻzbekistonda. Kalit topshirish asosida. Toʻla zallar bilan.
+- UZ: Koʻrgazmangiz — Oʻzbekistonda. Boshidan oxirigacha. Zallar toʻla boʻladi.
 
 **`meta.ogDescription`**
 
@@ -52,7 +52,7 @@
 - EN: Permits, venue, build, promotion and visitor flow — under one contract.
 - TR: İzinler, mekân, kurulum, tanıtım ve ziyaretçi akışı — tek sözleşmeyle.
 - ZH: 许可、场馆、搭建、宣传与观众引流——一份合同全部搞定。
-- UZ: Ruxsatnomalar, maydon, qurilish, reklama va mehmonlar oqimi — bitta shartnoma asosida.
+- UZ: Ruxsatnomalar, maydoncha, qurilish, reklama va tashrif buyuruvchilar oqimi — barchasi bitta shartnomada.
 
 **`meta.ogKicker`**
 
@@ -60,7 +60,7 @@
 - EN: Local organising partner · Uzbekistan
 - TR: Yerel organizasyon ortağı · Özbekistan
 - ZH: 本地主办合作伙伴 · 乌兹别克斯坦
-- UZ: Mahalliy hamkor-tashkilotchi · Oʻzbekiston
+- UZ: Oʻzbekistondagi mahalliy hamkoringiz
 
 ## Подписи для скринридеров
 
@@ -70,7 +70,7 @@
 - EN: Skip to content
 - TR: İçeriğe geç
 - ZH: 跳到正文
-- UZ: Asosiy qismga oʻtish
+- UZ: Asosiy mazmunga oʻtish
 
 **`a11y.home`**
 
@@ -78,7 +78,7 @@
 - EN: ExpoContact — back to top
 - TR: ExpoContact — sayfa başına dön
 - ZH: ExpoContact——返回页首
-- UZ: ExpoContact — sahifa boshiga
+- UZ: ExpoContact — sahifa boshiga qaytish
 
 **`a11y.menu`**
 
@@ -144,7 +144,7 @@
 - EN: Visitors
 - TR: Ziyaretçiler
 - ZH: 观众
-- UZ: Mehmonlar
+- UZ: Tashrif buyuruvchilar
 
 **`nav.plan`**
 
@@ -186,7 +186,7 @@
 - EN: Local organising partner · Uzbekistan
 - TR: Yerel organizasyon ortağı · Özbekistan
 - ZH: 本地主办合作伙伴 · 乌兹别克斯坦
-- UZ: Mahalliy hamkor-tashkilotchi · Oʻzbekiston
+- UZ: Oʻzbekistondagi mahalliy hamkoringiz
 
 **`hero.title.0`**
 
@@ -194,7 +194,7 @@
 - EN: Your trade show in Uzbekistan.
 - TR: Özbekistan'da fuarınız.
 - ZH: 您在乌兹别克斯坦的展会。
-- UZ: Koʻrgazmangiz Oʻzbekistonda.
+- UZ: Koʻrgazmangiz — Oʻzbekistonda.
 
 **`hero.title.1`**
 
@@ -202,7 +202,7 @@
 - EN: Turnkey.
 - TR: Anahtar teslim.
 - ZH: 一站式交付。
-- UZ: Kalit topshirish asosida.
+- UZ: Boshidan oxirigacha.
 
 **`hero.title.2`**
 
@@ -210,7 +210,7 @@
 - EN: With full halls.
 - TR: Dolu salonlarla.
 - ZH: 观众满馆。
-- UZ: Toʻla zallar bilan.
+- UZ: Zallar toʻla boʻladi.
 
 **`hero.lead`**
 
@@ -218,7 +218,7 @@
 - EN: From permits and venue to pavilion build, promotion and visitor flow — under one contract.
 - TR: İzinlerden mekâna, pavyon kurulumundan tanıtıma ve ziyaretçi akışına kadar — tek sözleşmeyle.
 - ZH: 从许可审批、场馆到展馆搭建、宣传推广和观众引流——一份合同全部搞定。
-- UZ: Ruxsatnomalar va maydondan tortib qurilish, reklama va mehmonlar oqimigacha — bitta shartnoma asosida.
+- UZ: Ruxsatnomalar va maydonchadan tortib pavilyon qurilishi, reklama va tashrif buyuruvchilargacha — barchasi bitta shartnoma asosida.
 
 **`hero.ctaPrimary`**
 
@@ -234,7 +234,7 @@
 - EN: How we bring visitors
 - TR: Ziyaretçileri nasıl getiriyoruz
 - ZH: 我们如何吸引观众
-- UZ: Mehmonlarni qanday jalb qilamiz
+- UZ: Tashrif buyuruvchilarni qanday jalb qilamiz
 
 **`hero.stats.since`**
 
@@ -242,7 +242,7 @@
 - EN: in business since
 - TR: yılından beri faaliyetteyiz
 - ZH: 成立年份
-- UZ: yildan beri ishlaymiz
+- UZ: yildan beri faoliyatdamiz
 
 **`hero.stats.stands`**
 
@@ -250,7 +250,7 @@
 - EN: stands built
 - TR: kurulan stant
 - ZH: 已搭建展位
-- UZ: qurilgan stend
+- UZ: qurilgan stendlar
 
 **`hero.stats.clients`**
 
@@ -258,7 +258,7 @@
 - EN: clients
 - TR: müşteri
 - ZH: 客户
-- UZ: mijoz
+- UZ: mijozlar
 
 **`hero.stats.support`**
 
@@ -284,7 +284,7 @@
 - EN: If you plan to run a trade show in Tashkent or Uzbekistan, [we handle everything on the ground.]
 - TR: Taşkent'te ya da Özbekistan'da fuar düzenlemeyi planlıyorsanız, [sahadaki her şeyi biz üstleniyoruz.]
 - ZH: 如果您计划在塔什干或乌兹别克斯坦举办展会，[现场的一切都由我们负责。]
-- UZ: Toshkent yoki Oʻzbekistonda koʻrgazma oʻtkazmoqchi boʻlsangiz, [joydagi barcha ishlarni oʻzimiz taʼminlaymiz.]
+- UZ: Toshkent yoki Oʻzbekistonda koʻrgazma oʻtkazishni rejalashtirayotgan boʻlsangiz, [joyidagi barcha ishlarni biz bajaramiz.]
 
 **`services.cards.0.title`**
 
@@ -308,7 +308,7 @@
 - EN: Venue
 - TR: Mekân
 - ZH: 场馆
-- UZ: Maydon
+- UZ: Maydoncha
 
 **`services.cards.1.text`**
 
@@ -316,7 +316,7 @@
 - EN: Selection, negotiation and booking
 - TR: Seçim, müzakere ve rezervasyon
 - ZH: 选址、谈判与预订
-- UZ: Tanlash, muzokaralar va bron qilish
+- UZ: Tanlash, muzokaralar va band qilish
 
 **`services.cards.2.title`**
 
@@ -332,7 +332,7 @@
 - EN: Design and turnkey build
 - TR: Tasarım ve anahtar teslim kurulum
 - ZH: 设计与交钥匙搭建
-- UZ: Loyiha va kalit topshirish asosida qurilish
+- UZ: Loyihalash va toʻliq qurib berish
 
 **`services.cards.3.title`**
 
@@ -348,7 +348,7 @@
 - EN: Production, set-up, dismantling
 - TR: Üretim, kurulum, söküm
 - ZH: 制作、安装与拆除
-- UZ: Tayyorlash, montaj, demontaj
+- UZ: Tayyorlash, montaj va demontaj
 
 **`services.cards.4.title`**
 
@@ -364,7 +364,7 @@
 - EN: Pre-show campaign for maximum reach
 - TR: Maksimum erişim için fuar öncesi kampanya
 - ZH: 开幕前推广，实现最大覆盖
-- UZ: Maksimal qamrov uchun ochilishdan oldingi kampaniya
+- UZ: Ochilishdan oldin keng auditoriyani qamrab oluvchi kampaniya
 
 **`services.cards.5.title`**
 
@@ -372,7 +372,7 @@
 - EN: Visitor flow
 - TR: Ziyaretçi akışı
 - ZH: 观众引流
-- UZ: Mehmonlar oqimi
+- UZ: Tashrif buyuruvchilar oqimi
 
 **`services.cards.5.text`**
 
@@ -380,7 +380,7 @@
 - EN: Every visitor registered, full database
 - TR: Her ziyaretçi kayıtlı, eksiksiz veri tabanı
 - ZH: 每位观众实名登记，完整数据库
-- UZ: Har bir mehmon roʻyxatda, toʻliq baza
+- UZ: Har biri roʻyxatga olinadi, toʻliq baza beriladi
 
 ## 3. Проблемы → решения
 
@@ -390,7 +390,7 @@
 - EN: New-market risks
 - TR: Yeni pazarın riskleri
 - ZH: 新市场的风险
-- UZ: Yangi bozor xatarlari
+- UZ: Yangi bozordagi xatarlar
 
 **`problems.title`**
 
@@ -398,7 +398,7 @@
 - EN: What holds a show back in a new market — [and how we remove it]
 - TR: Yeni bir pazarda fuarın önündeki engeller — [ve onları nasıl ortadan kaldırıyoruz]
 - ZH: 新市场办展的障碍——[以及我们如何消除]
-- UZ: Yangi hududda koʻrgazmaga nima xalaqit beradi — [va biz buni qanday bartaraf etamiz]
+- UZ: Yangi bozorda koʻrgazmaga nimalar toʻsqinlik qiladi — [va biz ularni qanday bartaraf etamiz]
 
 **`problems.problemLabel`**
 
@@ -438,7 +438,7 @@
 - EN: Empty aisles — exhibitors don't come back
 - TR: Boş koridorlar — katılımcılar bir daha gelmiyor
 - ZH: 过道冷清——参展商不再回来
-- UZ: Boʻsh yoʻlaklar — ishtirokchilar qaytib kelmaydi
+- UZ: Yoʻlaklar boʻsh — ishtirokchilar keyingi yil qaytmaydi
 
 **`problems.pairs.1.solution`**
 
@@ -446,7 +446,7 @@
 - EN: We bring targeted visitors and show the numbers
 - TR: Hedef ziyaretçileri getiriyor, rakamları gösteriyoruz
 - ZH: 我们带来精准观众，并用数据说话
-- UZ: Maqsadli mehmonlarni olib kelamiz va raqamlarni koʻrsatamiz
+- UZ: Maqsadli tashrif buyuruvchilarni olib kelamiz va natijani raqamlarda koʻrsatamiz
 
 **`problems.pairs.2.problem`**
 
@@ -462,7 +462,7 @@
 - EN: One contract, one team, one point of responsibility
 - TR: Tek sözleşme, tek ekip, tek sorumlu
 - ZH: 一份合同、一个团队、一方负责
-- UZ: Bitta shartnoma, bitta jamoa, bitta masʼuliyat
+- UZ: Bitta shartnoma, bitta jamoa, bitta javobgar
 
 ## 4. Один договор вместо пяти
 
@@ -480,7 +480,7 @@
 - EN: One contract [instead of five]
 - TR: Beş sözleşme yerine [tek sözleşme]
 - ZH: [一份合同]取代五份
-- UZ: Beshta oʻrniga [bitta shartnoma]
+- UZ: Beshta shartnoma oʻrniga [bittasi]
 
 **`contract.usualLabel`**
 
@@ -496,7 +496,7 @@
 - EN: Venue
 - TR: Mekân
 - ZH: 场馆
-- UZ: Maydon
+- UZ: Maydoncha
 
 **`contract.usual.1`**
 
@@ -568,7 +568,7 @@
 - EN: One party accountable for results
 - TR: Sonuçtan sorumlu tek taraf
 - ZH: 对结果全权负责
-- UZ: Natija uchun yagona masʼuliyat
+- UZ: Natija uchun bitta javobgar
 
 **`contract.with.3`**
 
@@ -576,7 +576,7 @@
 - EN: Post-show report with hard numbers
 - TR: Fuar sonrası rakamlarla rapor
 - ZH: 展后提供数据报告
-- UZ: Koʻrgazmadan keyin raqamlar bilan hisobot
+- UZ: Koʻrgazmadan soʻng raqamlar bilan hisobot
 
 ## 5. Посетители
 
@@ -586,7 +586,7 @@
 - EN: Visitors
 - TR: Ziyaretçiler
 - ZH: 观众
-- UZ: Mehmonlar
+- UZ: Tashrif buyuruvchilar
 
 **`visitors.title`**
 
@@ -594,7 +594,7 @@
 - EN: We don't just build halls. ⏎ [We fill them.]
 - TR: Sadece salon kurmuyoruz. ⏎ [Salonları dolduruyoruz.]
 - ZH: 我们不只搭建展馆。 ⏎ [我们让展馆座无虚席。]
-- UZ: Biz zallarni qurish bilan cheklanmaymiz. ⏎ [Biz ularni toʻldiramiz.]
+- UZ: Biz nafaqat zallar quramiz. ⏎ [Biz ularni odamlar bilan toʻldiramiz.]
 
 **`visitors.steps.0.title`**
 
@@ -610,7 +610,7 @@
 - EN: Meta, Telegram, Google, trade media
 - TR: Meta, Telegram, Google, sektör medyası
 - ZH: Meta、Telegram、Google、行业媒体
-- UZ: Meta, Telegram, Google, sohaviy OAV
+- UZ: Meta, Telegram, Google va soha nashrlari
 
 **`visitors.steps.1.title`**
 
@@ -626,7 +626,7 @@
 - EN: Show landing page and Telegram bot
 - TR: Fuarın açılış sayfası ve Telegram botu
 - ZH: 展会落地页和 Telegram 机器人
-- UZ: Koʻrgazma sahifasi va Telegram-bot
+- UZ: Koʻrgazma sahifasi va Telegram-bot orqali
 
 **`visitors.steps.2.title`**
 
@@ -650,7 +650,7 @@
 - EN: QR check-in
 - TR: QR giriş
 - ZH: 二维码签到
-- UZ: QR-nazorat
+- UZ: QR orqali kirish
 
 **`visitors.steps.3.text`**
 
@@ -658,7 +658,7 @@
 - EN: Badges and scanning at the entrance
 - TR: Yaka kartları ve girişte tarama
 - ZH: 胸卡与入口扫码
-- UZ: Beyjlar va kirishda skanerlash
+- UZ: Beyjlar va kirishda QR-kodni skanerlash
 
 **`visitors.steps.4.title`**
 
@@ -674,7 +674,7 @@
 - EN: Visitors by day, industry and job title
 - TR: Güne, sektöre ve unvana göre ziyaretçiler
 - ZH: 按日期、行业、职位统计观众
-- UZ: Kunlar, sohalar va lavozimlar boʻyicha mehmonlar
+- UZ: Kunlar, sohalar va lavozimlar kesimida tashrif buyuruvchilar
 
 **`visitors.note`**
 
@@ -682,7 +682,7 @@
 - EN: The target visitor count is fixed in the contract.
 - TR: Hedef ziyaretçi sayısı sözleşmede belirlenir.
 - ZH: 目标观众人数写入合同。
-- UZ: Mehmonlarning maqsadli soni shartnomada belgilanadi.
+- UZ: Tashrif buyuruvchilarning maqsadli soni shartnomada qayd etiladi.
 
 ## 6. Отчёт организатору
 
@@ -692,7 +692,7 @@
 - EN: Organiser report
 - TR: Organizatör raporu
 - ZH: 主办方报告
-- UZ: Tashkilotchi uchun hisobot
+- UZ: Tashkilotchiga hisobot
 
 **`report.title`**
 
@@ -700,7 +700,7 @@
 - EN: You see [every visitor]
 - TR: [Her ziyaretçiyi] görürsünüz
 - ZH: 您能看到[每一位观众]
-- UZ: Siz [har bir mehmonni] koʻrasiz
+- UZ: Siz [har bir tashrif buyuruvchini] koʻrasiz
 
 **`report.demo`**
 
@@ -724,7 +724,7 @@
 - EN: registered
 - TR: kayıtlı
 - ZH: 已登记
-- UZ: roʻyxatdan oʻtgan
+- UZ: roʻyxatdan oʻtdi
 
 **`report.kpi.attended`**
 
@@ -732,7 +732,7 @@
 - EN: attended
 - TR: katılan
 - ZH: 实际到场
-- UZ: kelgan
+- UZ: tashrif buyurdi
 
 **`report.kpi.turnout`**
 
@@ -740,7 +740,7 @@
 - EN: turnout
 - TR: katılım oranı
 - ZH: 到场率
-- UZ: kelish darajasi
+- UZ: kelganlar ulushi
 
 **`report.kpi.companies`**
 
@@ -756,7 +756,7 @@
 - EN: Visitors by day
 - TR: Günlere göre ziyaretçiler
 - ZH: 每日观众
-- UZ: Kunlar boʻyicha mehmonlar
+- UZ: Kunlar kesimida tashriflar
 
 **`report.day`**
 
@@ -788,7 +788,7 @@
 - EN: Distribution & retail
 - TR: Dağıtım ve perakende
 - ZH: 分销与零售
-- UZ: Distribyutsiya va riteyl
+- UZ: Distribyutsiya va chakana savdo
 
 **`report.industries.2`**
 
@@ -812,7 +812,7 @@
 - EN: Other
 - TR: Diğer
 - ZH: 其他
-- UZ: Boshqa
+- UZ: Boshqalar
 
 **`report.rolesTitle`**
 
@@ -828,7 +828,7 @@
 - EN: Owners & directors
 - TR: Şirket sahipleri ve yöneticiler
 - ZH: 企业主与总经理
-- UZ: Kompaniya egalari va direktorlar
+- UZ: Kompaniya egalari va rahbarlar
 
 **`report.roles.1`**
 
@@ -860,7 +860,7 @@
 - EN: After the show you receive
 - TR: Fuardan sonra elinize geçenler
 - ZH: 展会结束后您将获得
-- UZ: Koʻrgazmadan soʻng sizga taqdim etiladi
+- UZ: Koʻrgazmadan soʻng sizga beriladi
 
 **`report.receive.0.title`**
 
@@ -876,7 +876,7 @@
 - EN: with visitor consent
 - TR: ziyaretçilerin onayıyla
 - ZH: 经观众同意
-- UZ: mehmonlarning roziligi bilan
+- UZ: tashrif buyuruvchilar roziligi bilan
 
 **`report.receive.1.title`**
 
@@ -892,7 +892,7 @@
 - EN: by day, industry, job title and region
 - TR: güne, sektöre, unvana ve bölgeye göre
 - ZH: 按日期、行业、职位和地区
-- UZ: kunlar, sohalar, lavozimlar va hududlar boʻyicha
+- UZ: kunlar, sohalar, lavozimlar va hududlar kesimida
 
 **`report.receive.2.title`**
 
@@ -908,7 +908,7 @@
 - EN: during the show
 - TR: fuar süresince
 - ZH: 展会期间实时查看
-- UZ: koʻrgazma davomida
+- UZ: koʻrgazma davomida real vaqtda
 
 **`report.receive.3.title`**
 
@@ -924,7 +924,7 @@
 - EN: to sell next year's floor space
 - TR: gelecek yılın stant alanlarını satmak için
 - ZH: 用于销售明年的展位面积
-- UZ: keyingi yil maydonlarini sotish uchun
+- UZ: keyingi yilgi maydonlarni sotishda
 
 ## 7. План запуска
 
@@ -974,7 +974,7 @@
 - EN: Strategy, venue, dates
 - TR: Strateji, mekân, tarihler
 - ZH: 策略、场馆、日期
-- UZ: Strategiya, maydon, sanalar
+- UZ: Strategiya, maydoncha, sanalar
 
 **`plan.stages.1`**
 
@@ -1014,7 +1014,7 @@
 - EN: Report and visitor database
 - TR: Rapor ve ziyaretçi veri tabanı
 - ZH: 报告与观众数据库
-- UZ: Hisobot va mehmonlar bazasi
+- UZ: Hisobot va tashrif buyuruvchilar bazasi
 
 **`plan.note`**
 
@@ -1022,7 +1022,7 @@
 - EN: Tight timeline? We also run fast-track launches.
 - TR: Zaman mı dar? Hızlandırılmış lansman da yapıyoruz.
 - ZH: 时间紧？我们也可加急启动。
-- UZ: Muddat qisqami? Tezlashtirilgan rejimda ham ishga tushiramiz.
+- UZ: Muddatlar qisqami? Tezlashtirilgan tartibda ham ishga tushiramiz.
 
 ## 8. Опыт
 
@@ -1056,7 +1056,7 @@
 - EN: clients
 - TR: müşteri
 - ZH: 客户
-- UZ: mijoz
+- UZ: mijozlar
 
 **`experience.sqm`**
 
@@ -1088,7 +1088,7 @@
 - EN: key venues in Tashkent
 - TR: Taşkent'te kilit etkinlik mekânı
 - ZH: 塔什干核心场馆
-- UZ: Toshkentning asosiy maydonlari
+- UZ: Toshkentdagi asosiy maydonchalar
 
 **`experience.venuesTitle`**
 
@@ -1096,7 +1096,7 @@
 - EN: Venues
 - TR: Mekânlar
 - ZH: 场馆
-- UZ: Maydonlar
+- UZ: Maydonchalar
 
 **`experience.partnersTitle`**
 
@@ -1112,7 +1112,7 @@
 - EN: We work closely with government institutions, ministries, associations and companies of every size
 - TR: Devlet kurumları, bakanlıklar, dernekler ve her ölçekten şirketle yakın çalışıyoruz
 - ZH: 我们与政府机构、各部委、行业协会以及各种规模的企业密切合作
-- UZ: Davlat muassasalari, vazirliklar, uyushmalar va har qanday miqyosdagi kompaniyalar bilan yaqin hamkorlik qilamiz
+- UZ: Davlat muassasalari, vazirliklar, uyushmalar va turli miqyosdagi kompaniyalar bilan yaqin hamkorlik qilamiz
 
 ## 9. Форматы
 
@@ -1130,7 +1130,7 @@
 - EN: Choose [your format]
 - TR: [Formatınızı] seçin
 - ZH: 选择[适合您的模式]
-- UZ: [Oʻz formatingizni] tanlang
+- UZ: [Oʻzingizga mos formatni] tanlang
 
 **`formats.recommended`**
 
@@ -1170,7 +1170,7 @@
 - EN: You build — we handle everything on the ground
 - TR: Kurulumu siz yaparsınız — sahadaki her şeyi biz hallederiz
 - ZH: 您自行搭建——现场事务由我们全部解决
-- UZ: Siz qurasiz — joydagi barcha masalalarni biz hal qilamiz
+- UZ: Stendni oʻzingiz qurasiz — joyidagi barcha masalalarni biz hal qilamiz
 
 **`formats.taglines.turnkey`**
 
@@ -1178,7 +1178,7 @@
 - EN: Turnkey trade show
 - TR: Anahtar teslim fuar
 - ZH: 交钥匙展会
-- UZ: Kalit topshirish asosidagi koʻrgazma
+- UZ: Koʻrgazmani toʻliq tashkil etamiz
 
 **`formats.taglines.full`**
 
@@ -1186,7 +1186,7 @@
 - EN: Turnkey + full halls
 - TR: Anahtar teslim + dolu salonlar
 - ZH: 交钥匙 + 观众满馆
-- UZ: Kalit topshirish + toʻla zallar
+- UZ: Toʻliq tashkil etish + toʻla zallar
 
 **`formats.rows.0`**
 
@@ -1202,7 +1202,7 @@
 - EN: Venue selection and booking
 - TR: Mekân seçimi ve rezervasyonu
 - ZH: 场馆选址与预订
-- UZ: Maydonni tanlash va bron qilish
+- UZ: Maydonchani tanlash va band qilish
 
 **`formats.rows.2`**
 
@@ -1218,7 +1218,7 @@
 - EN: Pavilion design and build
 - TR: Pavyon tasarımı ve kurulumu
 - ZH: 展馆设计与搭建
-- UZ: Pavilyon loyihasi va qurilishi
+- UZ: Pavilyonni loyihalash va qurish
 
 **`formats.rows.4`**
 
@@ -1250,7 +1250,7 @@
 - EN: Registration and QR check-in
 - TR: Kayıt ve QR giriş
 - ZH: 观众登记与二维码签到
-- UZ: Roʻyxatga olish va QR-nazorat
+- UZ: Roʻyxatga olish va QR orqali kirish
 
 **`formats.rows.8`**
 
@@ -1266,7 +1266,7 @@
 - EN: Report and visitor database
 - TR: Rapor ve ziyaretçi veri tabanı
 - ZH: 报告与观众数据库
-- UZ: Hisobot va mehmonlar bazasi
+- UZ: Hisobot va tashrif buyuruvchilar bazasi
 
 ## 10. Контакт
 
@@ -1308,7 +1308,7 @@
 - EN: Visitor acquisition plan
 - TR: Ziyaretçi kazanım planı
 - ZH: 观众招募计划
-- UZ: Mehmonlarni jalb qilish rejasi
+- UZ: Tashrif buyuruvchilarni jalb qilish rejasi
 
 **`contact.phones`**
 
@@ -1366,7 +1366,7 @@
 - EN: Name
 - TR: Ad Soyad
 - ZH: 姓名
-- UZ: Ism
+- UZ: Ismingiz
 
 **`form.company`**
 
@@ -1390,7 +1390,7 @@
 - EN: Start typing a country
 - TR: Ülke adını yazmaya başlayın
 - ZH: 输入国家名称
-- UZ: Mamlakat nomini yozing
+- UZ: Mamlakat nomini kiriting
 
 **`form.countryEmpty`**
 
@@ -1422,7 +1422,7 @@
 - EN: Show name / theme
 - TR: Fuarın adı / konusu
 - ZH: 展会名称 / 主题
-- UZ: Koʻrgazma nomi / mavzusi
+- UZ: Koʻrgazma nomi yoki mavzusi
 
 **`form.dates`**
 
@@ -1494,7 +1494,7 @@
 - EN: not sure yet
 - TR: henüz bilmiyorum
 - ZH: 尚未确定
-- UZ: hozircha bilmayman
+- UZ: hozircha nomaʼlum
 
 **`form.format`**
 
@@ -1534,7 +1534,7 @@
 - EN: Industry, expected number of exhibitors — anything that matters
 - TR: Sektör, beklenen katılımcı sayısı — önemli olan her şey
 - ZH: 行业、预计参展商数量——任何重要信息
-- UZ: Soha, kutilayotgan ishtirokchilar soni — barcha muhim maʼlumotlar
+- UZ: Soha, ishtirokchilarning taxminiy soni va boshqa muhim maʼlumotlar
 
 **`form.consent`**
 
@@ -1582,7 +1582,7 @@
 - EN: Please fill in this field
 - TR: Bu alanı doldurun
 - ZH: 请填写此项
-- UZ: Maydonni toʻldiring
+- UZ: Ushbu maydonni toʻldiring
 
 **`form.errors.email`**
 
@@ -1590,7 +1590,7 @@
 - EN: Please check the e-mail address
 - TR: E-posta adresini kontrol edin
 - ZH: 请检查邮箱地址
-- UZ: E-mailni tekshiring
+- UZ: E-mail manzilini tekshiring
 
 **`form.errors.phone`**
 
@@ -1606,7 +1606,7 @@
 - EN: Choose a country from the list
 - TR: Listeden bir ülke seçin
 - ZH: 请从列表中选择国家
-- UZ: Roʻyxatdan mamlakatni tanlang
+- UZ: Mamlakatni roʻyxatdan tanlang
 
 **`form.errors.consent`**
 
@@ -1614,7 +1614,7 @@
 - EN: We need your consent to process your data
 - TR: Veri işleme onayı gerekli
 - ZH: 需要您同意数据处理
-- UZ: Maʼlumotlarni qayta ishlashga rozilik kerak
+- UZ: Maʼlumotlarni qayta ishlashga rozilik bildiring
 
 **`form.errors.summary`**
 
@@ -1630,7 +1630,7 @@
 - EN: Could not send. Check your connection and try again — or message us on WhatsApp.
 - TR: Gönderilemedi. Bağlantınızı kontrol edip tekrar deneyin — ya da bize WhatsApp'tan yazın.
 - ZH: 发送失败。请检查网络后重试，或通过 WhatsApp 联系我们。
-- UZ: Yuborib boʻlmadi. Internetni tekshirib, qayta urinib koʻring — yoki bizga WhatsApp orqali yozing.
+- UZ: Yuborib boʻlmadi. Internet aloqasini tekshirib, qayta urinib koʻring yoki bizga WhatsApp orqali yozing.
 
 **`form.successTitle`**
 
@@ -1654,7 +1654,7 @@
 - EN: Prefer to talk now? Message us:
 - TR: Hemen konuşmak isterseniz bize yazın:
 - ZH: 如需立即沟通，请联系我们：
-- UZ: Hoziroq gaplashmoqchi boʻlsangiz, yozing:
+- UZ: Hoziroq gaplashmoqchi boʻlsangiz, bizga yozing:
 
 ## 11. Футер
 
@@ -1698,7 +1698,7 @@
 - EN: Your name, company, country, e-mail, phone and whatever you write in the form, plus details of the visit: the page, where you came from and campaign tags.
 - TR: Adınız, şirketiniz, ülkeniz, e-posta adresiniz, telefonunuz ve formda yazdıklarınız; ayrıca ziyaretle ilgili bilgiler: sayfa, geldiğiniz kaynak ve kampanya etiketleri.
 - ZH: 您的姓名、公司、国家、电子邮箱、电话以及您在表单中填写的内容，另外还有访问信息：页面、来源和广告标签。
-- UZ: Ismingiz, kompaniyangiz, mamlakatingiz, e-mail, telefon va formada yozganlaringiz, shuningdek tashrif haqidagi maʼlumotlar: sahifa, qayerdan kelganingiz va reklama belgilari.
+- UZ: Ismingiz, kompaniyangiz, mamlakatingiz, e-mail, telefon raqamingiz va formada yozgan maʼlumotlaringiz. Shuningdek, tashrif haqidagi maʼlumotlar: sahifa, qayerdan kelganingiz va reklama belgilari.
 
 **`privacy.sections.1.title`**
 
@@ -1730,7 +1730,7 @@
 - EN: The enquiry is stored in ExpoContact's secured database and delivered to our team's work chat in Telegram.
 - TR: Talep, ExpoContact'ın güvenli veri tabanında saklanır ve ekibimizin Telegram'daki çalışma sohbetine iletilir.
 - ZH: 咨询信息保存在 ExpoContact 的安全数据库中，并发送到我们团队在 Telegram 的工作群。
-- UZ: Ariza ExpoContactning himoyalangan bazasida saqlanadi va jamoamizning Telegramdagi ish chatiga keladi.
+- UZ: Ariza ExpoContactning himoyalangan bazasida saqlanadi va jamoamizning Telegramdagi ishchi chatiga yuboriladi.
 
 **`privacy.sections.3.title`**
 
@@ -1746,7 +1746,7 @@
 - EN: The site uses the Meta Pixel and its own anonymised visit statistics and, when enabled, Google Analytics and the LinkedIn Insight Tag. They show which advertising works.
 - TR: Site, Meta Pixel'i ve kendi anonim ziyaret istatistiklerini, etkinleştirildiğinde ise Google Analytics ve LinkedIn Insight Tag'i kullanır. Bunlar hangi reklamın işe yaradığını gösterir.
 - ZH: 本网站使用 Meta Pixel 和自有的匿名访问统计，启用后还会使用 Google Analytics 和 LinkedIn Insight Tag，用于了解哪些广告有效。
-- UZ: Sayt Meta Pixel va oʻzining anonim tashriflar statistikasidan, yoqilganda esa Google Analytics va LinkedIn Insight Tag xizmatlaridan foydalanadi. Ular qaysi reklama ishlayotganini koʻrsatadi.
+- UZ: Sayt Meta Pixel va oʻzining anonim tashriflar statistikasidan, ulanganida esa Google Analytics va LinkedIn Insight Tag xizmatlaridan foydalanadi. Ular qaysi reklama samarali ishlayotganini koʻrsatadi.
 
 **`privacy.sections.4.title`**
 

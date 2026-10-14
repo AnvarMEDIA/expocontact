@@ -147,6 +147,12 @@
   line-height: 1.02;
   letter-spacing: -0.03em;
 }
+/* Phones: the size follows the screen width. The longest unbreakable piece of
+   any headline («Koʻrgazmangiz —», 312px at 40px) must fit a 320px screen;
+   at 360–414px this lands on the 38–44px the design asks for. */
+@media (max-width: 639px) {
+  .h1 { font-size: clamp(34px, 10.6vw, 44px); }
+}
 .h2 {
   font-size: clamp(30px, 1.15rem + 2.9vw, 54px);
   font-weight: 800;
@@ -193,6 +199,12 @@
   transition: transform 0.25s var(--ease-out), background-color 0.2s, box-shadow 0.25s, color 0.2s, border-color 0.2s;
 }
 .btn:active { transform: translateY(1px) scale(0.99); }
+.btn svg { flex: none; }
+/* Phones: a long label («Tashrif buyuruvchilarni qanday jalb qilamiz») wraps
+   inside the button instead of running out of it. */
+@media (max-width: 639px) {
+  .btn { white-space: normal; padding-block: 12px; line-height: 1.25; }
+}
 
 /* Navy on orange rather than white: white on #EC691F is 3.2:1 and fails AA
    at button size; #0A1F45 on it is 5.1:1. */

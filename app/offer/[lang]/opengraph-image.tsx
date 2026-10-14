@@ -41,7 +41,10 @@ export default async function Image({ params }: { params: { lang: string } }) {
   const dict = getDict(lang);
   const [first, ...accent] = dict.hero.title;
   const footer = "expocontact.uz";
-  const text = [dict.meta.ogKicker, ...dict.hero.title, footer].join(" ");
+  const kicker = dict.meta.ogKicker.toLocaleUpperCase(lang);
+  // The font is subset to exactly these characters, so the kicker goes in the
+  // case it is drawn in — otherwise its capitals fall back to the heavy face.
+  const text = [kicker, ...dict.hero.title, footer].join(" ");
 
   const family = lang === "zh" ? "Noto Sans SC" : "Onest";
   const [heavy, bold] = await Promise.all([googleFont(family, 800, text), googleFont(family, 600, text)]);
@@ -67,7 +70,7 @@ export default async function Image({ params }: { params: { lang: string } }) {
         <div style={{ display: "flex", alignItems: "center", gap: 16, fontSize: 24, fontWeight: 600,
           letterSpacing: cjk ? 2 : 3, color: "#FF9658" }}>
           <div style={{ width: 36, height: 3, background: "#FF9658", borderRadius: 3 }} />
-          {dict.meta.ogKicker.toLocaleUpperCase(lang)}
+          {kicker}
         </div>
 
         {/* Chinese breaks between any two characters, so each phrase gets its

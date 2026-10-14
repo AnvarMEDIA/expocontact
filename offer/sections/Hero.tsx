@@ -33,7 +33,7 @@ export default function Hero({ hero, intl }: HeroProps) {
         <h1 className={`${base.h1} ${s.title}`}>
           {hero.title.map((line, i) => (
             <span key={i} className={`${s.line} ${i > 0 ? base.accent : ""}`} style={{ ["--i" as string]: i }}>
-              {line}
+              {line.replace(/ —/g, "\u00a0—")}
             </span>
           ))}
         </h1>

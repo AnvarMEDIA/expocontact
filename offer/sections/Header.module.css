@@ -33,6 +33,7 @@
   border-radius: 10px;
   font-size: 15px;
   font-weight: 500;
+  white-space: nowrap;
   opacity: 0.82;
   transition: opacity 0.2s, background-color 0.2s, color 0.2s;
 }
@@ -52,6 +53,7 @@
   font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.04em;
+  white-space: nowrap;
   opacity: 0.7;
   transition: opacity 0.2s, background-color 0.2s;
 }
@@ -111,14 +113,21 @@
   .burger { margin-left: 0; }
 }
 
-@media (min-width: 1100px) {
+/* The full bar needs about 1280px in the longest language (Uzbek:
+   «Tashrif buyuruvchilar», «Koʻrgazmani muhokama qilish»). Below that the
+   burger carries the sections and the languages; items never wrap. */
+@media (min-width: 1280px) {
   .nav, .desktopLangs { display: block; }
   .nav { margin-left: auto; }
   .cta { margin-left: 0; }
   .burger, .menu { display: none !important; }
 }
 
-@media (min-width: 1100px) and (max-width: 1279px) {
+@media (min-width: 1280px) and (max-width: 1439px) {
+  .bar { gap: 14px; }
+  .nav ul { gap: 0; }
   .nav a { padding: 0 8px; font-size: 14px; }
-  .langs a { min-width: 38px; }
+  .langs a { min-width: 36px; padding: 0 4px; }
+  .cta { padding: 0 14px; font-size: 14px; }
+  .cta svg { display: none; }
 }
