@@ -4,7 +4,7 @@ export const en: OfferDict = {
   meta: {
     title: "Trade Show Organiser in Uzbekistan — Turnkey, Full Halls | ExpoContact",
     description:
-      "ExpoContact is your local organising partner in Tashkent and Uzbekistan: permits, venue, pavilion build, promotion and a visitor flow with every visitor registered. One contract.",
+      "ExpoContact is your local organising partner in Tashkent and Uzbekistan: permits, venue, pavilion build, promotion and a steady flow of visitors — each one registered. One contract.",
     ogTitle: "Your trade show in Uzbekistan. Turnkey. With full halls.",
     ogDescription: "Permits, venue, build, promotion and visitor flow — under one contract.",
     ogKicker: "Local organising partner · Uzbekistan",
@@ -60,7 +60,7 @@ export const en: OfferDict = {
     pairs: [
       {
         problem: "Unfamiliar rules, authorities and contractors",
-        solution: "We take on permits and talks with the authorities",
+        solution: "We handle permits and negotiations with the authorities",
       },
       {
         problem: "Empty aisles — exhibitors don't come back",
@@ -92,7 +92,7 @@ export const en: OfferDict = {
     steps: [
       { title: "Promotion", text: "Meta, Telegram, Google, trade media" },
       { title: "Early sign-up", text: "Show landing page and Telegram bot" },
-      { title: "Invitations", text: "Direct to target companies, regional delegations" },
+      { title: "Invitations", text: "Personal invitations to target companies, regional delegations" },
       { title: "QR check-in", text: "Badges and scanning at the entrance" },
       { title: "Report & database", text: "Visitors by day, industry and job title" },
     ],
@@ -125,7 +125,7 @@ export const en: OfferDict = {
   },
   plan: {
     kicker: "Plan",
-    title: "Launching your show — [on a clear plan]",
+    title: "Launching your show — [with a clear plan]",
     months: "mo.",
     opening: "Opening",
     range: "{from} → {to} mo.",
@@ -179,7 +179,7 @@ export const en: OfferDict = {
     ],
   },
   contact: {
-    kicker: "Based on your brief, before launch we prepare",
+    kicker: "Based on your brief, we'll prepare before launch",
     title: "Send us your show's [theme and dates.]",
     prepare: ["Show concept and launch plan", "3D pavilion concept", "Visitor acquisition plan"],
     phones: "Phone",
@@ -204,7 +204,7 @@ export const en: OfferDict = {
     area: "Floor area",
     areas: ["up to 1,000 m²", "1,000–5,000 m²", "5,000–10,000 m²", "10,000+ m²", "not sure yet"],
     format: "Format",
-    formatConsult: "need advice",
+    formatConsult: "I need advice",
     choose: "Select…",
     message: "Message",
     messagePlaceholder: "Industry, expected number of exhibitors — anything that matters",
@@ -218,7 +218,7 @@ export const en: OfferDict = {
       email: "Please check the e-mail address",
       phone: "Enter the full number with the country code",
       country: "Choose a country from the list",
-      consent: "We need your consent to process the data",
+      consent: "We need your consent to process your data",
       summary: "Please check the highlighted fields",
       network: "Could not send. Check your connection and try again — or message us on WhatsApp.",
     },

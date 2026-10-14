@@ -4,7 +4,7 @@ export const zh: OfferDict = {
   meta: {
     title: "乌兹别克斯坦展会本地主办伙伴——一站式交付，观众满馆 | ExpoContact",
     description:
-      "ExpoContact 是您在塔什干和乌兹别克斯坦的本地主办合作伙伴：许可审批、场馆、展馆搭建、宣传推广，以及每位观众实名登记的观众引流。一份合同。",
+      "ExpoContact 是您在塔什干和乌兹别克斯坦的本地主办合作伙伴：许可审批、场馆、展馆搭建、宣传推广，以及每位观众实名登记的观众引流。一份合同全部搞定。",
     ogTitle: "您在乌兹别克斯坦的展会。一站式交付。观众满馆。",
     ogDescription: "许可、场馆、搭建、宣传与观众引流——一份合同全部搞定。",
     ogKicker: "本地主办合作伙伴 · 乌兹别克斯坦",
@@ -59,7 +59,7 @@ export const zh: OfferDict = {
     solutionLabel: "解决方案",
     pairs: [
       {
-        problem: "陌生的法规、政府部门和供应商",
+        problem: "陌生的法规、政府部门和承包商",
         solution: "许可审批及与政府部门的沟通由我们承担",
       },
       {
@@ -67,7 +67,7 @@ export const zh: OfferDict = {
         solution: "我们带来精准观众，并用数据说话",
       },
       {
-        problem: "五个供应商——五种借口",
+        problem: "五家承包商——五种借口",
         solution: "一份合同、一个团队、一方负责",
       },
     ],
@@ -120,7 +120,7 @@ export const zh: OfferDict = {
   },
   plan: {
     kicker: "计划",
-    title: "展会启动——[计划清晰]",
+    title: "展会启动——[按清晰计划推进]",
     months: "个月",
     opening: "开幕",
     range: "{from} → {to} 个月",
@@ -142,7 +142,7 @@ export const zh: OfferDict = {
     sqm: "m²",
     production: "自有生产车间",
     support: "技术支持",
-    venues: "塔什干主要展馆",
+    venues: "塔什干核心场馆",
     venuesTitle: "场馆",
     partnersTitle: "合作伙伴",
     partnersText: "我们与政府机构、各部委、行业协会以及各种规模的企业密切合作",

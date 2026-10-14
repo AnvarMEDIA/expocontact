@@ -2,10 +2,10 @@ import type { OfferDict } from "./ru";
 
 export const uz: OfferDict = {
   meta: {
-    title: "Oʻzbekistonda koʻrgazma tashkilotchisi — toʻliq tayyor, toʻla zallar | ExpoContact",
+    title: "Oʻzbekistonda koʻrgazma tashkilotchisi — kalit topshirish asosida, toʻla zallar bilan | ExpoContact",
     description:
       "ExpoContact — Toshkent va Oʻzbekistonda koʻrgazmalar boʻyicha mahalliy hamkor-tashkilotchi: ruxsatnomalar, maydon, qurilish, reklama va har bir mehmon roʻyxatga olinadigan tashriflar oqimi. Bitta shartnoma.",
-    ogTitle: "Koʻrgazmangiz Oʻzbekistonda. Toʻliq tayyor. Toʻla zallar bilan.",
+    ogTitle: "Koʻrgazmangiz Oʻzbekistonda. Kalit topshirish asosida. Toʻla zallar bilan.",
     ogDescription: "Ruxsatnomalar, maydon, qurilish, reklama va mehmonlar oqimi — bitta shartnoma asosida.",
     ogKicker: "Mahalliy hamkor-tashkilotchi · Oʻzbekiston",
   },
@@ -29,7 +29,7 @@ export const uz: OfferDict = {
   },
   hero: {
     kicker: "Mahalliy hamkor-tashkilotchi · Oʻzbekiston",
-    title: ["Koʻrgazmangiz Oʻzbekistonda.", "Toʻliq tayyor holda.", "Toʻla zallar bilan."],
+    title: ["Koʻrgazmangiz Oʻzbekistonda.", "Kalit topshirish asosida.", "Toʻla zallar bilan."],
     lead: "Ruxsatnomalar va maydondan tortib qurilish, reklama va mehmonlar oqimigacha — bitta shartnoma asosida.",
     ctaPrimary: "Koʻrgazmani muhokama qilish",
     ctaSecondary: "Mehmonlarni qanday jalb qilamiz",
@@ -46,9 +46,9 @@ export const uz: OfferDict = {
     cards: [
       { title: "Ruxsatnomalar", text: "Huquqiy masalalar va davlat idoralari bilan kelishuvlar" },
       { title: "Maydon", text: "Tanlash, muzokaralar va bron qilish" },
-      { title: "Pavilyon", text: "Loyiha va toʻliq tayyor qurilish" },
+      { title: "Pavilyon", text: "Loyiha va kalit topshirish asosida qurilish" },
       { title: "Ishtirokchilar stendlari", text: "Tayyorlash, montaj, demontaj" },
-      { title: "Oldindan reklama", text: "Maksimal qamrov uchun ochilishgacha kampaniya" },
+      { title: "Oldindan reklama", text: "Maksimal qamrov uchun ochilishdan oldingi kampaniya" },
       { title: "Mehmonlar oqimi", text: "Har bir mehmon roʻyxatda, toʻliq baza" },
     ],
   },
@@ -81,19 +81,19 @@ export const uz: OfferDict = {
     withLabel: "ExpoContact bilan",
     with: [
       "Bitta loyiha menejeri",
-      "Bitta shartnoma va bitta hisob",
+      "Bitta shartnoma va bitta hisob-faktura",
       "Natija uchun yagona masʼuliyat",
       "Koʻrgazmadan keyin raqamlar bilan hisobot",
     ],
   },
   visitors: {
     kicker: "Mehmonlar",
-    title: "Biz faqat zal qurmaymiz.\n[Biz ularni toʻldiramiz.]",
+    title: "Biz zallarni qurish bilan cheklanmaymiz.\n[Biz ularni toʻldiramiz.]",
     steps: [
-      { title: "Reklama", text: "Meta, Telegram, Google, soha OAV" },
-      { title: "Oldindan roʻyxat", text: "Koʻrgazma sahifasi va Telegram-bot" },
-      { title: "Taklifnomalar", text: "Maqsadli kompaniyalarga shaxsan, viloyatlardan delegatsiyalar" },
-      { title: "QR-hisob", text: "Beyjlar va kirishda skanerlash" },
+      { title: "Reklama", text: "Meta, Telegram, Google, sohaviy OAV" },
+      { title: "Oldindan roʻyxatga olish", text: "Koʻrgazma sahifasi va Telegram-bot" },
+      { title: "Taklifnomalar", text: "Maqsadli kompaniyalarga shaxsiy taklif, viloyatlardan delegatsiyalar" },
+      { title: "QR-nazorat", text: "Beyjlar va kirishda skanerlash" },
       { title: "Hisobot va baza", text: "Kunlar, sohalar va lavozimlar boʻyicha mehmonlar" },
     ],
     note: "Mehmonlarning maqsadli soni shartnomada belgilanadi.",
@@ -114,13 +114,13 @@ export const uz: OfferDict = {
     industriesTitle: "Sohalar",
     industries: ["Ishlab chiqarish", "Distribyutsiya va riteyl", "Qurilish", "Davlat sektori", "Boshqa"],
     rolesTitle: "Lavozimlar",
-    roles: ["Egalari va direktorlar", "Xarid va taʼminot", "Mutaxassislar", "Boshqalar"],
-    receiveTitle: "Koʻrgazmadan keyin siz olasiz",
+    roles: ["Kompaniya egalari va direktorlar", "Xarid va taʼminot", "Mutaxassislar", "Boshqalar"],
+    receiveTitle: "Koʻrgazmadan soʻng sizga taqdim etiladi",
     receive: [
       { title: "Kontaktlar bazasi", text: "mehmonlarning roziligi bilan" },
       { title: "Tahlil", text: "kunlar, sohalar, lavozimlar va hududlar boʻyicha" },
       { title: "Onlayn-dashbord", text: "koʻrgazma davomida" },
-      { title: "Ishtirokchilar uchun dalil", text: "keyingi yil maydonini sotish uchun" },
+      { title: "Ishtirokchilar uchun dalil", text: "keyingi yil maydonlarini sotish uchun" },
     ],
   },
   plan: {
@@ -133,7 +133,7 @@ export const uz: OfferDict = {
       "Strategiya, maydon, sanalar",
       "Ruxsatnomalar va kelishuvlar",
       "Pavilyon va stendlar loyihasi",
-      "Reklama va oldindan roʻyxat",
+      "Reklama va oldindan roʻyxatga olish",
       "Qurilish va montaj",
       "Hisobot va mehmonlar bazasi",
     ],
@@ -162,8 +162,8 @@ export const uz: OfferDict = {
     feature: "Nimalar kiradi",
     taglines: {
       local: "Siz qurasiz — joydagi barcha masalalarni biz hal qilamiz",
-      turnkey: "Toʻliq tayyor koʻrgazma",
-      full: "Toʻliq tayyor + toʻla zallar",
+      turnkey: "Kalit topshirish asosidagi koʻrgazma",
+      full: "Kalit topshirish + toʻla zallar",
     },
     rows: [
       "Ruxsatnomalar va davlat idoralari",
@@ -173,7 +173,7 @@ export const uz: OfferDict = {
       "Ishtirokchilar uchun stendlar",
       "24/7 texnik yordam",
       "Oldindan reklama kampaniyasi",
-      "Roʻyxatga olish va QR-hisob",
+      "Roʻyxatga olish va QR-nazorat",
       "Taklifnomalar va delegatsiyalar",
       "Hisobot va mehmonlar bazasi",
     ],
@@ -251,7 +251,7 @@ export const uz: OfferDict = {
       },
       {
         title: "Tahlil",
-        text: "Sayt Meta Pixel va oʻzining anonim tashriflar statistikasidan, yoqilganda esa Google Analytics va LinkedIn Insight Tagʼdan foydalanadi. Ular qaysi reklama ishlayotganini koʻrsatadi.",
+        text: "Sayt Meta Pixel va oʻzining anonim tashriflar statistikasidan, yoqilganda esa Google Analytics va LinkedIn Insight Tag xizmatlaridan foydalanadi. Ular qaysi reklama ishlayotganini koʻrsatadi.",
       },
       {
         title: "Huquqlaringiz",

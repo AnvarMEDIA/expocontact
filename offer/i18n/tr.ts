@@ -30,7 +30,7 @@ export const tr: OfferDict = {
   hero: {
     kicker: "Yerel organizasyon ortağı · Özbekistan",
     title: ["Özbekistan'da fuarınız.", "Anahtar teslim.", "Dolu salonlarla."],
-    lead: "İzinler ve mekândan pavyon kurulumuna, tanıtıma ve ziyaretçi akışına kadar — tek sözleşmeyle.",
+    lead: "İzinlerden mekâna, pavyon kurulumundan tanıtıma ve ziyaretçi akışına kadar — tek sözleşmeyle.",
     ctaPrimary: "Fuarınızı konuşalım",
     ctaSecondary: "Ziyaretçileri nasıl getiriyoruz",
     stats: {
@@ -54,12 +54,12 @@ export const tr: OfferDict = {
   },
   problems: {
     kicker: "Yeni pazarın riskleri",
-    title: "Yeni bir pazarda fuarı geride bırakan şeyler — [ve onları nasıl ortadan kaldırıyoruz]",
+    title: "Yeni bir pazarda fuarın önündeki engeller — [ve onları nasıl ortadan kaldırıyoruz]",
     problemLabel: "Sorun",
     solutionLabel: "Çözüm",
     pairs: [
       {
-        problem: "Bilinmeyen kurallar, kurumlar ve tedarikçiler",
+        problem: "Bilinmeyen kurallar, kurumlar ve yükleniciler",
         solution: "İzinleri ve devlet kurumlarıyla görüşmeleri biz üstleniyoruz",
       },
       {
@@ -67,7 +67,7 @@ export const tr: OfferDict = {
         solution: "Hedef ziyaretçileri getiriyor, rakamları gösteriyoruz",
       },
       {
-        problem: "Beş tedarikçi — beş bahane",
+        problem: "Beş yüklenici — beş bahane",
         solution: "Tek sözleşme, tek ekip, tek sorumlu",
       },
     ],
@@ -82,7 +82,7 @@ export const tr: OfferDict = {
     with: [
       "Tek proje yöneticisi",
       "Tek sözleşme, tek fatura",
-      "Sonuçtan tek sorumlu",
+      "Sonuçtan sorumlu tek taraf",
       "Fuar sonrası rakamlarla rapor",
     ],
   },
@@ -92,11 +92,11 @@ export const tr: OfferDict = {
     steps: [
       { title: "Tanıtım", text: "Meta, Telegram, Google, sektör medyası" },
       { title: "Ön kayıt", text: "Fuarın açılış sayfası ve Telegram botu" },
-      { title: "Davetler", text: "Hedef şirketlere doğrudan, bölgelerden heyetler" },
+      { title: "Davetler", text: "Hedef şirketlere doğrudan davet, bölgelerden heyetler" },
       { title: "QR giriş", text: "Yaka kartları ve girişte tarama" },
       { title: "Rapor ve veri tabanı", text: "Güne, sektöre ve unvana göre ziyaretçiler" },
     ],
-    note: "Hedef ziyaretçi sayısı sözleşmeye yazılır.",
+    note: "Hedef ziyaretçi sayısı sözleşmede belirlenir.",
   },
   report: {
     kicker: "Organizatör raporu",
@@ -105,7 +105,7 @@ export const tr: OfferDict = {
     dashboard: "Fuar paneli",
     kpi: {
       registered: "kayıtlı",
-      attended: "katıldı",
+      attended: "katılan",
       turnout: "katılım oranı",
       companies: "şirket",
     },
@@ -120,7 +120,7 @@ export const tr: OfferDict = {
       { title: "İletişim veri tabanı", text: "ziyaretçilerin onayıyla" },
       { title: "Analitik", text: "güne, sektöre, unvana ve bölgeye göre" },
       { title: "Canlı panel", text: "fuar süresince" },
-      { title: "Katılımcılar için kanıt", text: "gelecek yılın alanını satmak için" },
+      { title: "Katılımcılar için kanıt", text: "gelecek yılın stant alanlarını satmak için" },
     ],
   },
   plan: {
@@ -147,7 +147,7 @@ export const tr: OfferDict = {
     sqm: "m²",
     production: "kendi üretim tesisimiz",
     support: "teknik destek",
-    venues: "Taşkent'in kilit fuar alanı",
+    venues: "Taşkent'te kilit etkinlik mekânı",
     venuesTitle: "Mekânlar",
     partnersTitle: "İş birliği",
     partnersText:
@@ -168,7 +168,7 @@ export const tr: OfferDict = {
     rows: [
       "İzinler ve devlet kurumları",
       "Mekân seçimi ve rezervasyonu",
-      "Gümrük ve sergi lojistiği",
+      "Gümrük ve sergi ürünlerinin lojistiği",
       "Pavyon tasarımı ve kurulumu",
       "Katılımcı stantları",
       "7/24 teknik destek",
@@ -190,7 +190,7 @@ export const tr: OfferDict = {
   },
   form: {
     title: "Organizatör talebi",
-    name: "Adınız",
+    name: "Ad Soyad",
     company: "Şirket",
     country: "Ülke",
     countryPlaceholder: "Ülke adını yazmaya başlayın",
@@ -198,13 +198,13 @@ export const tr: OfferDict = {
     email: "E-posta",
     phone: "Telefon / WhatsApp",
     showName: "Fuarın adı / konusu",
-    dates: "Planlanan tarih",
+    dates: "Planlanan tarihler",
     month: "Ay",
     year: "Yıl",
     area: "Alan",
     areas: ["1.000 m²'ye kadar", "1.000–5.000 m²", "5.000–10.000 m²", "10.000+ m²", "henüz bilmiyorum"],
     format: "Format",
-    formatConsult: "danışmanlık gerekli",
+    formatConsult: "danışmanlık istiyorum",
     choose: "Seçin…",
     message: "Mesaj",
     messagePlaceholder: "Sektör, beklenen katılımcı sayısı — önemli olan her şey",

@@ -28,14 +28,14 @@
 - EN: Trade Show Organiser in Uzbekistan — Turnkey, Full Halls | ExpoContact
 - TR: Özbekistan'da Fuar Organizatörü — Anahtar Teslim, Dolu Salonlar | ExpoContact
 - ZH: 乌兹别克斯坦展会本地主办伙伴——一站式交付，观众满馆 | ExpoContact
-- UZ: Oʻzbekistonda koʻrgazma tashkilotchisi — toʻliq tayyor, toʻla zallar | ExpoContact
+- UZ: Oʻzbekistonda koʻrgazma tashkilotchisi — kalit topshirish asosida, toʻla zallar bilan | ExpoContact
 
 **`meta.description`**
 
 - RU: ExpoContact — местный партнёр-организатор выставок в Ташкенте и Узбекистане: разрешения, площадка, застройка, реклама и поток посетителей с регистрацией каждого. Один договор.
-- EN: ExpoContact is your local organising partner in Tashkent and Uzbekistan: permits, venue, pavilion build, promotion and a visitor flow with every visitor registered. One contract.
+- EN: ExpoContact is your local organising partner in Tashkent and Uzbekistan: permits, venue, pavilion build, promotion and a steady flow of visitors — each one registered. One contract.
 - TR: ExpoContact, Taşkent ve Özbekistan'daki yerel organizasyon ortağınız: izinler, mekân, pavyon kurulumu, tanıtım ve her ziyaretçinin kayıtlı olduğu ziyaretçi akışı. Tek sözleşme.
-- ZH: ExpoContact 是您在塔什干和乌兹别克斯坦的本地主办合作伙伴：许可审批、场馆、展馆搭建、宣传推广，以及每位观众实名登记的观众引流。一份合同。
+- ZH: ExpoContact 是您在塔什干和乌兹别克斯坦的本地主办合作伙伴：许可审批、场馆、展馆搭建、宣传推广，以及每位观众实名登记的观众引流。一份合同全部搞定。
 - UZ: ExpoContact — Toshkent va Oʻzbekistonda koʻrgazmalar boʻyicha mahalliy hamkor-tashkilotchi: ruxsatnomalar, maydon, qurilish, reklama va har bir mehmon roʻyxatga olinadigan tashriflar oqimi. Bitta shartnoma.
 
 **`meta.ogTitle`**
@@ -44,7 +44,7 @@
 - EN: Your trade show in Uzbekistan. Turnkey. With full halls.
 - TR: Özbekistan'da fuarınız. Anahtar teslim. Dolu salonlarla.
 - ZH: 您在乌兹别克斯坦的展会。一站式交付。观众满馆。
-- UZ: Koʻrgazmangiz Oʻzbekistonda. Toʻliq tayyor. Toʻla zallar bilan.
+- UZ: Koʻrgazmangiz Oʻzbekistonda. Kalit topshirish asosida. Toʻla zallar bilan.
 
 **`meta.ogDescription`**
 
@@ -202,7 +202,7 @@
 - EN: Turnkey.
 - TR: Anahtar teslim.
 - ZH: 一站式交付。
-- UZ: Toʻliq tayyor holda.
+- UZ: Kalit topshirish asosida.
 
 **`hero.title.2`**
 
@@ -216,7 +216,7 @@
 
 - RU: От разрешений и площадки до застройки, рекламы и потока посетителей — по одному договору.
 - EN: From permits and venue to pavilion build, promotion and visitor flow — under one contract.
-- TR: İzinler ve mekândan pavyon kurulumuna, tanıtıma ve ziyaretçi akışına kadar — tek sözleşmeyle.
+- TR: İzinlerden mekâna, pavyon kurulumundan tanıtıma ve ziyaretçi akışına kadar — tek sözleşmeyle.
 - ZH: 从许可审批、场馆到展馆搭建、宣传推广和观众引流——一份合同全部搞定。
 - UZ: Ruxsatnomalar va maydondan tortib qurilish, reklama va mehmonlar oqimigacha — bitta shartnoma asosida.
 
@@ -332,7 +332,7 @@
 - EN: Design and turnkey build
 - TR: Tasarım ve anahtar teslim kurulum
 - ZH: 设计与交钥匙搭建
-- UZ: Loyiha va toʻliq tayyor qurilish
+- UZ: Loyiha va kalit topshirish asosida qurilish
 
 **`services.cards.3.title`**
 
@@ -364,7 +364,7 @@
 - EN: Pre-show campaign for maximum reach
 - TR: Maksimum erişim için fuar öncesi kampanya
 - ZH: 开幕前推广，实现最大覆盖
-- UZ: Maksimal qamrov uchun ochilishgacha kampaniya
+- UZ: Maksimal qamrov uchun ochilishdan oldingi kampaniya
 
 **`services.cards.5.title`**
 
@@ -396,7 +396,7 @@
 
 - RU: Что мешает выставке в новом регионе — [и как мы это убираем]
 - EN: What holds a show back in a new market — [and how we remove it]
-- TR: Yeni bir pazarda fuarı geride bırakan şeyler — [ve onları nasıl ortadan kaldırıyoruz]
+- TR: Yeni bir pazarda fuarın önündeki engeller — [ve onları nasıl ortadan kaldırıyoruz]
 - ZH: 新市场办展的障碍——[以及我们如何消除]
 - UZ: Yangi hududda koʻrgazmaga nima xalaqit beradi — [va biz buni qanday bartaraf etamiz]
 
@@ -420,14 +420,14 @@
 
 - RU: Незнакомые правила, органы и подрядчики
 - EN: Unfamiliar rules, authorities and contractors
-- TR: Bilinmeyen kurallar, kurumlar ve tedarikçiler
-- ZH: 陌生的法规、政府部门和供应商
+- TR: Bilinmeyen kurallar, kurumlar ve yükleniciler
+- ZH: 陌生的法规、政府部门和承包商
 - UZ: Notanish qoidalar, idoralar va pudratchilar
 
 **`problems.pairs.0.solution`**
 
 - RU: Разрешения и переговоры с госорганами берём на себя
-- EN: We take on permits and talks with the authorities
+- EN: We handle permits and negotiations with the authorities
 - TR: İzinleri ve devlet kurumlarıyla görüşmeleri biz üstleniyoruz
 - ZH: 许可审批及与政府部门的沟通由我们承担
 - UZ: Ruxsatnomalar va davlat idoralari bilan muzokaralarni oʻz zimmamizga olamiz
@@ -452,8 +452,8 @@
 
 - RU: Пять подрядчиков — пять оправданий
 - EN: Five contractors — five excuses
-- TR: Beş tedarikçi — beş bahane
-- ZH: 五个供应商——五种借口
+- TR: Beş yüklenici — beş bahane
+- ZH: 五家承包商——五种借口
 - UZ: Beshta pudratchi — beshta bahona
 
 **`problems.pairs.2.solution`**
@@ -560,13 +560,13 @@
 - EN: One contract, one invoice
 - TR: Tek sözleşme, tek fatura
 - ZH: 一份合同，一张发票
-- UZ: Bitta shartnoma va bitta hisob
+- UZ: Bitta shartnoma va bitta hisob-faktura
 
 **`contract.with.2`**
 
 - RU: Одна ответственность за результат
 - EN: One party accountable for results
-- TR: Sonuçtan tek sorumlu
+- TR: Sonuçtan sorumlu tek taraf
 - ZH: 对结果全权负责
 - UZ: Natija uchun yagona masʼuliyat
 
@@ -594,7 +594,7 @@
 - EN: We don't just build halls. ⏎ [We fill them.]
 - TR: Sadece salon kurmuyoruz. ⏎ [Salonları dolduruyoruz.]
 - ZH: 我们不只搭建展馆。 ⏎ [我们让展馆座无虚席。]
-- UZ: Biz faqat zal qurmaymiz. ⏎ [Biz ularni toʻldiramiz.]
+- UZ: Biz zallarni qurish bilan cheklanmaymiz. ⏎ [Biz ularni toʻldiramiz.]
 
 **`visitors.steps.0.title`**
 
@@ -610,7 +610,7 @@
 - EN: Meta, Telegram, Google, trade media
 - TR: Meta, Telegram, Google, sektör medyası
 - ZH: Meta、Telegram、Google、行业媒体
-- UZ: Meta, Telegram, Google, soha OAV
+- UZ: Meta, Telegram, Google, sohaviy OAV
 
 **`visitors.steps.1.title`**
 
@@ -618,7 +618,7 @@
 - EN: Early sign-up
 - TR: Ön kayıt
 - ZH: 预登记
-- UZ: Oldindan roʻyxat
+- UZ: Oldindan roʻyxatga olish
 
 **`visitors.steps.1.text`**
 
@@ -639,10 +639,10 @@
 **`visitors.steps.2.text`**
 
 - RU: Адресно целевым компаниям, делегации из регионов
-- EN: Direct to target companies, regional delegations
-- TR: Hedef şirketlere doğrudan, bölgelerden heyetler
+- EN: Personal invitations to target companies, regional delegations
+- TR: Hedef şirketlere doğrudan davet, bölgelerden heyetler
 - ZH: 直接邀请目标企业，组织各地区代表团
-- UZ: Maqsadli kompaniyalarga shaxsan, viloyatlardan delegatsiyalar
+- UZ: Maqsadli kompaniyalarga shaxsiy taklif, viloyatlardan delegatsiyalar
 
 **`visitors.steps.3.title`**
 
@@ -650,7 +650,7 @@
 - EN: QR check-in
 - TR: QR giriş
 - ZH: 二维码签到
-- UZ: QR-hisob
+- UZ: QR-nazorat
 
 **`visitors.steps.3.text`**
 
@@ -680,7 +680,7 @@
 
 - RU: Целевое число посетителей фиксируем в договоре.
 - EN: The target visitor count is fixed in the contract.
-- TR: Hedef ziyaretçi sayısı sözleşmeye yazılır.
+- TR: Hedef ziyaretçi sayısı sözleşmede belirlenir.
 - ZH: 目标观众人数写入合同。
 - UZ: Mehmonlarning maqsadli soni shartnomada belgilanadi.
 
@@ -730,7 +730,7 @@
 
 - RU: пришли
 - EN: attended
-- TR: katıldı
+- TR: katılan
 - ZH: 实际到场
 - UZ: kelgan
 
@@ -828,7 +828,7 @@
 - EN: Owners & directors
 - TR: Şirket sahipleri ve yöneticiler
 - ZH: 企业主与总经理
-- UZ: Egalari va direktorlar
+- UZ: Kompaniya egalari va direktorlar
 
 **`report.roles.1`**
 
@@ -860,7 +860,7 @@
 - EN: After the show you receive
 - TR: Fuardan sonra elinize geçenler
 - ZH: 展会结束后您将获得
-- UZ: Koʻrgazmadan keyin siz olasiz
+- UZ: Koʻrgazmadan soʻng sizga taqdim etiladi
 
 **`report.receive.0.title`**
 
@@ -922,9 +922,9 @@
 
 - RU: на продажу площади в следующем году
 - EN: to sell next year's floor space
-- TR: gelecek yılın alanını satmak için
+- TR: gelecek yılın stant alanlarını satmak için
 - ZH: 用于销售明年的展位面积
-- UZ: keyingi yil maydonini sotish uchun
+- UZ: keyingi yil maydonlarini sotish uchun
 
 ## 7. План запуска
 
@@ -939,9 +939,9 @@
 **`plan.title`**
 
 - RU: Запуск выставки — [по понятному плану]
-- EN: Launching your show — [on a clear plan]
+- EN: Launching your show — [with a clear plan]
 - TR: Fuarınızın lansmanı — [net bir planla]
-- ZH: 展会启动——[计划清晰]
+- ZH: 展会启动——[按清晰计划推进]
 - UZ: Koʻrgazmani ishga tushirish — [aniq reja asosida]
 
 **`plan.months`**
@@ -998,7 +998,7 @@
 - EN: Promotion and pre-registration
 - TR: Tanıtım ve ön kayıt
 - ZH: 宣传与预登记
-- UZ: Reklama va oldindan roʻyxat
+- UZ: Reklama va oldindan roʻyxatga olish
 
 **`plan.stages.4`**
 
@@ -1086,8 +1086,8 @@
 
 - RU: ключевых площадок Ташкента
 - EN: key venues in Tashkent
-- TR: Taşkent'in kilit fuar alanı
-- ZH: 塔什干主要展馆
+- TR: Taşkent'te kilit etkinlik mekânı
+- ZH: 塔什干核心场馆
 - UZ: Toshkentning asosiy maydonlari
 
 **`experience.venuesTitle`**
@@ -1178,7 +1178,7 @@
 - EN: Turnkey trade show
 - TR: Anahtar teslim fuar
 - ZH: 交钥匙展会
-- UZ: Toʻliq tayyor koʻrgazma
+- UZ: Kalit topshirish asosidagi koʻrgazma
 
 **`formats.taglines.full`**
 
@@ -1186,7 +1186,7 @@
 - EN: Turnkey + full halls
 - TR: Anahtar teslim + dolu salonlar
 - ZH: 交钥匙 + 观众满馆
-- UZ: Toʻliq tayyor + toʻla zallar
+- UZ: Kalit topshirish + toʻla zallar
 
 **`formats.rows.0`**
 
@@ -1208,7 +1208,7 @@
 
 - RU: Таможня и логистика экспонатов
 - EN: Customs and exhibit logistics
-- TR: Gümrük ve sergi lojistiği
+- TR: Gümrük ve sergi ürünlerinin lojistiği
 - ZH: 展品清关与物流
 - UZ: Bojxona va eksponatlar logistikasi
 
@@ -1250,7 +1250,7 @@
 - EN: Registration and QR check-in
 - TR: Kayıt ve QR giriş
 - ZH: 观众登记与二维码签到
-- UZ: Roʻyxatga olish va QR-hisob
+- UZ: Roʻyxatga olish va QR-nazorat
 
 **`formats.rows.8`**
 
@@ -1273,7 +1273,7 @@
 **`contact.kicker`**
 
 - RU: До старта подготовим по вашему ТЗ
-- EN: Based on your brief, before launch we prepare
+- EN: Based on your brief, we'll prepare before launch
 - TR: Brifinize göre lansmandan önce hazırlıyoruz
 - ZH: 根据您的需求，启动前我们将准备
 - UZ: Texnik topshirigʻingiz asosida ishga tushirishdan oldin tayyorlaymiz
@@ -1364,7 +1364,7 @@
 
 - RU: Имя
 - EN: Name
-- TR: Adınız
+- TR: Ad Soyad
 - ZH: 姓名
 - UZ: Ism
 
@@ -1428,7 +1428,7 @@
 
 - RU: Планируемые даты
 - EN: Planned dates
-- TR: Planlanan tarih
+- TR: Planlanan tarihler
 - ZH: 计划日期
 - UZ: Rejalashtirilgan sanalar
 
@@ -1507,8 +1507,8 @@
 **`form.formatConsult`**
 
 - RU: нужна консультация
-- EN: need advice
-- TR: danışmanlık gerekli
+- EN: I need advice
+- TR: danışmanlık istiyorum
 - ZH: 需要咨询
 - UZ: maslahat kerak
 
@@ -1611,7 +1611,7 @@
 **`form.errors.consent`**
 
 - RU: Нужно согласие на обработку данных
-- EN: We need your consent to process the data
+- EN: We need your consent to process your data
 - TR: Veri işleme onayı gerekli
 - ZH: 需要您同意数据处理
 - UZ: Maʼlumotlarni qayta ishlashga rozilik kerak
@@ -1746,7 +1746,7 @@
 - EN: The site uses the Meta Pixel and its own anonymised visit statistics and, when enabled, Google Analytics and the LinkedIn Insight Tag. They show which advertising works.
 - TR: Site, Meta Pixel'i ve kendi anonim ziyaret istatistiklerini, etkinleştirildiğinde ise Google Analytics ve LinkedIn Insight Tag'i kullanır. Bunlar hangi reklamın işe yaradığını gösterir.
 - ZH: 本网站使用 Meta Pixel 和自有的匿名访问统计，启用后还会使用 Google Analytics 和 LinkedIn Insight Tag，用于了解哪些广告有效。
-- UZ: Sayt Meta Pixel va oʻzining anonim tashriflar statistikasidan, yoqilganda esa Google Analytics va LinkedIn Insight Tagʼdan foydalanadi. Ular qaysi reklama ishlayotganini koʻrsatadi.
+- UZ: Sayt Meta Pixel va oʻzining anonim tashriflar statistikasidan, yoqilganda esa Google Analytics va LinkedIn Insight Tag xizmatlaridan foydalanadi. Ular qaysi reklama ishlayotganini koʻrsatadi.
 
 **`privacy.sections.4.title`**
 

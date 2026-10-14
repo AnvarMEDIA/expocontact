@@ -50,6 +50,8 @@ export default async function Image({ params }: { params: { lang: string } }) {
     ...(bold ? [{ name: "OG", data: bold, weight: 600 as const, style: "normal" as const }] : []),
   ];
   const cjk = lang === "zh";
+  // Uzbek runs a third longer than English; a smaller size keeps it to three lines.
+  const long = dict.hero.title.join(" ").length > 62;
 
   return new ImageResponse(
     (
@@ -70,7 +72,7 @@ export default async function Image({ params }: { params: { lang: string } }) {
 
         {/* Chinese breaks between any two characters, so each phrase gets its
             own line at a size where the longest one fits whole. */}
-        <div style={{ display: "flex", flexDirection: "column", fontSize: cjk ? 58 : 74, fontWeight: 800,
+        <div style={{ display: "flex", flexDirection: "column", fontSize: cjk ? 58 : long ? 62 : 74, fontWeight: 800,
           lineHeight: cjk ? 1.25 : 1.04, letterSpacing: cjk ? 0 : -2, maxWidth: 780 }}>
           <span>{first}</span>
           {cjk
