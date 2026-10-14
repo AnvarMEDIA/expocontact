@@ -9,18 +9,12 @@ import { useRef, useState, type KeyboardEvent } from "react";
 import Title from "../components/Title";
 import { IconCheck, IconDash } from "../components/Icons";
 import { PACKAGE_NAMES, type PackageKey } from "../lib/lead";
+import { FORMAT_PACKAGES as PACKAGES, RECOMMENDED_PACKAGE as RECOMMENDED } from "../lib/content";
 import { chooseFormat } from "../lib/events";
 import { plainTitle, type OfferDict } from "../i18n";
 import base from "../styles/base.module.css";
 import s from "./Formats.module.css";
 
-/** How many of the ten rows each format covers, top-down. */
-const PACKAGES: ReadonlyArray<{ key: PackageKey; rows: number; tagline: "local" | "turnkey" | "full" }> = [
-  { key: "local_partner", rows: 3, tagline: "local" },
-  { key: "turnkey_build", rows: 6, tagline: "turnkey" },
-  { key: "full_house", rows: 10, tagline: "full" },
-];
-const RECOMMENDED: PackageKey = "full_house";
 
 interface FormatsProps {
   formats: OfferDict["formats"];

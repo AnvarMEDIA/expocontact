@@ -1,5 +1,6 @@
 import Title from "../components/Title";
 import { fill, type OfferDict } from "../i18n";
+import { PLAN_STAGES as STAGES } from "../lib/content";
 import base from "../styles/base.module.css";
 import s from "./Plan.module.css";
 
@@ -7,14 +8,6 @@ import s from "./Plan.module.css";
 const FIRST = -9;
 const LAST = 1;
 const SPAN = LAST - FIRST;
-const STAGES: ReadonlyArray<{ from: number; to: number; accent?: boolean }> = [
-  { from: -9, to: -7 },
-  { from: -8, to: -4 },
-  { from: -6, to: -3 },
-  { from: -3, to: 0, accent: true },
-  { from: -0.6, to: 0 },
-  { from: 0, to: 0.7 },
-];
 
 const at = (month: number) => ((month - FIRST) / SPAN) * 100;
 /** −9 → "−9", 1 → "+1", with a real minus sign. */
