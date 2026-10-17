@@ -204,9 +204,12 @@ export const zh: OfferDict = {
     choose: "请选择…",
     message: "留言",
     messagePlaceholder: "行业、预计参展商数量——任何重要信息",
-    consent: "我同意根据{link}处理我的个人数据",
+    notice: "提交即表示您同意根据{link}处理您的个人数据",
     consentLink: "隐私政策",
     required: "* 为必填项",
+    optional: "选填",
+    more: "补充详情——公司、国家、电子邮箱、日期、面积",
+    less: "收起详情",
     submit: "提交咨询",
     sending: "正在发送…",
     errors: {

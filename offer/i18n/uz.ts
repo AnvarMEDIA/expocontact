@@ -284,9 +284,12 @@ export const uz: OfferDict = {
     choose: "Tanlang…",
     message: "Xabar",
     messagePlaceholder: "Soha, ishtirokchilarning taxminiy soni va boshqa muhim maʼlumotlar",
-    consent: "Shaxsiy maʼlumotlarimni {link} muvofiq qayta ishlashga roziman",
+    notice: "Arizani yuborish orqali shaxsiy maʼlumotlaringizni {link} muvofiq qayta ishlashga rozilik bildirasiz",
     consentLink: "maxfiylik siyosatiga",
     required: "* — majburiy maydonlar",
+    optional: "ixtiyoriy",
+    more: "Tafsilot qoʻshing — kompaniya, mamlakat, e-mail, sanalar, maydon",
+    less: "Tafsilotlarni yashirish",
     submit: "Arizani yuborish",
     sending: "Yuborilmoqda…",
     errors: {

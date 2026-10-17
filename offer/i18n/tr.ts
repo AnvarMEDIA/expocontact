@@ -210,9 +210,12 @@ export const tr: OfferDict = {
     choose: "Seçin…",
     message: "Mesaj",
     messagePlaceholder: "Sektör, beklenen katılımcı sayısı — önemli olan her şey",
-    consent: "Kişisel verilerimin {link} uyarınca işlenmesini kabul ediyorum",
+    notice: "Talebi göndererek kişisel verilerinizin {link} uyarınca işlenmesini kabul etmiş olursunuz",
     consentLink: "gizlilik politikası",
     required: "* zorunlu alanlar",
+    optional: "isteğe bağlı",
+    more: "Ayrıntı ekleyin — şirket, ülke, e-posta, tarihler, alan",
+    less: "Ayrıntıları gizle",
     submit: "Talebi gönder",
     sending: "Gönderiliyor…",
     errors: {

@@ -401,6 +401,22 @@ The enquiry:
   readable Russian lines, so the admin card and CSV need no changes.
 - Telegram gets its own message, headed `🌍 OFFER / ORGANISER LEAD`, with the
   page language, all five utm tags, referrer and Tashkent time.
+- **Short form.** Only name and phone/WhatsApp are required; the show's theme
+  is a third, optional field. Company, country, e-mail, dates, area, format
+  and message sit behind «Добавить детали» and are optional — the long form
+  (six required fields and a checkbox) cost too much per lead, and the team
+  asks the rest when it calls back. `REQUIRED_FIELDS` / `DETAIL_FIELDS` in
+  `offer/lib/lead.ts`; an optional field that is filled is still validated.
+  A format chosen in the formats table shows as a chip while details are
+  folded; a draft with details, or an error in one, unfolds them.
+- Consent is the notice under the button («Отправляя заявку, вы соглашаетесь
+  с политикой конфиденциальности»), as on the main site's forms; the form
+  sends `consent: true` and the API still requires it.
+- Without a country, Telegram and the lead summary name it from the phone's
+  dial code (`countriesByPhone()`, longest code first; +7 and +1 list every
+  country that shares them).
+- GA4 `lead_submit` carries `form: "short" | "detailed"`, so the two paths can
+  be compared.
 - Honeypot field `website`: when filled the API answers `{ok: true}` and
   stores and sends nothing. A phone field holding only the prefilled dial code
   counts as empty.
@@ -477,8 +493,7 @@ Design tokens and interaction rules:
   typed in — never «required» for a box they have not reached. Country text
   that names no country is reported on leaving the box.
 - The form keeps a draft in `sessionStorage` (`offer-form-draft`): this tab
-  only, never the consent box or the honeypot, removed once the enquiry is
-  sent. It is restored after mount so server and client render agree.
+  only, never the honeypot, removed once the enquiry is sent. It is restored after mount so server and client render agree.
 - Over the hero the header CTA is an outline, so it does not compete with the
   hero's own orange button; it fills in once the header turns solid.
 - `color-scheme: only light` in the viewport keeps Chrome's automatic dark

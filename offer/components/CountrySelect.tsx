@@ -118,7 +118,6 @@ export default function CountrySelect({
         aria-activedescendant={activeId}
         aria-invalid={invalid || undefined}
         aria-describedby={describedBy}
-        aria-required="true"
         autoComplete="off"
         placeholder={placeholder}
         className={`${s.input} ${invalid ? s.inputInvalid : ""}`}

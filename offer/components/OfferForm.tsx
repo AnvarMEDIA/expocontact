@@ -16,13 +16,21 @@
  *   Before that, a field is only checked when the visitor leaves it with
  *   something typed in, so tabbing through an empty form raises nothing.
  * - Answers survive a reload as a draft in sessionStorage — this tab only,
- *   never the consent box, gone once the enquiry is sent.
+ *   gone once the enquiry is sent.
+ * - Short by default: name, phone and the show's theme. Everything else sits
+ *   behind «Добавить детали» and is optional — the long form cost more per
+ *   lead, and the team asks the rest when it calls back. A chosen format
+ *   shows as a chip, so it is not lost while the details are folded.
+ * - Consent is the notice under the button, as on the main site's forms:
+ *   sending the enquiry is agreeing to the privacy policy.
  */
 import { useEffect, useRef, useState, type FormEvent, type MouseEvent } from "react";
 import useMarketing from "@/components/useMarketing";
 import CountrySelect from "./CountrySelect";
 import { IconArrow, IconCheck, IconTelegram, IconWhatsApp } from "./Icons";
-import { AREA_KEYS, PACKAGE_NAMES, validateOrganiser, type Field, type FieldError, type FormatKey } from "../lib/lead";
+import {
+  AREA_KEYS, DETAIL_FIELDS, PACKAGE_NAMES, validateOrganiser, type Field, type FieldError, type FormatKey,
+} from "../lib/lead";
 import { CHOOSE_FORMAT } from "../lib/events";
 import { openPrivacy } from "../lib/privacy";
 import { trackLeadSubmit } from "../lib/track";
@@ -45,13 +53,13 @@ interface OfferFormProps {
 type Values = {
   name: string; company: string; country: string; email: string; phone: string;
   showName: string; month: string; year: string; area: string; format: string;
-  message: string; consent: boolean; website: string;
+  message: string; website: string;
 };
 
 const FORMAT_OPTIONS: FormatKey[] = ["local_partner", "turnkey_build", "full_house", "consult"];
 
 const DRAFT_KEY = "offer-form-draft";
-/** What a draft may hold: the visitor's answers, never consent or the honeypot. */
+/** What a draft may hold: the visitor's answers, never the honeypot. */
 const DRAFT_FIELDS = [
   "name", "company", "country", "email", "phone", "showName", "month", "year", "area", "format", "message",
 ] as const satisfies readonly (keyof Values)[];
@@ -85,7 +93,14 @@ function writeDraft(values: Values | null) {
 }
 
 /** Fields the validator can complain about, in the order they appear. */
-const CHECKED: readonly Field[] = ["name", "company", "country", "email", "phone", "consent"];
+const CHECKED: readonly Field[] = ["name", "phone", "company", "country", "email"];
+
+/** Draft fields that live behind «Добавить детали». */
+const DETAIL_VALUES = ["company", "country", "email", "month", "year", "area", "message"] as const satisfies readonly (keyof Values)[];
+const hasDetails = (v: Values) => DETAIL_VALUES.some((key) => v[key].trim() !== "");
+
+const formatName = (format: string, consult: string) =>
+  format === "consult" ? consult : PACKAGE_NAMES[format as Exclude<FormatKey, "consult">] ?? format;
 
 export default function OfferForm({
   lang, form, chosenTemplate, countries, months, startYear, defaultDial,
@@ -94,8 +109,9 @@ export default function OfferForm({
   const [values, setValues] = useState<Values>({
     name: "", company: "", country: "", email: "", phone: defaultDial,
     showName: "", month: "", year: "", area: "", format: "",
-    message: "", consent: false, website: "",
+    message: "", website: "",
   });
+  const [open, setOpen] = useState(false);
   const [errors, setErrors] = useState<Partial<Record<Field, FieldError>>>({});
   const [summary, setSummary] = useState(false);
   const [state, setState] = useState<"idle" | "sending" | "done" | "error">("idle");
@@ -112,7 +128,13 @@ export default function OfferForm({
   // server and the first client render agree.
   useEffect(() => {
     const draft = readDraft();
-    if (draft) setValues((v) => ({ ...v, ...draft }));
+    if (draft) {
+      setValues((v) => {
+        const next = { ...v, ...draft };
+        if (hasDetails(next)) setOpen(true);
+        return next;
+      });
+    }
     restored.current = true;
   }, []);
 
@@ -131,7 +153,7 @@ export default function OfferForm({
     const onChoose = (event: Event) => {
       const format = (event as CustomEvent<FormatKey>).detail;
       setValues((v) => ({ ...v, format }));
-      setAnnounce(fill(chosenTemplate, { name: format === "consult" ? form.formatConsult : PACKAGE_NAMES[format] }));
+      setAnnounce(fill(chosenTemplate, { name: formatName(format, form.formatConsult) }));
       window.setTimeout(() => formRef.current?.querySelector<HTMLInputElement>("#of-name")?.focus({ preventScroll: true }), 700);
     };
     window.addEventListener(CHOOSE_FORMAT, onChoose);
@@ -145,6 +167,8 @@ export default function OfferForm({
   const failed = (found: Partial<Record<Field, FieldError>>) => {
     setErrors(found);
     setSummary(true);
+    // A problem in a folded field: unfold, so the summary link has a target.
+    if (DETAIL_FIELDS.some((f) => found[f])) setOpen(true);
     setAnnounce("");
     // After the summary has rendered.
     window.requestAnimationFrame(() => summaryRef.current?.focus());
@@ -174,14 +198,15 @@ export default function OfferForm({
     const payload = {
       name: values.name, company: values.company, country: values.country, email: values.email,
       phone: values.phone, showName: values.showName, dates, area: values.area, format: values.format,
-      message: values.message, consent: values.consent,
+      message: values.message, consent: true,
     };
     const check = validateOrganiser(payload);
-    if (!check.ok) {
-      // Text in the country box that matched nothing reads better as «choose
-      // from the list» than as «fill in the field».
-      if (check.errors.country === "required" && countryTyped.current) check.errors.country = "country";
-      failed(check.errors);
+    const found = check.ok ? {} : { ...check.errors };
+    // Text left in the country box that names no country: say so, rather
+    // than sending the enquiry without the country the visitor meant.
+    if (countryTyped.current && !values.country) found.country = "country";
+    if (Object.keys(found).length) {
+      failed(found);
       return;
     }
 
@@ -204,7 +229,7 @@ export default function OfferForm({
       if (!res.ok) throw new Error(String(res.status));
       setState("done");
       writeDraft(null);
-      trackLeadSubmit(lang);
+      trackLeadSubmit(lang, { form: hasDetails(values) || values.showName.trim() ? "detailed" : "short" });
     } catch {
       setState("error");
     } finally {
@@ -247,7 +272,6 @@ export default function OfferForm({
   // field is left alone until submit: nobody wants «required» for a box they
   // simply have not reached yet.
   function checkOnBlur(field: Field) {
-    if (field === "consent") return;
     // The phone starts out holding a dial code; that alone is still empty.
     const raw = field === "phone"
       ? values.phone.replace(/^\+\d{1,4}\s*$/, "")
@@ -258,8 +282,7 @@ export default function OfferForm({
     if (found && found !== "required") setErrors((e) => ({ ...e, [field]: found }));
   }
 
-  const summaryLabel = (field: Field) =>
-    field === "consent" ? "" : `${form[field as "name" | "company" | "country" | "email" | "phone"]} — `;
+  const summaryLabel = (field: Field) => `${form[field as "name" | "company" | "country" | "email" | "phone"]} — `;
   const summaryItems = summary ? CHECKED.filter((f) => errors[f]) : [];
   const toField = (field: Field) => (event: MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
@@ -306,34 +329,6 @@ export default function OfferForm({
           </div>
 
           <div className={s.field}>
-            <label htmlFor="of-company" className={s.label}>{form.company}{req}</label>
-            <input {...fieldProps("company")} name="company" type="text" autoComplete="organization" required
-              className={`${s.input} ${err("company") ? s.inputInvalid : ""}`}
-              value={values.company} onChange={(e) => set("company", e.target.value)} />
-            {errorLine("company")}
-          </div>
-
-          <div className={`${s.field} ${s.full}`}>
-            <label htmlFor="of-country" className={s.label}>{form.country}{req}</label>
-            <CountrySelect id="of-country" label={form.country} placeholder={form.countryPlaceholder}
-              empty={form.countryEmpty} options={countries} value={values.country} onChange={pickCountry}
-              onUnresolved={(typed) => {
-                countryTyped.current = typed;
-                if (typed) setErrors((e) => ({ ...e, country: "country" }));
-              }}
-              invalid={Boolean(err("country"))} describedBy={err("country") ? "of-country-error" : undefined} />
-            {errorLine("country")}
-          </div>
-
-          <div className={s.field}>
-            <label htmlFor="of-email" className={s.label}>{form.email}{req}</label>
-            <input {...fieldProps("email")} name="email" type="email" inputMode="email" autoComplete="email" required
-              className={`${s.input} ${err("email") ? s.inputInvalid : ""}`}
-              value={values.email} onChange={(e) => set("email", e.target.value)} />
-            {errorLine("email")}
-          </div>
-
-          <div className={s.field}>
             <label htmlFor="of-phone" className={s.label}>{form.phone}{req}</label>
             <input {...fieldProps("phone")} name="phone" type="tel" inputMode="tel" autoComplete="tel" required
               placeholder="+44 20 7123 4567"
@@ -342,70 +337,108 @@ export default function OfferForm({
             {errorLine("phone")}
           </div>
 
-          {/* Who is asking above the line, what the show is below it. */}
-          <hr className={`${s.divider} ${s.full}`} />
-
           <div className={`${s.field} ${s.full}`}>
-            <label htmlFor="of-showName" className={s.label}>{form.showName}</label>
+            <label htmlFor="of-showName" className={s.label}>
+              {form.showName}<span className={s.optional}> · {form.optional}</span>
+            </label>
             <input id="of-showName" name="showName" type="text" autoComplete="off" className={s.input}
               value={values.showName} onChange={(e) => set("showName", e.target.value)} />
           </div>
 
-          <div role="group" aria-labelledby="of-dates-label" className={s.field}>
-            <span id="of-dates-label" className={s.label}>{form.dates}</span>
-            <div className={s.pair}>
-              <select id="of-dates" aria-label={form.month} className={s.input} value={values.month}
-                onChange={(e) => set("month", e.target.value)}>
-                <option value="">{form.month}</option>
-                {months.map((m, i) => <option key={m} value={String(i + 1).padStart(2, "0")}>{m}</option>)}
-              </select>
-              <select aria-label={form.year} className={s.input} value={values.year}
-                onChange={(e) => set("year", e.target.value)}>
-                <option value="">{form.year}</option>
-                {[0, 1, 2, 3].map((d) => <option key={d} value={String(year0 + d)}>{year0 + d}</option>)}
-              </select>
+          {values.format && !open && (
+            <div className={s.full}>
+              <button type="button" className={s.chosen}
+                onClick={() => {
+                  setOpen(true);
+                  window.requestAnimationFrame(() => formRef.current?.querySelector<HTMLElement>("#of-format")?.focus());
+                }}>
+                <IconCheck />
+                {fill(chosenTemplate, { name: formatName(values.format, form.formatConsult) })}
+              </button>
             </div>
+          )}
+
+          <div className={s.full}>
+            <button type="button" className={s.more} aria-expanded={open} aria-controls="of-details"
+              data-track="form_details" onClick={() => setOpen((v) => !v)}>
+              <span className={s.moreIcon} aria-hidden="true" />
+              {open ? form.less : form.more}
+            </button>
           </div>
 
-          <div className={s.field}>
-            <label htmlFor="of-area" className={s.label}>{form.area}</label>
-            <select id="of-area" name="area" className={s.input} value={values.area}
-              onChange={(e) => set("area", e.target.value)}>
-              <option value="">{form.choose}</option>
-              {AREA_KEYS.map((key, i) => <option key={key} value={key}>{form.areas[i]}</option>)}
-            </select>
-          </div>
+          <div id="of-details" className={`${s.details} ${s.full}`} hidden={!open}>
+            <div className={s.grid}>
+              <div className={s.field}>
+                <label htmlFor="of-company" className={s.label}>{form.company}</label>
+                <input {...fieldProps("company")} name="company" type="text" autoComplete="organization"
+                  className={`${s.input} ${err("company") ? s.inputInvalid : ""}`}
+                  value={values.company} onChange={(e) => set("company", e.target.value)} />
+                {errorLine("company")}
+              </div>
 
-          <div className={`${s.field} ${s.full}`}>
-            <label htmlFor="of-format" className={s.label}>{form.format}</label>
-            <select id="of-format" name="format" className={s.input} value={values.format}
-              onChange={(e) => set("format", e.target.value)}>
-              <option value="">{form.choose}</option>
-              {FORMAT_OPTIONS.map((key) => (
-                <option key={key} value={key}>{key === "consult" ? form.formatConsult : PACKAGE_NAMES[key]}</option>
-              ))}
-            </select>
-          </div>
+              <div className={s.field}>
+                <label htmlFor="of-email" className={s.label}>{form.email}</label>
+                <input {...fieldProps("email")} name="email" type="email" inputMode="email" autoComplete="email"
+                  className={`${s.input} ${err("email") ? s.inputInvalid : ""}`}
+                  value={values.email} onChange={(e) => set("email", e.target.value)} />
+                {errorLine("email")}
+              </div>
 
-          <div className={`${s.field} ${s.full}`}>
-            <label htmlFor="of-message" className={s.label}>{form.message}</label>
-            <textarea id="of-message" name="message" rows={4} className={`${s.input} ${s.textarea}`}
-              placeholder={form.messagePlaceholder}
-              value={values.message} onChange={(e) => set("message", e.target.value)} />
-          </div>
+              <div className={`${s.field} ${s.full}`}>
+                <label htmlFor="of-country" className={s.label}>{form.country}</label>
+                <CountrySelect id="of-country" label={form.country} placeholder={form.countryPlaceholder}
+                  empty={form.countryEmpty} options={countries} value={values.country} onChange={pickCountry}
+                  onUnresolved={(typed) => {
+                    countryTyped.current = typed;
+                    if (typed) setErrors((e) => ({ ...e, country: "country" }));
+                  }}
+                  invalid={Boolean(err("country"))} describedBy={err("country") ? "of-country-error" : undefined} />
+                {errorLine("country")}
+              </div>
 
-          <div className={`${s.field} ${s.full}`}>
-            <div className={s.consent}>
-              <input {...fieldProps("consent")} type="checkbox" name="consent" required className={s.checkbox}
-                checked={values.consent} onChange={(e) => set("consent", e.target.checked)} />
-              <label htmlFor="of-consent" className={s.consentText}>
-                {form.consent.split("{link}")[0]}
-                <button type="button" className={s.linkButton} onClick={openPrivacy}>{form.consentLink}</button>
-                {form.consent.split("{link}")[1]}
-                {req}
-              </label>
+              <div role="group" aria-labelledby="of-dates-label" className={s.field}>
+                <span id="of-dates-label" className={s.label}>{form.dates}</span>
+                <div className={s.pair}>
+                  <select id="of-dates" aria-label={form.month} className={s.input} value={values.month}
+                    onChange={(e) => set("month", e.target.value)}>
+                    <option value="">{form.month}</option>
+                    {months.map((m, i) => <option key={m} value={String(i + 1).padStart(2, "0")}>{m}</option>)}
+                  </select>
+                  <select aria-label={form.year} className={s.input} value={values.year}
+                    onChange={(e) => set("year", e.target.value)}>
+                    <option value="">{form.year}</option>
+                    {[0, 1, 2, 3].map((d) => <option key={d} value={String(year0 + d)}>{year0 + d}</option>)}
+                  </select>
+                </div>
+              </div>
+
+              <div className={s.field}>
+                <label htmlFor="of-area" className={s.label}>{form.area}</label>
+                <select id="of-area" name="area" className={s.input} value={values.area}
+                  onChange={(e) => set("area", e.target.value)}>
+                  <option value="">{form.choose}</option>
+                  {AREA_KEYS.map((key, i) => <option key={key} value={key}>{form.areas[i]}</option>)}
+                </select>
+              </div>
+
+              <div className={`${s.field} ${s.full}`}>
+                <label htmlFor="of-format" className={s.label}>{form.format}</label>
+                <select id="of-format" name="format" className={s.input} value={values.format}
+                  onChange={(e) => set("format", e.target.value)}>
+                  <option value="">{form.choose}</option>
+                  {FORMAT_OPTIONS.map((key) => (
+                    <option key={key} value={key}>{formatName(key, form.formatConsult)}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className={`${s.field} ${s.full}`}>
+                <label htmlFor="of-message" className={s.label}>{form.message}</label>
+                <textarea id="of-message" name="message" rows={4} className={`${s.input} ${s.textarea}`}
+                  placeholder={form.messagePlaceholder}
+                  value={values.message} onChange={(e) => set("message", e.target.value)} />
+              </div>
             </div>
-            {errorLine("consent")}
           </div>
         </div>
 
@@ -419,7 +452,14 @@ export default function OfferForm({
           <p className={s.requiredNote}>{form.required}</p>
         </div>
 
-        <p className={s.live} aria-live="polite">{announce}</p>
+        <p className={s.notice}>
+          {form.notice.split("{link}")[0]}
+          <button type="button" className={s.linkButton} onClick={openPrivacy}>{form.consentLink}</button>
+          {form.notice.split("{link}")[1]}
+        </p>
+        {errorLine("consent")}
+
+        <p className={base.srOnly} aria-live="polite">{announce}</p>
         {state === "error" && (
           <p className={s.networkError} role="alert">
             {form.errors.network}{" "}

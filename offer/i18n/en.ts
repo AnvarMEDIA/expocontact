@@ -210,9 +210,12 @@ export const en: OfferDict = {
     choose: "Select…",
     message: "Message",
     messagePlaceholder: "Industry, expected number of exhibitors — anything that matters",
-    consent: "I agree to the processing of my personal data in accordance with the {link}",
+    notice: "By sending the enquiry you agree to the {link}",
     consentLink: "privacy policy",
     required: "* required fields",
+    optional: "optional",
+    more: "Add details — company, country, e-mail, dates, floor area",
+    less: "Hide details",
     submit: "Send enquiry",
     sending: "Sending…",
     errors: {

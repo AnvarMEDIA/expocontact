@@ -7,6 +7,7 @@
  * and the team reads all of them in Russian.
  */
 import { formatPhone } from "@/lib/phone";
+import { COUNTRIES } from "@/lib/countries";
 import { COUNTRY_CODES, countryNameRu } from "./countries";
 
 export const AREA_KEYS = ["lt1000", "1000_5000", "5000_10000", "10000plus", "unknown"] as const;
@@ -40,8 +41,18 @@ export const FIELDS = [
 export type Field = (typeof FIELDS)[number];
 export type FieldError = "required" | "email" | "phone" | "country" | "consent";
 
+/**
+ * The short form asks for these only; everything else is an optional detail.
+ * A long form cost more per lead than a short one: the team calls back and
+ * asks the rest.
+ */
+export const REQUIRED_FIELDS = ["name", "phone"] as const satisfies readonly Field[];
+/** Behind «Добавить детали» on the form. */
+export const DETAIL_FIELDS = ["company", "country", "email", "dates", "area", "format", "message"] as const satisfies readonly Field[];
+
 export interface OrganiserLead {
   name: string;
+  /** Optional, like everything except name and phone: "" when not given. */
   company: string;
   country: string;
   email: string;
@@ -89,17 +100,17 @@ export function validateOrganiser(input: Record<string, unknown>): Validation {
   const formatRaw = text(input.format, 20);
 
   if (!name) errors.name = "required";
-  if (!company) errors.company = "required";
-  if (!country) errors.country = "required";
-  else if (!COUNTRY_CODES.has(country)) errors.country = "country";
-  if (!email) errors.email = "required";
-  else if (!EMAIL_RE.test(email)) errors.email = "email";
+  // Optional, but what is given must make sense.
+  if (country && !COUNTRY_CODES.has(country)) errors.country = "country";
+  if (email && !EMAIL_RE.test(email)) errors.email = "email";
   // An international number is 7 to 15 digits (E.164). The field starts
   // prefilled with a dial code, so "+90" alone means it was never filled in.
   if (!phone || phoneDigits(phone) === 0 || /^\+\d{1,4}$/.test(phone)) errors.phone = "required";
   else if (!/^[+\d\s()\-.]+$/.test(phone) || phoneDigits(phone) < 7 || phoneDigits(phone) > 15) {
     errors.phone = "phone";
   }
+  // The form shows «by sending you agree to the privacy policy» next to the
+  // button and sends consent: true with the enquiry, as the main site does.
   if (input.consent !== true && input.consent !== "true" && input.consent !== "on") {
     errors.consent = "consent";
   }
@@ -125,13 +136,34 @@ function datesLabel(dates: string): string {
 }
 
 /**
+ * Where a number is from, by its dial code, for an enquiry that left the
+ * country out. Longest code first (+998 before +9…); a code shared by several
+ * countries (+7, +1) names them all.
+ */
+export function countriesByPhone(phone: string): string[] {
+  const digits = phone.replace(/[^\d+]/g, "");
+  if (!digits.startsWith("+")) return [];
+  let best = "";
+  for (const c of COUNTRIES) if (digits.startsWith(c.dial) && c.dial.length > best.length) best = c.dial;
+  return best ? COUNTRIES.filter((c) => c.dial === best).map((c) => c.code) : [];
+}
+
+/** "Турция (TR)", or "не указана · по номеру: Россия / Казахстан", or null. */
+function countryLine(lead: OrganiserLead): string | null {
+  if (lead.country) return `${countryNameRu(lead.country)} (${lead.country})`;
+  const guess = countriesByPhone(lead.phone);
+  return guess.length ? `не указана · по номеру: ${guess.map(countryNameRu).join(" / ")}` : null;
+}
+
+/**
  * The enquiry as Russian lines. Stored as the lead's message too, so the admin
  * lead card and the CSV export show every answer without knowing this form.
  */
 export function organiserSummary(lead: OrganiserLead): string[] {
+  const country = countryLine(lead);
   return [
-    `Страна: ${countryNameRu(lead.country)} (${lead.country})`,
-    `E-mail: ${lead.email}`,
+    country ? `Страна: ${country}` : null,
+    lead.email ? `E-mail: ${lead.email}` : null,
     lead.dates ? `Даты: ${datesLabel(lead.dates)}` : null,
     lead.area ? `Площадь: ${AREA_RU[lead.area]}` : null,
     lead.format ? `Формат: ${FORMAT_RU[lead.format]}` : null,
@@ -176,9 +208,9 @@ export function organiserTelegram(args: {
     id ? `🆔 ${id}` : null,
     "",
     `👤 Имя: ${lead.name}`,
-    `🏢 Компания: ${lead.company}`,
-    `🌐 Страна: ${countryNameRu(lead.country)} (${lead.country})`,
-    `✉️ E-mail: ${lead.email}`,
+    lead.company ? `🏢 Компания: ${lead.company}` : null,
+    countryLine(lead) ? `🌐 Страна: ${countryLine(lead)}` : null,
+    lead.email ? `✉️ E-mail: ${lead.email}` : null,
     `📞 Телефон / WhatsApp: ${formatPhone(lead.phone)}`,
     lead.showName ? `🎪 Выставка: ${lead.showName}` : null,
     lead.dates ? `📅 Даты: ${datesLabel(lead.dates)}` : null,

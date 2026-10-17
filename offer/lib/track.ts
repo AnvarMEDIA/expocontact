@@ -30,10 +30,13 @@ export function trackEvent(name: string, params: Params = {}): void {
   } catch { /* blocked */ }
 }
 
-/** Called only after the server confirmed the enquiry — never on the button click. */
-export function trackLeadSubmit(language: string): void {
+/**
+ * Called only after the server confirmed the enquiry — never on the button
+ * click. `form` says whether the visitor sent the short form or added details.
+ */
+export function trackLeadSubmit(language: string, extra: Params = {}): void {
   trackLead("offer");
-  trackEvent("lead_submit", { language });
+  trackEvent("lead_submit", { language, ...extra });
   try {
     if (GADS_ID && GADS_LEAD_LABEL) {
       win().gtag?.("event", "conversion", { send_to: `${GADS_ID}/${GADS_LEAD_LABEL}`, language });

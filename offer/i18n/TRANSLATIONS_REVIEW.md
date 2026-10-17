@@ -18,7 +18,7 @@
 собирается ровно из иероглифов словаря. Этот файл пересобирается командой
 `node offer/scripts/translations-review.mjs`.
 
-Всего строк: 216 × 5 языков.
+Всего строк: 219 × 5 языков.
 
 ## Мета-теги и соцсети
 
@@ -1552,13 +1552,13 @@
 - ZH: 行业、预计参展商数量——任何重要信息
 - UZ: Soha, ishtirokchilarning taxminiy soni va boshqa muhim maʼlumotlar
 
-**`form.consent`**
+**`form.notice`**
 
-- RU: Я согласен(на) на обработку персональных данных в соответствии с {link}
-- EN: I agree to the processing of my personal data in accordance with the {link}
-- TR: Kişisel verilerimin {link} uyarınca işlenmesini kabul ediyorum
-- ZH: 我同意根据{link}处理我的个人数据
-- UZ: Shaxsiy maʼlumotlarimni {link} muvofiq qayta ishlashga roziman
+- RU: Отправляя заявку, вы соглашаетесь с {link}
+- EN: By sending the enquiry you agree to the {link}
+- TR: Talebi göndererek kişisel verilerinizin {link} uyarınca işlenmesini kabul etmiş olursunuz
+- ZH: 提交即表示您同意根据{link}处理您的个人数据
+- UZ: Arizani yuborish orqali shaxsiy maʼlumotlaringizni {link} muvofiq qayta ishlashga rozilik bildirasiz
 
 **`form.consentLink`**
 
@@ -1575,6 +1575,30 @@
 - TR: * zorunlu alanlar
 - ZH: * 为必填项
 - UZ: * — majburiy maydonlar
+
+**`form.optional`**
+
+- RU: необязательно
+- EN: optional
+- TR: isteğe bağlı
+- ZH: 选填
+- UZ: ixtiyoriy
+
+**`form.more`**
+
+- RU: Добавить детали — компания, страна, e-mail, даты, площадь
+- EN: Add details — company, country, e-mail, dates, floor area
+- TR: Ayrıntı ekleyin — şirket, ülke, e-posta, tarihler, alan
+- ZH: 补充详情——公司、国家、电子邮箱、日期、面积
+- UZ: Tafsilot qoʻshing — kompaniya, mamlakat, e-mail, sanalar, maydon
+
+**`form.less`**
+
+- RU: Скрыть детали
+- EN: Hide details
+- TR: Ayrıntıları gizle
+- ZH: 收起详情
+- UZ: Tafsilotlarni yashirish
 
 **`form.submit`**
 
