@@ -12,7 +12,7 @@ import { Onest } from "next/font/google";
 import AnalyticsTracker from "@/components/AnalyticsTracker";
 import { META_PIXEL_ID, META_PIXEL_SNIPPET } from "@/lib/metaPixel";
 import { DEFAULT_OFFER_LANG, LANG_INFO, OFFER_LANGS, getDict, isOfferLang } from "@/offer/i18n";
-import { CONTACTS } from "@/offer/lib/content";
+import { offerJsonLd } from "@/offer/lib/schema";
 import ClickTracker from "@/offer/components/ClickTracker";
 import RevealObserver from "@/offer/components/RevealObserver";
 import Trackers from "@/offer/components/Trackers";
@@ -64,7 +64,11 @@ export function generateMetadata({ params }: Params): Metadata {
       alternateLocale: OFFER_LANGS.filter((l) => l !== lang).map((l) => LANG_INFO[l].og),
     },
     twitter: { card: "summary_large_image", title: meta.ogTitle, description: meta.ogDescription },
-    robots: { index: true, follow: true },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 },
+    },
     formatDetection: { telephone: false, email: false, address: false },
   };
 }
@@ -78,25 +82,6 @@ export const viewport: Viewport = {
   initialScale: 1,
   viewportFit: "cover",
 };
-
-const JSON_LD = JSON.stringify({
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  name: "ExpoContact",
-  url: SITE_URL,
-  logo: "https://static.tildacdn.one/tild3233-3438-4034-a138-316162306464/ExpoContact_-_Logo_W.png",
-  foundingDate: "2004",
-  email: CONTACTS.email,
-  telephone: CONTACTS.phones.map((p) => p.tel),
-  address: { "@type": "PostalAddress", addressLocality: "Tashkent", addressCountry: "UZ" },
-  contactPoint: CONTACTS.phones.map((p) => ({
-    "@type": "ContactPoint",
-    telephone: p.tel,
-    email: CONTACTS.email,
-    contactType: "sales",
-  })),
-  sameAs: [CONTACTS.telegram],
-}).replace(/</g, "\\u003c");
 
 export default function OfferLayout({ children, params }: { children: ReactNode } & Params) {
   if (!isOfferLang(params.lang)) notFound();
@@ -117,7 +102,7 @@ export default function OfferLayout({ children, params }: { children: ReactNode 
         {/* Meta Pixel — the same ExpoContact Pixel as the main site. Loaded
             here because the main site's layout, which carries it, is not. */}
         <script dangerouslySetInnerHTML={{ __html: META_PIXEL_SNIPPET }} />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON_LD }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: offerJsonLd(lang, SITE_URL) }} />
       </head>
       <body className={`${base.body} of-root ${onest.variable} ${lang === "zh" ? "of-zh" : ""}`}>
         <noscript>

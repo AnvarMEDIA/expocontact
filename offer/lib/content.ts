@@ -22,6 +22,8 @@ export const CONTACTS = {
   ],
   whatsapp: "https://wa.me/998977111711",
   telegram: "https://t.me/expocontact",
+  /** Not shown on the page; the organisation's profile for structured data. */
+  instagram: "https://instagram.com/expo.contact",
   email: "info@expocontact.uz",
   /** Shown as text only: the landing never links to the main site. */
   site: "www.expocontact.uz",

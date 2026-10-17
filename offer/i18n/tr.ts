@@ -2,9 +2,8 @@ import type { OfferDict } from "./ru";
 
 export const tr: OfferDict = {
   meta: {
-    title: "Özbekistan'da Fuar Organizatörü — Anahtar Teslim, Dolu Salonlar | ExpoContact",
-    description:
-      "ExpoContact, Taşkent ve Özbekistan'daki yerel organizasyon ortağınız: izinler, mekân, pavyon kurulumu, tanıtım ve her ziyaretçinin kayıtlı olduğu ziyaretçi akışı. Tek sözleşme.",
+    title: "Özbekistan'da Anahtar Teslim Fuar Organizasyonu | ExpoContact",
+    description: "Taşkent'te yerel organizasyon ortağınız: izinler, mekân, pavyon kurulumu, tanıtım ve kayıtlı ziyaretçi akışı. Özbekistan'daki fuarınız için tek sözleşme.",
     ogTitle: "Özbekistan'da fuarınız. Anahtar teslim. Dolu salonlarla.",
     ogDescription: "İzinler, mekân, kurulum, tanıtım ve ziyaretçi akışı — tek sözleşmeyle.",
     ogKicker: "Yerel organizasyon ortağı · Özbekistan",
@@ -178,6 +177,40 @@ export const tr: OfferDict = {
       "Kayıt ve QR giriş",
       "Davetler ve heyetler",
       "Rapor ve ziyaretçi veri tabanı",
+    ],
+  },
+  faq: {
+    kicker: "Sık sorulan sorular",
+    title: "Başlamadan önce [bilmeniz gerekenler]",
+    items: [
+      {
+        q: "ExpoContact yabancı bir fuar organizatörüne nasıl yardımcı olur?",
+        a: "Taşkent'teki yerel organizasyon ortağınızız. İzinleri ve devlet kurumlarıyla görüşmeleri, mekân seçimi ve rezervasyonunu, gümrük ve sergi ürünlerinin lojistiğini, pavyon tasarımı ve kurulumunu, katılımcı stantlarını, tanıtımı ve ziyaretçi akışını üstleniyoruz — hepsi tek sözleşmeyle ve tek proje yöneticisiyle.",
+      },
+      {
+        q: "Özbekistan'da bir fuara hazırlığa ne zaman başlamalı?",
+        a: "Genellikle açılıştan dokuz ay önce. Strateji, mekân ve tarihler 9–7 ay önce; izinler ve onaylar 8–4 ay önce; pavyon ve stant tasarımı 6–3 ay önce; tanıtım ve ön kayıt son 3 ayda; kurulum ve montaj son haftalarda. Zaman darsa hızlandırılmış lansman yapıyoruz.",
+      },
+      {
+        q: "Taşkent'te hangi mekânlarda fuar düzenlenebilir?",
+        a: "Taşkent'in yedi kilit etkinlik mekânında çalışıyoruz: UzExpoCentre, CAEx Uzbekistan, Anhor Lokomotiv, Yoshlar Ijod Saroyi, Humo Arena, Alpomish Arena ve Zakovat Arena. Fuarınıza uygun mekânı seçiyor, görüşmeleri yürütüyor ve rezervasyonu yapıyoruz.",
+      },
+      {
+        q: "Fuara ziyaretçileri nasıl getiriyorsunuz?",
+        a: "Meta, Telegram, Google ve sektör medyasında tanıtım; fuarın açılış sayfası ve Telegram botu üzerinden ön kayıt; hedef şirketlere doğrudan davet ve bölgelerden heyetler; girişte QR ile kayıt. Hedef ziyaretçi sayısı sözleşmede belirlenir.",
+      },
+      {
+        q: "Organizatör fuardan sonra ne alır?",
+        a: "Ziyaretçilerin onayıyla toplanan iletişim veri tabanı; güne, sektöre, unvana ve bölgeye göre analitik; fuar süresince canlı panel ve gelecek yılın stant alanlarını katılımcılara satmayı kolaylaştıran rakamlar.",
+      },
+      {
+        q: "Hangi çalışma formatları var?",
+        a: "Üç format var. Local Partner: kurulumu siz yaparsınız, sahadaki her şeyi biz hallederiz — izinler, mekân, gümrük ve lojistik. Turnkey Build: anahtar teslim fuar — ek olarak pavyon tasarımı ve kurulumu, katılımcı stantları ve 7/24 teknik destek. Full House: anahtar teslim ve dolu salonlar — ek olarak tanıtım, kayıt ve QR giriş, davetler ve heyetler, rapor ve ziyaretçi veri tabanı.",
+      },
+      {
+        q: "Nasıl başlarız?",
+        a: "Fuarınızın konusunu ve tarihlerini bu sayfadaki form, WhatsApp veya Telegram üzerinden gönderin. Brifinize göre lansmandan önce fuar konseptini ve lansman planını, pavyonun 3D konseptini ve ziyaretçi kazanım planını hazırlıyoruz.",
+      },
     ],
   },
   contact: {

@@ -18,25 +18,25 @@
 собирается ровно из иероглифов словаря. Этот файл пересобирается командой
 `node offer/scripts/translations-review.mjs`.
 
-Всего строк: 219 × 5 языков.
+Всего строк: 235 × 5 языков.
 
 ## Мета-теги и соцсети
 
 **`meta.title`**
 
-- RU: Организатор выставок в Узбекистане — под ключ, с полными залами | ExpoContact
-- EN: Trade Show Organiser in Uzbekistan — Turnkey, Full Halls | ExpoContact
-- TR: Özbekistan'da Fuar Organizatörü — Anahtar Teslim, Dolu Salonlar | ExpoContact
+- RU: Организация выставок в Узбекистане под ключ | ExpoContact
+- EN: Trade Show Organiser in Uzbekistan — Turnkey | ExpoContact
+- TR: Özbekistan'da Anahtar Teslim Fuar Organizasyonu | ExpoContact
 - ZH: 乌兹别克斯坦展会本地主办伙伴——一站式交付，观众满馆 | ExpoContact
-- UZ: Oʻzbekistonda koʻrgazmalarni toʻliq tashkil etish — tashrif buyuruvchilarga toʻla zallar | ExpoContact
+- UZ: Oʻzbekistonda koʻrgazmalarni toʻliq tashkil etish | ExpoContact
 
 **`meta.description`**
 
-- RU: ExpoContact — местный партнёр-организатор выставок в Ташкенте и Узбекистане: разрешения, площадка, застройка, реклама и поток посетителей с регистрацией каждого. Один договор.
-- EN: ExpoContact is your local organising partner in Tashkent and Uzbekistan: permits, venue, pavilion build, promotion and a steady flow of visitors — each one registered. One contract.
-- TR: ExpoContact, Taşkent ve Özbekistan'daki yerel organizasyon ortağınız: izinler, mekân, pavyon kurulumu, tanıtım ve her ziyaretçinin kayıtlı olduğu ziyaretçi akışı. Tek sözleşme.
+- RU: Местный партнёр-организатор выставок в Ташкенте: разрешения, площадка, застройка павильона, реклама и посетители с регистрацией. Всё по одному договору.
+- EN: Your local organising partner in Tashkent: permits, venue, pavilion build, promotion and registered visitors for a trade show in Uzbekistan. One contract.
+- TR: Taşkent'te yerel organizasyon ortağınız: izinler, mekân, pavyon kurulumu, tanıtım ve kayıtlı ziyaretçi akışı. Özbekistan'daki fuarınız için tek sözleşme.
 - ZH: ExpoContact 是您在塔什干和乌兹别克斯坦的本地主办合作伙伴：许可审批、场馆、展馆搭建、宣传推广，以及每位观众实名登记的观众引流。一份合同全部搞定。
-- UZ: ExpoContact — Toshkent va Oʻzbekistonda koʻrgazmangizni joyida tashkil etuvchi hamkoringiz: ruxsatnomalar, maydoncha, pavilyon qurilishi, reklama va har biri roʻyxatga olinadigan tashrif buyuruvchilar oqimi. Hammasi bitta shartnoma asosida.
+- UZ: Toshkentdagi mahalliy hamkoringiz: ruxsatnomalar, maydoncha, pavilyon qurilishi, reklama va roʻyxatga olingan tashrif buyuruvchilar. Bitta shartnoma asosida.
 
 **`meta.ogTitle`**
 
@@ -1283,6 +1283,136 @@
 - TR: Rapor ve ziyaretçi veri tabanı
 - ZH: 报告与观众数据库
 - UZ: Hisobot va tashrif buyuruvchilar bazasi
+
+## faq
+
+**`faq.kicker`**
+
+- RU: Вопросы и ответы
+- EN: Questions & answers
+- TR: Sık sorulan sorular
+- ZH: 常见问题
+- UZ: Savol-javoblar
+
+**`faq.title`**
+
+- RU: Что важно знать [до старта]
+- EN: What to know [before you start]
+- TR: Başlamadan önce [bilmeniz gerekenler]
+- ZH: 启动前[您需要了解]
+- UZ: Boshlashdan oldin [bilish muhim]
+
+**`faq.items.0.q`**
+
+- RU: Чем ExpoContact помогает зарубежному организатору выставки?
+- EN: How does ExpoContact help a foreign trade-show organiser?
+- TR: ExpoContact yabancı bir fuar organizatörüne nasıl yardımcı olur?
+- ZH: ExpoContact 如何帮助外国展会主办方？
+- UZ: ExpoContact xorijiy koʻrgazma tashkilotchisiga qanday yordam beradi?
+
+**`faq.items.0.a`**
+
+- RU: Мы — местный партнёр-организатор в Ташкенте. Берём на себя разрешения и переговоры с госорганами, подбор и бронирование площадки, таможню и логистику экспонатов, проект и застройку павильона, стенды участников, рекламу и поток посетителей. Всё — по одному договору, с одним менеджером проекта.
+- EN: We are your local organising partner in Tashkent. We handle permits and negotiations with the authorities, venue selection and booking, customs and exhibit logistics, pavilion design and build, exhibitor stands, promotion and the visitor flow — all under one contract, with one project manager.
+- TR: Taşkent'teki yerel organizasyon ortağınızız. İzinleri ve devlet kurumlarıyla görüşmeleri, mekân seçimi ve rezervasyonunu, gümrük ve sergi ürünlerinin lojistiğini, pavyon tasarımı ve kurulumunu, katılımcı stantlarını, tanıtımı ve ziyaretçi akışını üstleniyoruz — hepsi tek sözleşmeyle ve tek proje yöneticisiyle.
+- ZH: 我们是您在塔什干的本地主办合作伙伴，负责许可审批及与政府部门的沟通、场馆选址与预订、展品清关与物流、展馆设计与搭建、参展商展位、宣传推广和观众引流——全部通过一份合同、由一位项目经理负责。
+- UZ: Biz Toshkentdagi mahalliy hamkoringizmiz. Ruxsatnomalar va davlat idoralari bilan muzokaralar, maydonchani tanlash va band qilish, bojxona va eksponatlar logistikasi, pavilyonni loyihalash va qurish, ishtirokchilar stendlari, reklama va tashrif buyuruvchilar oqimini oʻz zimmamizga olamiz — barchasi bitta shartnoma va bitta loyiha menejeri bilan.
+
+**`faq.items.1.q`**
+
+- RU: За сколько начинать подготовку выставки в Узбекистане?
+- EN: How far ahead should we start preparing a show in Uzbekistan?
+- TR: Özbekistan'da bir fuara hazırlığa ne zaman başlamalı?
+- ZH: 在乌兹别克斯坦办展需要提前多久准备？
+- UZ: Oʻzbekistonda koʻrgazmaga tayyorgarlikni qachondan boshlash kerak?
+
+**`faq.items.1.a`**
+
+- RU: Обычно за 9 месяцев до открытия. Стратегия, площадка и даты — за 9–7 месяцев, разрешения и согласования — за 8–4, проект павильона и стендов — за 6–3, реклама и предрегистрация — в последние 3 месяца, застройка и монтаж — в последние недели. При сжатых сроках запускаем выставку в ускоренном режиме.
+- EN: Usually nine months before opening. Strategy, venue and dates 9–7 months ahead, permits and approvals 8–4, pavilion and stand design 6–3, promotion and pre-registration in the last 3 months, build and set-up in the final weeks. On a tight timeline we run a fast-track launch.
+- TR: Genellikle açılıştan dokuz ay önce. Strateji, mekân ve tarihler 9–7 ay önce; izinler ve onaylar 8–4 ay önce; pavyon ve stant tasarımı 6–3 ay önce; tanıtım ve ön kayıt son 3 ayda; kurulum ve montaj son haftalarda. Zaman darsa hızlandırılmış lansman yapıyoruz.
+- ZH: 通常在开幕前九个月启动：开幕前 9–7 个月确定策略、场馆和日期，8–4 个月办理许可与审批，6–3 个月完成展馆与展位设计，最后 3 个月开展宣传与预登记，最后几周完成搭建与安装。时间紧张时，我们也可加急启动。
+- UZ: Odatda ochilishdan toʻqqiz oy oldin. Strategiya, maydoncha va sanalar — 9–7 oy oldin, ruxsatnomalar va kelishuvlar — 8–4 oy oldin, pavilyon va stendlar loyihasi — 6–3 oy oldin, reklama va oldindan roʻyxatga olish — soʻnggi 3 oyda, qurilish va montaj — soʻnggi haftalarda. Muddatlar qisqa boʻlsa, tezlashtirilgan tartibda ishga tushiramiz.
+
+**`faq.items.2.q`**
+
+- RU: На каких площадках Ташкента можно провести выставку?
+- EN: Which venues in Tashkent can host a trade show?
+- TR: Taşkent'te hangi mekânlarda fuar düzenlenebilir?
+- ZH: 塔什干有哪些场馆可以举办展会？
+- UZ: Toshkentda qaysi maydonchalarda koʻrgazma oʻtkazish mumkin?
+
+**`faq.items.2.a`**
+
+- RU: Мы работаем на семи ключевых площадках Ташкента: UzExpoCentre, CAEx Uzbekistan, Anhor Lokomotiv, Yoshlar Ijod Saroyi, Humo Arena, Alpomish Arena и Zakovat Arena. Подбираем площадку под вашу выставку, ведём переговоры и бронируем её.
+- EN: We work at the seven key venues in Tashkent: UzExpoCentre, CAEx Uzbekistan, Anhor Lokomotiv, Yoshlar Ijod Saroyi, Humo Arena, Alpomish Arena and Zakovat Arena. We choose the venue that fits your show, negotiate and book it.
+- TR: Taşkent'in yedi kilit etkinlik mekânında çalışıyoruz: UzExpoCentre, CAEx Uzbekistan, Anhor Lokomotiv, Yoshlar Ijod Saroyi, Humo Arena, Alpomish Arena ve Zakovat Arena. Fuarınıza uygun mekânı seçiyor, görüşmeleri yürütüyor ve rezervasyonu yapıyoruz.
+- ZH: 我们在塔什干七个核心场馆开展工作：UzExpoCentre、CAEx Uzbekistan、Anhor Lokomotiv、Yoshlar Ijod Saroyi、Humo Arena、Alpomish Arena 和 Zakovat Arena。我们根据展会需求选择场馆，负责谈判和预订。
+- UZ: Toshkentdagi yettita asosiy maydonchada ishlaymiz: UzExpoCentre, CAEx Uzbekistan, Anhor Lokomotiv, Yoshlar Ijod Saroyi, Humo Arena, Alpomish Arena va Zakovat Arena. Koʻrgazmangizga mos maydonchani tanlaymiz, muzokaralar olib boramiz va band qilamiz.
+
+**`faq.items.3.q`**
+
+- RU: Как вы приводите посетителей на выставку?
+- EN: How do you bring visitors to the show?
+- TR: Fuara ziyaretçileri nasıl getiriyorsunuz?
+- ZH: 你们如何为展会吸引观众？
+- UZ: Koʻrgazmaga tashrif buyuruvchilarni qanday jalb qilasiz?
+
+**`faq.items.3.a`**
+
+- RU: Реклама в Meta, Telegram, Google и отраслевых СМИ; предрегистрация через лендинг выставки и Telegram-бот; персональные приглашения целевым компаниям и делегации из регионов; QR-учёт на входе. Целевое число посетителей фиксируем в договоре.
+- EN: Promotion on Meta, Telegram, Google and in trade media; pre-registration through the show's landing page and a Telegram bot; personal invitations to target companies and regional delegations; QR check-in at the entrance. The target visitor count is fixed in the contract.
+- TR: Meta, Telegram, Google ve sektör medyasında tanıtım; fuarın açılış sayfası ve Telegram botu üzerinden ön kayıt; hedef şirketlere doğrudan davet ve bölgelerden heyetler; girişte QR ile kayıt. Hedef ziyaretçi sayısı sözleşmede belirlenir.
+- ZH: 在 Meta、Telegram、Google 和行业媒体上宣传推广；通过展会落地页和 Telegram 机器人进行预登记；直接邀请目标企业，组织各地区代表团；入口二维码签到。目标观众人数写入合同。
+- UZ: Meta, Telegram, Google va soha nashrlarida reklama; koʻrgazma sahifasi va Telegram-bot orqali oldindan roʻyxatga olish; maqsadli kompaniyalarga shaxsiy taklif va viloyatlardan delegatsiyalar; kirishda QR orqali roʻyxatga olish. Tashrif buyuruvchilarning maqsadli soni shartnomada qayd etiladi.
+
+**`faq.items.4.q`**
+
+- RU: Что организатор получает после выставки?
+- EN: What does the organiser receive after the show?
+- TR: Organizatör fuardan sonra ne alır?
+- ZH: 展会结束后主办方能获得什么？
+- UZ: Koʻrgazmadan soʻng tashkilotchi nimalarga ega boʻladi?
+
+**`faq.items.4.a`**
+
+- RU: Базу контактов посетителей — с их согласия; аналитику по дням, отраслям, должностям и регионам; онлайн-дашборд во время выставки и цифры, с которыми проще продавать площадь участникам на следующий год.
+- EN: A contact database of visitors, collected with their consent; analytics by day, industry, job title and region; a live dashboard during the show; and the numbers that make it easier to sell next year's floor space to exhibitors.
+- TR: Ziyaretçilerin onayıyla toplanan iletişim veri tabanı; güne, sektöre, unvana ve bölgeye göre analitik; fuar süresince canlı panel ve gelecek yılın stant alanlarını katılımcılara satmayı kolaylaştıran rakamlar.
+- ZH: 经观众同意收集的联系人数据库；按日期、行业、职位和地区的数据分析；展会期间的在线看板；以及帮助您向参展商销售明年展位面积的数据。
+- UZ: Tashrif buyuruvchilar roziligi bilan toʻplangan kontaktlar bazasi; kunlar, sohalar, lavozimlar va hududlar kesimidagi tahlil; koʻrgazma davomida onlayn-dashbord va keyingi yilgi maydonlarni ishtirokchilarga sotishni osonlashtiradigan raqamlar.
+
+**`faq.items.5.q`**
+
+- RU: Какие есть форматы работы?
+- EN: Which formats do you offer?
+- TR: Hangi çalışma formatları var?
+- ZH: 有哪些合作模式？
+- UZ: Qanday ishlash formatlari bor?
+
+**`faq.items.5.a`**
+
+- RU: Три. Local Partner: вы строите сами, мы решаем всё на месте — разрешения, площадка, таможня и логистика. Turnkey Build: выставка под ключ — плюс проект и застройка павильона, стенды участников и техподдержка 24/7. Full House: под ключ и с полными залами — плюс реклама, регистрация и QR-учёт, приглашения и делегации, отчёт и база посетителей.
+- EN: Three. Local Partner: you build, we handle everything on the ground — permits, venue, customs and logistics. Turnkey Build: a turnkey show — plus pavilion design and build, exhibitor stands and 24/7 technical support. Full House: turnkey with full halls — plus promotion, registration and QR check-in, invitations and delegations, the report and the visitor database.
+- TR: Üç format var. Local Partner: kurulumu siz yaparsınız, sahadaki her şeyi biz hallederiz — izinler, mekân, gümrük ve lojistik. Turnkey Build: anahtar teslim fuar — ek olarak pavyon tasarımı ve kurulumu, katılımcı stantları ve 7/24 teknik destek. Full House: anahtar teslim ve dolu salonlar — ek olarak tanıtım, kayıt ve QR giriş, davetler ve heyetler, rapor ve ziyaretçi veri tabanı.
+- ZH: 共三种。Local Partner：您自行搭建，现场事务由我们全部解决——许可、场馆、清关与物流。Turnkey Build：交钥匙展会——另含展馆设计与搭建、参展商展位和 7×24 小时技术支持。Full House：交钥匙 + 观众满馆——另含宣传推广、观众登记与二维码签到、邀请与代表团、报告与观众数据库。
+- UZ: Uchta. Local Partner: stendni oʻzingiz qurasiz, joyidagi barcha masalalarni biz hal qilamiz — ruxsatnomalar, maydoncha, bojxona va logistika. Turnkey Build: koʻrgazmani toʻliq tashkil etamiz — qoʻshimcha ravishda pavilyonni loyihalash va qurish, ishtirokchilar stendlari va 24/7 texnik yordam. Full House: toʻliq tashkil etish va toʻla zallar — qoʻshimcha ravishda reklama, roʻyxatga olish va QR orqali kirish, taklifnomalar va delegatsiyalar, hisobot va tashrif buyuruvchilar bazasi.
+
+**`faq.items.6.q`**
+
+- RU: С чего начать?
+- EN: How do we start?
+- TR: Nasıl başlarız?
+- ZH: 如何开始合作？
+- UZ: Nimadan boshlaymiz?
+
+**`faq.items.6.a`**
+
+- RU: Пришлите тему и даты выставки через форму на этой странице, в WhatsApp или Telegram. По вашему ТЗ до старта подготовим концепцию и план запуска выставки, 3D-концепцию павильона и план привлечения посетителей.
+- EN: Send us your show's theme and dates through the form on this page, on WhatsApp or Telegram. Based on your brief, before launch we prepare the show concept and launch plan, a 3D pavilion concept and a visitor acquisition plan.
+- TR: Fuarınızın konusunu ve tarihlerini bu sayfadaki form, WhatsApp veya Telegram üzerinden gönderin. Brifinize göre lansmandan önce fuar konseptini ve lansman planını, pavyonun 3D konseptini ve ziyaretçi kazanım planını hazırlıyoruz.
+- ZH: 请通过本页表单、WhatsApp 或 Telegram 发送展会的主题和日期。根据您的需求，启动前我们将准备展会概念与启动计划、展馆 3D 概念设计和观众招募计划。
+- UZ: Koʻrgazmangiz mavzusi va sanalarini ushbu sahifadagi forma, WhatsApp yoki Telegram orqali yuboring. Texnik topshirigʻingiz asosida ishga tushirishdan oldin koʻrgazma konsepsiyasi va ishga tushirish rejasini, pavilyonning 3D-konsepsiyasini va tashrif buyuruvchilarni jalb qilish rejasini tayyorlaymiz.
 
 ## 10. Контакт
 

@@ -478,6 +478,19 @@ Motion and performance:
   unbreakable piece («Koʻrgazmangiz —», 312px at 40px) fits a 320px screen,
   and button labels wrap inside the button. After any text change, check every
   language from 320 to 1920px — a long word that fits in Russian may not.
+- SEO: `meta.title` stays within ~60 characters and `meta.description`
+  within 160 — longer ones were cut off in search results. Structured data is
+  one `@graph` per language from `offer/lib/schema.ts`: Organization (same
+  `@id` as the main site's, `https://expocontact.uz/#organization`),
+  WebPage, Service with the three formats as an OfferCatalog, and FAQPage.
+- The FAQ section (`offer/sections/Faq.tsx`, `faq` in the dictionaries)
+  answers only from what the page already says — plan months, venues,
+  formats, visitor steps, the report. Do not add answers with new promises
+  (prices, deadlines, guarantees) that the page does not make. Answers sit in
+  native `<details>`, so the full text is in the HTML, and FAQPage is built
+  from the same strings: what the markup says is what the visitor sees.
+- `/llms.txt` lists each /offer language with its own description and links
+  the FAQ; `/llms-full.txt` carries the organiser FAQ in all five languages.
 - Open Graph images (`opengraph-image.tsx`, next/og) cannot use opacity on SVG
   strokes and must uppercase text with `toLocaleUpperCase(lang)` (Turkish
   `i → İ`), not CSS. Their font is subset to the exact characters drawn, so

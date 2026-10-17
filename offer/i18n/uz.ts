@@ -2,8 +2,8 @@ import type { OfferDict } from "./ru";
 
 export const uz: OfferDict = {
   meta: {
-    title: "Oʻzbekistonda koʻrgazmalarni toʻliq tashkil etish — tashrif buyuruvchilarga toʻla zallar | ExpoContact",
-    description: "ExpoContact — Toshkent va Oʻzbekistonda koʻrgazmangizni joyida tashkil etuvchi hamkoringiz: ruxsatnomalar, maydoncha, pavilyon qurilishi, reklama va har biri roʻyxatga olinadigan tashrif buyuruvchilar oqimi. Hammasi bitta shartnoma asosida.",
+    title: "Oʻzbekistonda koʻrgazmalarni toʻliq tashkil etish | ExpoContact",
+    description: "Toshkentdagi mahalliy hamkoringiz: ruxsatnomalar, maydoncha, pavilyon qurilishi, reklama va roʻyxatga olingan tashrif buyuruvchilar. Bitta shartnoma asosida.",
     ogTitle: "Koʻrgazmangiz — Oʻzbekistonda. Boshidan oxirigacha. Zallar toʻla boʻladi.",
     ogDescription: "Ruxsatnomalar, maydoncha, qurilish, reklama va tashrif buyuruvchilar oqimi — barchasi bitta shartnomada.",
     ogKicker: "Oʻzbekistondagi mahalliy hamkoringiz",
@@ -242,6 +242,40 @@ export const uz: OfferDict = {
       "Roʻyxatga olish va QR orqali kirish",
       "Taklifnomalar va delegatsiyalar",
       "Hisobot va tashrif buyuruvchilar bazasi",
+    ],
+  },
+  faq: {
+    kicker: "Savol-javoblar",
+    title: "Boshlashdan oldin [bilish muhim]",
+    items: [
+      {
+        q: "ExpoContact xorijiy koʻrgazma tashkilotchisiga qanday yordam beradi?",
+        a: "Biz Toshkentdagi mahalliy hamkoringizmiz. Ruxsatnomalar va davlat idoralari bilan muzokaralar, maydonchani tanlash va band qilish, bojxona va eksponatlar logistikasi, pavilyonni loyihalash va qurish, ishtirokchilar stendlari, reklama va tashrif buyuruvchilar oqimini oʻz zimmamizga olamiz — barchasi bitta shartnoma va bitta loyiha menejeri bilan.",
+      },
+      {
+        q: "Oʻzbekistonda koʻrgazmaga tayyorgarlikni qachondan boshlash kerak?",
+        a: "Odatda ochilishdan toʻqqiz oy oldin. Strategiya, maydoncha va sanalar — 9–7 oy oldin, ruxsatnomalar va kelishuvlar — 8–4 oy oldin, pavilyon va stendlar loyihasi — 6–3 oy oldin, reklama va oldindan roʻyxatga olish — soʻnggi 3 oyda, qurilish va montaj — soʻnggi haftalarda. Muddatlar qisqa boʻlsa, tezlashtirilgan tartibda ishga tushiramiz.",
+      },
+      {
+        q: "Toshkentda qaysi maydonchalarda koʻrgazma oʻtkazish mumkin?",
+        a: "Toshkentdagi yettita asosiy maydonchada ishlaymiz: UzExpoCentre, CAEx Uzbekistan, Anhor Lokomotiv, Yoshlar Ijod Saroyi, Humo Arena, Alpomish Arena va Zakovat Arena. Koʻrgazmangizga mos maydonchani tanlaymiz, muzokaralar olib boramiz va band qilamiz.",
+      },
+      {
+        q: "Koʻrgazmaga tashrif buyuruvchilarni qanday jalb qilasiz?",
+        a: "Meta, Telegram, Google va soha nashrlarida reklama; koʻrgazma sahifasi va Telegram-bot orqali oldindan roʻyxatga olish; maqsadli kompaniyalarga shaxsiy taklif va viloyatlardan delegatsiyalar; kirishda QR orqali roʻyxatga olish. Tashrif buyuruvchilarning maqsadli soni shartnomada qayd etiladi.",
+      },
+      {
+        q: "Koʻrgazmadan soʻng tashkilotchi nimalarga ega boʻladi?",
+        a: "Tashrif buyuruvchilar roziligi bilan toʻplangan kontaktlar bazasi; kunlar, sohalar, lavozimlar va hududlar kesimidagi tahlil; koʻrgazma davomida onlayn-dashbord va keyingi yilgi maydonlarni ishtirokchilarga sotishni osonlashtiradigan raqamlar.",
+      },
+      {
+        q: "Qanday ishlash formatlari bor?",
+        a: "Uchta. Local Partner: stendni oʻzingiz qurasiz, joyidagi barcha masalalarni biz hal qilamiz — ruxsatnomalar, maydoncha, bojxona va logistika. Turnkey Build: koʻrgazmani toʻliq tashkil etamiz — qoʻshimcha ravishda pavilyonni loyihalash va qurish, ishtirokchilar stendlari va 24/7 texnik yordam. Full House: toʻliq tashkil etish va toʻla zallar — qoʻshimcha ravishda reklama, roʻyxatga olish va QR orqali kirish, taklifnomalar va delegatsiyalar, hisobot va tashrif buyuruvchilar bazasi.",
+      },
+      {
+        q: "Nimadan boshlaymiz?",
+        a: "Koʻrgazmangiz mavzusi va sanalarini ushbu sahifadagi forma, WhatsApp yoki Telegram orqali yuboring. Texnik topshirigʻingiz asosida ishga tushirishdan oldin koʻrgazma konsepsiyasi va ishga tushirish rejasini, pavilyonning 3D-konsepsiyasini va tashrif buyuruvchilarni jalb qilish rejasini tayyorlaymiz.",
+      },
     ],
   },
   contact: {

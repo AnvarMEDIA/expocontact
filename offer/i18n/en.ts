@@ -2,9 +2,8 @@ import type { OfferDict } from "./ru";
 
 export const en: OfferDict = {
   meta: {
-    title: "Trade Show Organiser in Uzbekistan — Turnkey, Full Halls | ExpoContact",
-    description:
-      "ExpoContact is your local organising partner in Tashkent and Uzbekistan: permits, venue, pavilion build, promotion and a steady flow of visitors — each one registered. One contract.",
+    title: "Trade Show Organiser in Uzbekistan — Turnkey | ExpoContact",
+    description: "Your local organising partner in Tashkent: permits, venue, pavilion build, promotion and registered visitors for a trade show in Uzbekistan. One contract.",
     ogTitle: "Your trade show in Uzbekistan. Turnkey. With full halls.",
     ogDescription: "Permits, venue, build, promotion and visitor flow — under one contract.",
     ogKicker: "Local organising partner · Uzbekistan",
@@ -178,6 +177,40 @@ export const en: OfferDict = {
       "Registration and QR check-in",
       "Invitations and delegations",
       "Report and visitor database",
+    ],
+  },
+  faq: {
+    kicker: "Questions & answers",
+    title: "What to know [before you start]",
+    items: [
+      {
+        q: "How does ExpoContact help a foreign trade-show organiser?",
+        a: "We are your local organising partner in Tashkent. We handle permits and negotiations with the authorities, venue selection and booking, customs and exhibit logistics, pavilion design and build, exhibitor stands, promotion and the visitor flow — all under one contract, with one project manager.",
+      },
+      {
+        q: "How far ahead should we start preparing a show in Uzbekistan?",
+        a: "Usually nine months before opening. Strategy, venue and dates 9–7 months ahead, permits and approvals 8–4, pavilion and stand design 6–3, promotion and pre-registration in the last 3 months, build and set-up in the final weeks. On a tight timeline we run a fast-track launch.",
+      },
+      {
+        q: "Which venues in Tashkent can host a trade show?",
+        a: "We work at the seven key venues in Tashkent: UzExpoCentre, CAEx Uzbekistan, Anhor Lokomotiv, Yoshlar Ijod Saroyi, Humo Arena, Alpomish Arena and Zakovat Arena. We choose the venue that fits your show, negotiate and book it.",
+      },
+      {
+        q: "How do you bring visitors to the show?",
+        a: "Promotion on Meta, Telegram, Google and in trade media; pre-registration through the show's landing page and a Telegram bot; personal invitations to target companies and regional delegations; QR check-in at the entrance. The target visitor count is fixed in the contract.",
+      },
+      {
+        q: "What does the organiser receive after the show?",
+        a: "A contact database of visitors, collected with their consent; analytics by day, industry, job title and region; a live dashboard during the show; and the numbers that make it easier to sell next year's floor space to exhibitors.",
+      },
+      {
+        q: "Which formats do you offer?",
+        a: "Three. Local Partner: you build, we handle everything on the ground — permits, venue, customs and logistics. Turnkey Build: a turnkey show — plus pavilion design and build, exhibitor stands and 24/7 technical support. Full House: turnkey with full halls — plus promotion, registration and QR check-in, invitations and delegations, the report and the visitor database.",
+      },
+      {
+        q: "How do we start?",
+        a: "Send us your show's theme and dates through the form on this page, on WhatsApp or Telegram. Based on your brief, before launch we prepare the show concept and launch plan, a 3D pavilion concept and a visitor acquisition plan.",
+      },
     ],
   },
   contact: {

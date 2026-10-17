@@ -11,6 +11,7 @@ import Report from "@/offer/sections/Report";
 import Plan from "@/offer/sections/Plan";
 import Experience from "@/offer/sections/Experience";
 import Formats from "@/offer/sections/Formats";
+import Faq from "@/offer/sections/Faq";
 import Contact from "@/offer/sections/Contact";
 import Footer from "@/offer/sections/Footer";
 import MobileCta from "@/offer/components/MobileCta";
@@ -46,6 +47,7 @@ export default function OfferPage({ params }: { params: { lang: string } }) {
         <Plan plan={dict.plan} />
         <Experience experience={dict.experience} a11y={dict.a11y} intl={info.intl} />
         <Formats formats={dict.formats} a11y={dict.a11y} />
+        <Faq faq={dict.faq} />
         <Contact lang={lang} dict={dict} countries={countryOptions(info.intl)} months={monthNames(info.intl)}
           startYear={new Date().getFullYear()} defaultDial={info.dial} />
       </main>
