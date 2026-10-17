@@ -45,9 +45,8 @@ const TIES = [[0, 3], [1, 4], [2, 0], [3, 1], [4, 2], [0, 1]] as const;
 const clamp = (v: number) => Math.min(1, Math.max(0, v));
 const ease = (t: number) => 1 - Math.pow(1 - t, 3);
 
-/** Fixed header height plus breathing room under it. */
-const HEADER = 72;
-const GAP = 16;
+/** Breathing room under the fixed header, in rem: it scales with the page. */
+const GAP_REM = 1;
 /** Scroll distance the pinned scene plays over, as a share of the viewport. */
 const TRAVEL = 0.8;
 
@@ -116,14 +115,18 @@ export default function OneContract({ contract }: { contract: OfferDict["contrac
 
     const measure = () => {
       const vh = window.innerHeight;
-      const room = vh - HEADER - GAP * 2;
+      // The header and the gap scale with the root font size on big screens.
+      const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+      const header = document.querySelector("header")?.offsetHeight ?? 72;
+      const gap = GAP_REM * rem;
+      const room = vh - header - gap * 2;
       // Without the stage spacer, which is inside the block when shown.
       const blockH = (pin.current?.offsetHeight ?? 0) - (spacerStage.current?.offsetHeight ?? 0);
       const stageH = stage.current?.offsetHeight ?? 0;
       mode = !wide.matches ? "none" : blockH <= room ? "block" : stageH <= room ? "stage" : "none";
       const pinnedH = mode === "block" ? blockH : stageH;
       // Centred in the space under the header.
-      pinTop = Math.round(HEADER + GAP + Math.max(0, (room - pinnedH) / 2));
+      pinTop = Math.round(header + gap + Math.max(0, (room - pinnedH) / 2));
       travel = Math.round(vh * TRAVEL);
       const tr = track.current;
       if (tr) {

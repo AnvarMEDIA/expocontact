@@ -1,43 +1,43 @@
 .grid {
   display: grid;
-  gap: 16px;
+  gap: 1rem;
   grid-template-columns: 1fr;
 }
 .card {
   position: relative;
   display: grid;
   align-content: start;
-  gap: 10px;
-  min-height: 220px;
-  padding: 28px;
+  gap: 0.625rem;
+  min-height: 13.75rem;
+  padding: 1.75rem;
   border-radius: var(--radius);
   background: var(--card);
   transition: transform var(--dur-base) var(--ease-out), box-shadow var(--dur-base) var(--ease-out);
 }
-.card:hover { transform: translateY(-4px); box-shadow: var(--elev-2); }
+.card:hover { transform: translateY(-0.25rem); box-shadow: var(--elev-2); }
 
 .icon {
   display: grid;
   place-items: center;
-  width: 48px;
-  height: 48px;
-  margin-bottom: 18px;
-  border-radius: 14px;
+  width: 3rem;
+  height: 3rem;
+  margin-bottom: 1.125rem;
+  border-radius: 0.875rem;
   background: #fff;
   color: var(--navy);
-  box-shadow: 0 1px 0 var(--line);
+  box-shadow: 0 0.0625rem 0 var(--line);
 }
 .num {
   position: absolute;
-  top: 26px;
-  right: 28px;
-  font-size: 13px;
+  top: 1.625rem;
+  right: 1.75rem;
+  font-size: 0.8125rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   color: var(--faint);
 }
-.title { font-size: 21px; font-weight: 700; line-height: 1.2; letter-spacing: -0.01em; }
-.text { font-size: 16px; color: var(--muted); }
+.title { font-size: 1.3125rem; font-weight: 700; line-height: 1.2; letter-spacing: -0.01em; }
+.text { font-size: 1rem; color: var(--muted); }
 
 .cardAccent { background: var(--orange); color: var(--deeper); }
 .cardAccent .icon { background: rgba(255, 255, 255, 0.92); color: var(--orange-ink); box-shadow: none; }
@@ -48,6 +48,6 @@
   .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (min-width: 1024px) {
-  .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
-  .card { min-height: 250px; padding: 32px; }
+  .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem; }
+  .card { min-height: 15.625rem; padding: 2rem; }
 }

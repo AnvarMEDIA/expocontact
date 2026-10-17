@@ -2,13 +2,23 @@
  * The /offer design system: tokens, type scale, container, buttons and the
  * two section surfaces. Everything is a CSS Module, scoped to this landing —
  * the main site's globals.css is never loaded here and nothing here leaks out.
+ *
+ * Sizes are in rem, never px (media queries aside), so the whole page scales
+ * from one place: the root font size below. Up to 1600px it is the browser's
+ * own (16px by default) and the layout is the one designed and tested; past
+ * 1600px it grows with the screen, so Full HD, 2K and 4K show the same
+ * composition larger instead of a 1240px column lost in the middle.
  */
 
 .html {
   -webkit-text-size-adjust: 100%;
+  /* 16px at 1600 · 18.4px at 1920 · 23.2px at 2560 · 32.8px at 3840.
+     Percentages here are of the visitor's own default size, so a larger
+     default set in the browser is never shrunk. */
+  font-size: 100%;
   scroll-behavior: smooth;
   /* Anchors land below the sticky header, not under it. */
-  scroll-padding-top: 84px;
+  scroll-padding-top: 5.25rem;
   background: #0a1f45;
 }
 
@@ -16,7 +26,10 @@
   .html { scroll-behavior: auto; }
 }
 @media (max-width: 767px) {
-  .html { scroll-padding-bottom: 96px; }
+  .html { scroll-padding-bottom: 6rem; }
+}
+@media (min-width: 1600px) {
+  .html { font-size: clamp(100%, 0.25rem + 0.75vw, 250%); }
 }
 
 .body {
@@ -38,10 +51,10 @@
   --line: #e2e6ee;
   --card: #f3f5f9;
   --dark-bg: radial-gradient(120% 120% at 0% 0%, #1b4e9b 0%, #0e2a5a 55%, #0a1f45 100%);
-  --radius: 16px;
-  --radius-sm: 12px;
-  --container: 1240px;
-  --gutter: clamp(16px, 4vw, 40px);
+  --radius: 1rem;
+  --radius-sm: 0.75rem;
+  --container: 77.5rem;
+  --gutter: clamp(1rem, 4vw, 2.5rem);
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in: cubic-bezier(0.5, 0, 0.75, 0);
   /* Motion: things arrive at --dur-base and leave faster, at --dur-fast. */
@@ -51,16 +64,16 @@
   /* Elevation, three levels and nothing in between:
      1 — chips, tabs, small round buttons; 2 — cards and dropdowns;
      3 — the big panels (dashboard, ExpoContact card, form, dialog). */
-  --elev-1: 0 1px 0 var(--line), 0 8px 20px -14px rgba(14, 42, 90, 0.45);
-  --elev-2: 0 18px 40px -24px rgba(14, 42, 90, 0.4);
-  --elev-3: 0 40px 80px -40px rgba(10, 31, 69, 0.55);
+  --elev-1: 0 0.0625rem 0 var(--line), 0 0.5rem 1.25rem -0.875rem rgba(14, 42, 90, 0.45);
+  --elev-2: 0 1.125rem 2.5rem -1.5rem rgba(14, 42, 90, 0.4);
+  --elev-3: 0 2.5rem 5rem -2.5rem rgba(10, 31, 69, 0.55);
 
   margin: 0;
-  min-width: 320px;
+  min-width: 20rem;
   background: #fff;
   color: var(--ink);
   font-family: var(--font-onest), var(--font-sc, "PingFang SC"), "Microsoft YaHei", system-ui, -apple-system, "Segoe UI", sans-serif;
-  font-size: 17px;
+  font-size: 1.0625rem;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -72,12 +85,15 @@
 }
 
 @media (min-width: 1024px) {
-  .body { font-size: 18px; }
+  .body { font-size: 1.125rem; }
 }
 
 .body *,
 .body *::before,
 .body *::after { box-sizing: border-box; }
+/* Icons carry width="24" for the first paint; in CSS they follow the scale.
+   :where() keeps this at zero specificity, so any sized rule wins. */
+.body :where(svg[width="24"][height="24"]) { width: 1.5rem; height: 1.5rem; }
 
 .body :where(h1, h2, h3, h4, p, ul, ol, figure, dl, dd) { margin: 0; }
 .body :where(ul, ol) { padding: 0; list-style: none; }
@@ -92,9 +108,9 @@
 .body :where(img) { max-width: 100%; display: block; }
 
 .body :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
-  outline: 3px solid var(--orange);
-  outline-offset: 3px;
-  border-radius: 6px;
+  outline: 0.1875rem solid var(--orange);
+  outline-offset: 0.1875rem;
+  border-radius: 0.375rem;
 }
 
 /* Chinese: Onest has no hanzi, so they come from Noto Sans SC; tight Latin
@@ -103,16 +119,16 @@
 
 .skip {
   position: absolute;
-  left: 16px;
-  top: -100px;
+  left: 1rem;
+  top: -6.25rem;
   z-index: 100;
-  padding: 12px 18px;
+  padding: 0.75rem 1.125rem;
   border-radius: var(--radius-sm);
   background: #fff;
   color: var(--ink);
   font-weight: 600;
 }
-.skip:focus { top: 12px; }
+.skip:focus { top: 0.75rem; }
 
 .container {
   width: 100%;
@@ -123,8 +139,8 @@
 
 .section {
   position: relative;
-  padding-block: clamp(72px, 9vw, 128px);
-  scroll-margin-top: 72px;
+  padding-block: clamp(4.5rem, 9vw, 8rem);
+  scroll-margin-top: 4.5rem;
 }
 .sectionGrey { background: var(--card); }
 .sectionDark {
@@ -141,8 +157,8 @@
 .kicker {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  font-size: 12px;
+  gap: 0.625rem;
+  font-size: 0.75rem;
   font-weight: 700;
   line-height: 1.4;
   letter-spacing: 0.16em;
@@ -151,16 +167,16 @@
 }
 .kicker::before {
   content: "";
-  width: 22px;
-  height: 2px;
-  border-radius: 2px;
+  width: 1.375rem;
+  height: 0.125rem;
+  border-radius: 0.125rem;
   background: currentColor;
 }
 .sectionDark .kicker { color: var(--orange-glow); }
 .body:lang(zh) .kicker { letter-spacing: 0.08em; }
 
 .h1 {
-  font-size: clamp(40px, 1.6rem + 5.2vw, 86px);
+  font-size: clamp(2.5rem, 1.6rem + 5.2vw, 5.375rem);
   font-weight: 800;
   line-height: 1.02;
   letter-spacing: -0.03em;
@@ -169,10 +185,10 @@
    any headline («Koʻrgazmangiz —», 312px at 40px) must fit a 320px screen;
    at 360–414px this lands on the 38–44px the design asks for. */
 @media (max-width: 639px) {
-  .h1 { font-size: clamp(34px, 10.6vw, 44px); }
+  .h1 { font-size: clamp(2.125rem, 10.6vw, 2.75rem); }
 }
 .h2 {
-  font-size: clamp(30px, 1.15rem + 2.9vw, 54px);
+  font-size: clamp(1.875rem, 1.15rem + 2.9vw, 3.375rem);
   font-weight: 800;
   line-height: 1.06;
   letter-spacing: -0.025em;
@@ -185,13 +201,13 @@
 
 .head {
   display: grid;
-  gap: 18px;
-  max-width: 920px;
-  margin-bottom: clamp(36px, 5vw, 64px);
+  gap: 1.125rem;
+  max-width: 57.5rem;
+  margin-bottom: clamp(2.25rem, 5vw, 4rem);
 }
 
 .lead {
-  font-size: clamp(18px, 1rem + 0.5vw, 21px);
+  font-size: clamp(1.125rem, 1rem + 0.5vw, 1.3125rem);
   line-height: 1.5;
   color: var(--muted);
 }
@@ -203,12 +219,12 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  min-height: 52px;
-  padding: 0 26px;
+  gap: 0.625rem;
+  min-height: 3.25rem;
+  padding: 0 1.625rem;
   border: 0;
   border-radius: var(--radius-sm);
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 700;
   line-height: 1.2;
   letter-spacing: -0.005em;
@@ -216,12 +232,12 @@
   white-space: nowrap;
   transition: transform 0.25s var(--ease-out), background-color 0.2s, box-shadow 0.25s, color 0.2s, border-color 0.2s;
 }
-.btn:active { transform: translateY(1px) scale(0.99); }
+.btn:active { transform: translateY(0.0625rem) scale(0.99); }
 .btn svg { flex: none; }
 /* Phones: a long label («Tashrif buyuruvchilarni qanday jalb qilamiz») wraps
    inside the button instead of running out of it. */
 @media (max-width: 639px) {
-  .btn { white-space: normal; padding-block: 12px; line-height: 1.25; }
+  .btn { white-space: normal; padding-block: 0.75rem; line-height: 1.25; }
 }
 
 /* Navy on orange rather than white: white on #EC691F is 3.2:1 and fails AA
@@ -229,16 +245,16 @@
 .btnPrimary {
   background: var(--orange);
   color: var(--deeper);
-  box-shadow: 0 10px 28px -12px rgba(236, 105, 31, 0.75);
+  box-shadow: 0 0.625rem 1.75rem -0.75rem rgba(236, 105, 31, 0.75);
 }
-.btnPrimary:hover { background: #f27a35; box-shadow: 0 14px 34px -12px rgba(236, 105, 31, 0.9); }
+.btnPrimary:hover { background: #f27a35; box-shadow: 0 0.875rem 2.125rem -0.75rem rgba(236, 105, 31, 0.9); }
 
 .btnGhost {
   background: transparent;
   color: #fff;
-  box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.34);
+  box-shadow: inset 0 0 0 0.0938rem rgba(255, 255, 255, 0.34);
 }
-.btnGhost:hover { box-shadow: inset 0 0 0 1.5px #fff; background: rgba(255, 255, 255, 0.06); }
+.btnGhost:hover { box-shadow: inset 0 0 0 0.0938rem #fff; background: rgba(255, 255, 255, 0.06); }
 
 .btnNavy { background: var(--navy); color: #fff; }
 .btnNavy:hover { background: var(--navy-2); }
@@ -246,15 +262,15 @@
 .btnOutline {
   background: #fff;
   color: var(--navy);
-  box-shadow: inset 0 0 0 1.5px var(--line);
+  box-shadow: inset 0 0 0 0.0938rem var(--line);
 }
-.btnOutline:hover { box-shadow: inset 0 0 0 1.5px var(--navy); }
+.btnOutline:hover { box-shadow: inset 0 0 0 0.0938rem var(--navy); }
 
 .srOnly {
   position: absolute;
-  width: 1px;
-  height: 1px;
-  margin: -1px;
+  width: 0.0625rem;
+  height: 0.0625rem;
+  margin: -0.0625rem;
   padding: 0;
   overflow: hidden;
   clip: rect(0 0 0 0);

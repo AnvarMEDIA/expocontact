@@ -1,34 +1,34 @@
-.list { display: grid; gap: 16px; }
+.list { display: grid; gap: 1rem; }
 
 .row {
   display: grid;
   grid-template-columns: 1fr;
   align-items: stretch;
-  gap: 10px;
+  gap: 0.625rem;
 }
 
 .label {
   display: block;
-  margin-bottom: 8px;
-  font-size: 12px;
+  margin-bottom: 0.5rem;
+  font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 
 .problem {
-  padding: 24px 26px;
+  padding: 1.5rem 1.625rem;
   border-radius: var(--radius);
-  border: 1.5px dashed #c9d0dd;
+  border: 0.0938rem dashed #c9d0dd;
   background: transparent;
 }
 .problem .label { color: var(--muted); }
 .struck {
-  font-size: clamp(18px, 1rem + 0.5vw, 21px);
+  font-size: clamp(1.125rem, 1rem + 0.5vw, 1.3125rem);
   font-weight: 500;
   line-height: 1.35;
   color: var(--muted);
-  text-decoration-thickness: 1.5px;
+  text-decoration-thickness: 0.0938rem;
   text-decoration-color: rgba(93, 104, 131, 0.7);
 }
 
@@ -36,8 +36,8 @@
   display: grid;
   place-items: center;
   justify-self: center;
-  width: 44px;
-  height: 44px;
+  width: 2.75rem;
+  height: 2.75rem;
   border-radius: 50%;
   background: #fff;
   color: var(--orange-ink);
@@ -46,7 +46,7 @@
 }
 
 .solution {
-  padding: 24px 26px;
+  padding: 1.5rem 1.625rem;
   border-radius: var(--radius);
   background: var(--navy);
   color: #fff;
@@ -54,13 +54,13 @@
 }
 .solution .label { color: var(--orange-glow); }
 .solution p {
-  font-size: clamp(18px, 1rem + 0.5vw, 21px);
+  font-size: clamp(1.125rem, 1rem + 0.5vw, 1.3125rem);
   font-weight: 600;
   line-height: 1.35;
 }
 
 @media (min-width: 900px) {
-  .row { grid-template-columns: minmax(0, 1fr) auto minmax(0, 1.15fr); align-items: center; gap: 20px; }
+  .row { grid-template-columns: minmax(0, 1fr) auto minmax(0, 1.15fr); align-items: center; gap: 1.25rem; }
   .arrow { transform: none; }
-  .problem, .solution { padding: 30px 32px; height: 100%; display: grid; align-content: center; }
+  .problem, .solution { padding: 1.875rem 2rem; height: 100%; display: grid; align-content: center; }
 }

@@ -5,7 +5,7 @@
 .track[data-pin="block"] .pin,
 .track[data-pin="stage"] .stage {
   position: sticky;
-  top: var(--pin-top, 88px);
+  top: var(--pin-top, 5.5rem);
 }
 .spacerBlock,
 .spacerStage { display: none; height: var(--travel, 80vh); }
@@ -18,12 +18,12 @@
   --l: 0;
   --k: 0;
   display: grid;
-  gap: 16px;
+  gap: 1rem;
   align-items: stretch;
 }
 
 .panelLabel {
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -37,16 +37,16 @@
   z-index: 1;
   display: grid;
   grid-template-rows: auto 1fr auto;
-  gap: 12px;
-  padding: 24px;
+  gap: 0.75rem;
+  padding: 1.5rem;
   border-radius: var(--radius);
-  border: 1.5px dashed #c9d0dd;
+  border: 0.0938rem dashed #c9d0dd;
   background: var(--card);
 }
 
 .cloud {
   position: relative;
-  min-height: 250px;
+  min-height: 15.625rem;
 }
 
 .lines {
@@ -74,12 +74,12 @@
   position: absolute;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 16px;
-  border-radius: 999px;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  border-radius: 62.4375rem;
   background: #fff;
   box-shadow: var(--elev-1);
-  font-size: 15px;
+  font-size: 0.9375rem;
   font-weight: 600;
   white-space: nowrap;
   transform:
@@ -93,20 +93,20 @@
 .ghost {
   background: transparent;
   box-shadow: none;
-  outline: 1.5px dashed #c9d0dd;
-  outline-offset: -1.5px;
+  outline: 0.0938rem dashed #c9d0dd;
+  outline-offset: -0.0938rem;
   color: transparent;
   transform: translate(-50%, -50%) rotate(var(--r));
   opacity: calc(var(--c) * 0.9);
   will-change: auto;
 }
 .ghost .dot { background: transparent; }
-.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--faint); }
+.dot { width: 0.5rem; height: 0.5rem; border-radius: 50%; background: var(--faint); }
 
 .caption {
   position: relative;
   justify-self: start;
-  font-size: 15px;
+  font-size: 0.9375rem;
   font-weight: 600;
   color: var(--muted);
 }
@@ -115,7 +115,7 @@
   left: 0;
   right: 0;
   top: 52%;
-  height: 2px;
+  height: 0.125rem;
   background: var(--orange);
   transform: scaleX(var(--k));
   transform-origin: left;
@@ -125,8 +125,8 @@
   display: grid;
   place-items: center;
   justify-self: center;
-  width: 48px;
-  height: 48px;
+  width: 3rem;
+  height: 3rem;
   border-radius: 50%;
   background: var(--orange);
   color: var(--deeper);
@@ -138,8 +138,8 @@
   overflow: hidden;
   display: grid;
   align-content: start;
-  gap: 24px;
-  padding: 28px;
+  gap: 1.5rem;
+  padding: 1.75rem;
   border-radius: var(--radius);
   background: var(--dark-bg);
   color: #fff;
@@ -155,49 +155,49 @@
   opacity: calc(0.25 + var(--k) * 0.75);
   pointer-events: none;
 }
-.withHead { position: relative; display: flex; align-items: center; gap: 14px; }
+.withHead { position: relative; display: flex; align-items: center; gap: 0.875rem; }
 .badge {
   display: grid;
   place-items: center;
-  width: 56px;
-  height: 56px;
-  border-radius: 16px;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 1rem;
   background: rgba(255, 255, 255, 0.1);
   transform: scale(calc(1 + var(--k) * 0.12));
 }
-.badgeMark { width: 34px; height: 34px; color: #fff; }
-.withLabel { font-size: 20px; font-weight: 800; letter-spacing: -0.01em; }
+.badgeMark { width: 2.125rem; height: 2.125rem; color: #fff; }
+.withLabel { font-size: 1.25rem; font-weight: 800; letter-spacing: -0.01em; }
 
-.withList { position: relative; display: grid; gap: 14px; }
+.withList { position: relative; display: grid; gap: 0.875rem; }
 .withList li {
   display: grid;
   grid-template-columns: auto 1fr;
-  gap: 12px;
+  gap: 0.75rem;
   align-items: start;
-  font-size: 18px;
+  font-size: 1.125rem;
   font-weight: 500;
   line-height: 1.35;
 }
 .check {
   display: grid;
   place-items: center;
-  width: 26px;
-  height: 26px;
-  border-radius: 8px;
+  width: 1.625rem;
+  height: 1.625rem;
+  border-radius: 0.5rem;
   background: var(--orange);
   color: var(--deeper);
 }
-.check svg { width: 16px; height: 16px; }
+.check svg { width: 1rem; height: 1rem; }
 
 @keyframes flow { to { stroke-dashoffset: -22; } }
 
 @media (min-width: 900px) {
-  .stage { grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 24px; }
+  .stage { grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 1.5rem; }
   .arrow { transform: none; }
-  .usual { padding: 30px; min-height: 440px; }
-  .cloud { min-height: 300px; }
-  .with { padding: 40px; min-height: 440px; align-content: center; }
-  .withList li { font-size: 20px; }
+  .usual { padding: 1.875rem; min-height: 27.5rem; }
+  .cloud { min-height: 18.75rem; }
+  .with { padding: 2.5rem; min-height: 27.5rem; align-content: center; }
+  .withList li { font-size: 1.25rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {

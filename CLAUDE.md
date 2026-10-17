@@ -383,6 +383,17 @@ product, and these rules keep it that way:
 - TypeScript was added for this landing: `tsconfig.json` replaced
   `jsconfig.json` and carries the same `@/*` alias. The rest of the project is
   still JavaScript (`allowJs`, `checkJs: false`).
+- **Every size is in rem, never px** (media queries aside). The root font
+  size in `offer/styles/base.module.css` is the browser's own up to 1600px —
+  the designed and tested layout — and grows past it
+  (`clamp(100%, 0.25rem + 0.75vw, 250%)`: 18.4px at 1920, 23.2px at 2560,
+  32.8px at 3840), so Full HD, 2K and 4K show the same composition larger
+  instead of a 1240px column in the middle of the screen. A px value added
+  later will not scale; JavaScript that needs a size reads the header's real
+  height or the root font size (see `OneContract.tsx`). Icons carrying
+  `width="24"` are sized to 1.5rem by a zero-specificity rule. Careful with
+  `0px` inside `calc()`/`var()` fallbacks: a bare `0` there invalidates the
+  whole declaration.
 - Styles are CSS Modules under `offer/`. The only global rules
   (`app/offer/[lang]/offer-motion.css`, `offer-fonts.css`) hang off the
   `of-js` / `of-root` / `of-zh` classes that exist on these pages alone.
