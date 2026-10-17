@@ -1,3 +1,17 @@
+/* Pinning (see OneContract.tsx): the script measures what fits under the
+   header and sets data-pin to "block" (heading + stage) or "stage". The
+   matching spacer gives the scene its scroll distance, --travel. Without
+   data-pin — no JavaScript, reduced motion, phones — none of this applies. */
+.track[data-pin="block"] .pin,
+.track[data-pin="stage"] .stage {
+  position: sticky;
+  top: var(--pin-top, 88px);
+}
+.spacerBlock,
+.spacerStage { display: none; height: var(--travel, 80vh); }
+.track[data-pin="block"] .spacerBlock,
+.track[data-pin="stage"] .spacerStage { display: block; }
+
 .stage {
   --c: 0;
   --f: 0;
@@ -17,6 +31,10 @@
 }
 
 .usual {
+  /* Above the ExpoContact card: the blocks fly over it into its badge, and
+     without this they slid underneath its edge and seemed to vanish. */
+  position: relative;
+  z-index: 1;
   display: grid;
   grid-template-rows: auto 1fr auto;
   gap: 12px;
@@ -49,8 +67,10 @@
   animation: flow 1.6s linear infinite;
 }
 
-.chips { position: absolute; inset: 0; }
-.chip {
+.chips,
+.ghosts { position: absolute; inset: 0; }
+.chip,
+.ghost {
   position: absolute;
   display: inline-flex;
   align-items: center;
@@ -70,6 +90,17 @@
   opacity: calc(1 - var(--f));
   will-change: transform, opacity;
 }
+.ghost {
+  background: transparent;
+  box-shadow: none;
+  outline: 1.5px dashed #c9d0dd;
+  outline-offset: -1.5px;
+  color: transparent;
+  transform: translate(-50%, -50%) rotate(var(--r));
+  opacity: calc(var(--c) * 0.9);
+  will-change: auto;
+}
+.ghost .dot { background: transparent; }
 .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--faint); }
 
 .caption {

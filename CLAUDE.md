@@ -416,10 +416,19 @@ Motion and performance:
   which the head script sets before paint and removes again after 4 s if the
   scripts never start, so a failed bundle cannot leave the page blank.
   `prefers-reduced-motion` shows everything at once.
-- Only transform and opacity animate. «Один договор» is scroll-linked through
-  framer-motion's `useScroll`, written to CSS variables (no React re-render),
-  and timed by the cloud of blocks, not the whole stage — on a phone the stage
-  is taller than the screen and the scene used to finish before it was seen.
+- Only transform and opacity animate. «Один договор» is scroll-linked with a
+  plain passive scroll listener (no framer-motion on /offer any more), and
+  progress goes into CSS variables, so React does not re-render. Unpinned on
+  desktop it played out in three wheel clicks, and visitors reported the
+  block «disappearing on scroll». So where it fits the scene is **pinned**:
+  the script sets `data-pin` to `block` (heading + stage) or `stage` (short
+  screens), and a spacer gives ~80vh of scroll during which only the scene
+  moves. On phones (stacked, taller than the screen) nothing is pinned and the
+  scene is timed by the ExpoContact card coming up from below. Without
+  JavaScript or with reduced motion there is no pin and no spacer.
+- The blocks fly *over* the card into its badge (`.usual` sits above `.with`);
+  underneath it they slid under its edge and seemed to vanish. Dashed outlines
+  stay where they were, so the left panel does not end up looking empty.
 - Largest Contentful Paint is the hero headline. Two things broke it and must
   not come back: an entrance animation starting at `opacity: 0` (Chrome does
   not count a fully transparent first paint — it starts at 0.01), and a
