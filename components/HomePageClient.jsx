@@ -150,19 +150,23 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
     let mx = window.innerWidth / 2, my = window.innerHeight / 2;
     let rx = mx, ry = my;
     let raf;
-    const onMove = (e) => {
-      mx = e.clientX; my = e.clientY;
-      if (dotRef.current) {
-        dotRef.current.style.transform = `translate(${mx}px,${my}px) translate(-50%,-50%)`;
-      }
-    };
+    // The ring eases after the pointer, and the loop sleeps once it has caught
+    // up: running every frame while the mouse is still kept the main thread
+    // busy for nothing.
     const loop = () => {
       rx += (mx - rx) * 0.15;
       ry += (my - ry) * 0.15;
       if (ringRef.current) {
         ringRef.current.style.transform = `translate(${rx}px,${ry}px) translate(-50%,-50%)`;
       }
-      raf = requestAnimationFrame(loop);
+      raf = Math.abs(mx - rx) + Math.abs(my - ry) > 0.2 ? requestAnimationFrame(loop) : 0;
+    };
+    const onMove = (e) => {
+      mx = e.clientX; my = e.clientY;
+      if (dotRef.current) {
+        dotRef.current.style.transform = `translate(${mx}px,${my}px) translate(-50%,-50%)`;
+      }
+      if (!raf) raf = requestAnimationFrame(loop);
     };
     window.addEventListener('mousemove', onMove);
     raf = requestAnimationFrame(loop);
@@ -502,12 +506,7 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
 
   return (
     <>
-      {/* ── Fonts for the landing palette (Space Grotesk + JetBrains Mono) ── */}
-      {/* eslint-disable-next-line @next/next/no-page-custom-font */}
-      <link
-        rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-      />
+      {/* Fonts: next/font in app/[locale]/layout.js — no Google Fonts stylesheet here. */}
 
       {/* ── GLOBAL OVERLAYS ────────────────────────────────────────────── */}
       <div className="noise" aria-hidden />
@@ -581,7 +580,11 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
 
           {/* Animated slide: headline + subheadline */}
           <div style={{ overflow: 'hidden', minHeight: 'clamp(120px, 18svh, 200px)' }}>
-            <AnimatePresence mode="wait">
+            {/* initial={false}: the first headline is in the server HTML at full
+                opacity. Starting it at opacity 0 hid it until the scripts ran,
+                and Chrome does not count an invisible paint — Largest
+                Contentful Paint was ~10 s. Later slides still animate in. */}
+            <AnimatePresence mode="wait" initial={false}>
               <motion.div
                 key={heroSlide}
                 variants={heroSlideVariants}

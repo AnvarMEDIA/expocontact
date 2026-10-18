@@ -262,14 +262,47 @@ Both take the same authorisation and both are also wired to an «Отправи�
 
 ## SEO and AI discoverability
 
-- Titles, descriptions, keywords and the social image come from
-  `content/data/seo.{ru,en,uz}.json`, imported statically in
-  `app/[locale]/layout.js`. Do not switch this back to reading the files with
-  `fs` at request time: on Vercel those files are not in the bundle, the read
+- Titles, descriptions, keywords and the social image come from the
+  `seo.{ru,en,uz}` documents, read through `lib/store.js` in
+  `app/[locale]/layout.js` (Blob once an editor saves them in /admin → SEO,
+  the `content/data/seo.*.json` seeds until then). Never read those files with
+  `fs` at request time: on Vercel they are not in the bundle, the read
   silently returns `{}` and every SEO setting disappears from production.
-- `layout.js` also emits one JSON-LD `@graph` (Organization/LocalBusiness with
-  its service catalogue, WebSite, WebPage, FAQPage) built from the locale
-  content, so FAQ and services edits flow into structured data automatically.
+- Titles stay within ~60 characters and descriptions within 160, keyword
+  first, brand last; the `META` defaults in `layout.js` follow the same rule.
+- The canonical host is `https://www.expocontact.uz` — the bare domain
+  redirects to it. Every absolute URL (metadataBase, JSON-LD, sitemap, robots,
+  llms texts, /offer) comes from `SITE_URL` in `lib/site.js`
+  (`NEXT_PUBLIC_SITE_URL` overrides it). Canonicals and `og:url` pointing at
+  the redirecting host made every page a redirect target in search consoles.
+- Structured data is split by what is true where. The layout emits only what
+  holds on every page: Organization/LocalBusiness with its service catalogue
+  (built from the locale content, so services edits flow in) and WebSite.
+  Each page describes itself: the home page a WebPage, `/faq` WebPage +
+  BreadcrumbList + FAQPage. FAQPage lives on `/faq` only — the landing shows
+  the same questions as an accordion, and marking them up twice is a
+  duplicate. Shared nodes are linked by `@id` (`${SITE_URL}/#organization`,
+  `/#website`, `/<locale>#webpage`).
+- A page that sets `alternates` or `openGraph` replaces the layout's whole
+  object, not single fields. `/lp` and `/new` set their own canonical (the
+  layout's names the home page) and no hreflang; `/lp` also sets `og:url` and
+  `og:title` from the resolved parent so ad previews do not show the home
+  page, and keeps its image.
+- An unknown first segment renders the 404 through the `[locale]` layout;
+  `generateMetadata` returns `noindex` for it so it does not inherit the home
+  page's canonical and hreflang.
+- Fonts are self-hosted by `next/font` in the locale layout (Inter, Space
+  Grotesk, JetBrains Mono as `--nf-*` variables that `landing.css` and
+  `globals.css` read). Do not bring back the Google Fonts stylesheets: they
+  blocked first paint for about a second. Space Grotesk has no Cyrillic, so it
+  carries `adjustFontFallback: false` — otherwise Russian headings would fall
+  to a metric-matched Arial instead of Inter.
+- Largest Contentful Paint on the home page is the hero headline. The headline
+  switcher uses `AnimatePresence initial={false}` so the first headline is
+  server-rendered visible; an entrance from `opacity: 0` was part of a 10 s
+  mobile LCP. The three.js logo (`HeroLogo3D`) starts after `load` and an idle
+  callback, with the pixel ratio capped at 1.5: it was most of the main-thread
+  blocking time.
 - Search-console ownership tags sit in `verification` of the same metadata:
   `yandex` (Yandex Webmaster) and `other['msvalidate.01']` (Bing Webmaster
   Tools — Next.js has no named field for Bing). Both consoles re-check

@@ -8,6 +8,36 @@ import MetaPixel from '@/components/MetaPixel';
 import { META_PIXEL_ID, META_PIXEL_SNIPPET } from '@/lib/metaPixel';
 import '@/app/globals.css';
 import { readObject } from '@/lib/store';
+import { SITE_URL } from '@/lib/site';
+import { Inter, JetBrains_Mono, Space_Grotesk } from 'next/font/google';
+
+// The landing's three families (app/landing.css: --f-body, --f-display,
+// --f-mono), self-hosted by next/font. All three are variable fonts, so one
+// file per subset carries every weight. They used to come from two
+// render-blocking Google Fonts stylesheets — one here (Montserrat, which no
+// public page uses, plus Inter) and one inside the home page (Inter again,
+// Space Grotesk, JetBrains Mono): about a second of blocked first paint.
+const inter = Inter({
+  subsets: ['latin', 'cyrillic'],
+  display: 'swap',
+  variable: '--nf-inter',
+});
+// No Cyrillic in Space Grotesk: Russian headings fall through to Inter, as
+// they always did. Without adjustFontFallback: false next/font would put a
+// metric-matched Arial right after it, and Cyrillic would land on Arial.
+const spaceGrotesk = Space_Grotesk({
+  subsets: ['latin'],
+  display: 'swap',
+  adjustFontFallback: false,
+  variable: '--nf-space-grotesk',
+});
+// Small mono labels only: not worth a preload.
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin', 'cyrillic'],
+  display: 'swap',
+  preload: false,
+  variable: '--nf-jetbrains-mono',
+});
 
 // SEO comes from the persistent store, which falls back to the content files
 // bundled with the deployment. It must never be read with fs at request time:
@@ -15,7 +45,6 @@ import { readObject } from '@/lib/store';
 // every SEO setting silently disappears.
 export const revalidate = 60;
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://expocontact.uz';
 const LOGO_URL =
   'https://static.tildacdn.one/tild3233-3438-4034-a138-316162306464/ExpoContact_-_Logo_W.png';
 
@@ -26,26 +55,28 @@ const OG_IMAGE =
   'https://kha2ts7q3gkfbsis.public.blob.vercel-storage.com/img/og-image.jpg';
 
 // ── Defaults (used when content/data/seo.{locale}.json is missing fields) ───
+// Titles stay within ~60 characters and descriptions within 160, keyword first:
+// longer ones were cut off in search results, brand and all.
 const META = {
   ru: {
-    title:       'ExpoContact — Выставочные стенды в Узбекистане и Центральной Азии',
-    description: 'Проектирование и строительство выставочных стендов под ключ. 20 лет опыта, 5000+ проектов. Монтаж, брендинг, логистика.',
+    title:       'Выставочные стенды под ключ в Ташкенте | ExpoContact',
+    description: 'Застройщик выставочных стендов в Ташкенте с 2004 года: дизайн и 3D, своё производство, монтаж, брендинг и логистика по Узбекистану и Центральной Азии.',
     locale:      'ru_RU',
     ldDescription: 'Проектирование и строительство выставочных стендов',
     ldStreet:    'ул. Амира Темура, 107Б',
     ldCity:      'Ташкент',
   },
   en: {
-    title:       'ExpoContact — Exhibition Stands in Uzbekistan & Central Asia',
-    description: 'Design and construction of exhibition stands turnkey. 20 years of experience, 5000+ projects. Installation, branding, logistics.',
+    title:       'Exhibition Stands in Tashkent, Uzbekistan | ExpoContact',
+    description: 'Exhibition stand builder in Tashkent since 2004: 3D design, in-house production, installation, branding and logistics across Central Asia and abroad.',
     locale:      'en_US',
     ldDescription: 'Design and construction of exhibition stands',
     ldStreet:    '107B Amir Temur Street',
     ldCity:      'Tashkent',
   },
   uz: {
-    title:       'ExpoContact — O\'zbekistonda Ko\'rgazma Stendlari',
-    description: 'Ko\'rgazma stendlarini loyihalash va qurish. 20 yillik tajriba, 5000+ loyiha. Montaj, brending, logistika.',
+    title:       'Toshkentda ko\'rgazma stendlari qurish | ExpoContact',
+    description: 'Toshkentda 2004 yildan beri ko\'rgazma stendlari: 3D dizayn, o\'z ishlab chiqarishimiz, montaj, brending va Markaziy Osiyo bo\'ylab logistika.',
     locale:      'uz_UZ',
     ldDescription: 'Ko\'rgazma stendlarini loyihalash va qurish',
     ldStreet:    'Amir Temur ko\'chasi, 107B',
@@ -65,14 +96,15 @@ function toKeywordList(value) {
   return list.length ? list : undefined;
 }
 
-// Structured data as one @graph so the Organization, its offer catalogue and
-// the FAQ are linked entities. Search engines use this for rich results;
-// AI assistants use it as a clean, unambiguous source of facts about who we
-// are, what we do and where.
-function buildJsonLd({ locale, meta, seo, messages }) {
+// Site-wide structured data: the company with its service catalogue, and the
+// website. It is the same on every page of this layout, so it holds only what
+// is true of every page. What a single page is — the home page, the FAQ — is
+// described by that page (app/[locale]/page.js, faq/page.js): a WebPage and an
+// FAQPage here used to repeat on /faq, /lp and /new, and claimed the home URL
+// for all of them.
+function buildJsonLd({ meta, seo, messages }) {
   const orgId  = `${SITE_URL}/#organization`;
   const siteId = `${SITE_URL}/#website`;
-  const pageUrl = `${SITE_URL}/${locale}`;
 
   const services = (messages?.services?.items || []).map((s) => ({
     '@type': 'Offer',
@@ -83,12 +115,6 @@ function buildJsonLd({ locale, meta, seo, messages }) {
       provider:    { '@id': orgId },
       areaServed:  ['Uzbekistan', 'Kazakhstan', 'Kyrgyzstan', 'Tajikistan', 'Central Asia'],
     },
-  }));
-
-  const faq = (messages?.faq?.items || []).map((f) => ({
-    '@type': 'Question',
-    name:    f.q,
-    acceptedAnswer: { '@type': 'Answer', text: f.a },
   }));
 
   const graph = [
@@ -152,21 +178,7 @@ function buildJsonLd({ locale, meta, seo, messages }) {
       inLanguage:  ['ru', 'en', 'uz'],
       publisher:   { '@id': orgId },
     },
-    {
-      '@type':     'WebPage',
-      '@id':       `${pageUrl}#webpage`,
-      url:         pageUrl,
-      name:        seo.title || meta.title,
-      description: seo.description || meta.description,
-      inLanguage:  locale,
-      isPartOf:    { '@id': siteId },
-      about:       { '@id': orgId },
-    },
   ];
-
-  if (faq.length) {
-    graph.push({ '@type': 'FAQPage', '@id': `${pageUrl}#faq`, mainEntity: faq });
-  }
 
   return JSON.stringify({ '@context': 'https://schema.org', '@graph': graph })
     // Keep a stray "</script>" inside content from closing the tag early.
@@ -175,6 +187,10 @@ function buildJsonLd({ locale, meta, seo, messages }) {
 
 export async function generateMetadata({ params }) {
   const { locale } = await params;
+  // An unknown first segment ("/llms-full.txt" before it had a route) renders
+  // the 404 page through this layout; it must not inherit a canonical, a
+  // title or hreflang that claim it is the home page.
+  if (!routing.locales.includes(locale)) return { robots: { index: false, follow: false } };
   const meta = META[locale] || META.ru;
   const seo  = await readSeo(locale);
 
@@ -184,9 +200,7 @@ export async function generateMetadata({ params }) {
   const ogImageAlt  = seo.ogImageAlt  || 'ExpoContact';
 
   return {
-    metadataBase: new URL(
-      process.env.NEXT_PUBLIC_SITE_URL || 'https://expocontact.uz',
-    ),
+    metadataBase: new URL(SITE_URL),
     title: {
       default:  title,
       template: `%s | ExpoContact`,
@@ -196,7 +210,7 @@ export async function generateMetadata({ params }) {
     openGraph: {
       title,
       description,
-      url:         '/',
+      url:         `/${locale}`,
       siteName:    'ExpoContact',
       locale:      meta.locale,
       alternateLocale: ['ru_RU', 'en_US', 'uz_UZ'].filter((l) => l !== meta.locale),
@@ -247,25 +261,17 @@ export default async function LocaleLayout({ children, params }) {
 
   const meta = META[locale] || META.ru;
   const messages = await getMessages();
-  const jsonLd = buildJsonLd({ locale, meta, seo: await readSeo(locale), messages });
+  const jsonLd = buildJsonLd({ meta, seo: await readSeo(locale), messages });
 
   return (
-    <html lang={locale}>
+    <html lang={locale} className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable}`}>
       <head>
-        {/* Google Fonts — loaded via <link> for env-agnostic builds */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap"
-          rel="stylesheet"
-        />
-
 
         {/* Meta Pixel — ExpoContact Pixel. Not on /admin: that has its own
             layout, and there is nothing to measure behind the password. */}
         <script dangerouslySetInnerHTML={{ __html: META_PIXEL_SNIPPET }} />
 
-        {/* JSON-LD: Organization, service catalogue and FAQ as one linked graph */}
+        {/* JSON-LD: the company, its service catalogue and the website */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: jsonLd }}

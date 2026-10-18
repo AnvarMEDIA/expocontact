@@ -1915,7 +1915,7 @@ function SeoManager({ toast }) {
             {data.title || 'Заголовок не задан'}
           </p>
           <p className="text-[#006621] text-xs mt-0.5" style={{ fontFamily: 'arial, sans-serif' }}>
-            https://expocontact.uz/{locale}
+            https://www.expocontact.uz/{locale}
           </p>
           <p className="text-[#545454] text-sm mt-1 line-clamp-2" style={{ fontFamily: 'arial, sans-serif' }}>
             {data.description || 'Описание не задано'}

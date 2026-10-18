@@ -7,6 +7,8 @@
  * than duplicates. The draft landing at /[locale]/new is noindex and is
  * deliberately absent. The /offer landing is listed with its own five languages.
  */
+import { SITE_URL } from '@/lib/site';
+
 const LOCALES = ['ru', 'en', 'uz'];
 
 const PAGES = [
@@ -34,7 +36,7 @@ function offerEntries(BASE, lastModified) {
 }
 
 export default function sitemap() {
-  const BASE = process.env.NEXT_PUBLIC_SITE_URL || 'https://expocontact.uz';
+  const BASE = SITE_URL;
   const lastModified = new Date();
 
   const site = PAGES.flatMap(({ path, changeFrequency, priority }) => {

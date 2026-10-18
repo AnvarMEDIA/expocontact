@@ -3,13 +3,18 @@ import { readList } from '@/lib/store';
 
 export const revalidate = 60;
 
-export const metadata = {
-  title: 'ExpoContact — Vision in Form and Function',
-  // Draft alternative landing: keep it out of the index so it does not
-  // compete with the main page as duplicate content. Remove once it replaces
-  // the main landing.
-  robots: { index: false, follow: true },
-};
+export async function generateMetadata({ params }) {
+  const { locale } = await params;
+  return {
+    title: 'ExpoContact — Vision in Form and Function',
+    // Draft alternative landing: keep it out of the index so it does not
+    // compete with the main page as duplicate content. Remove once it replaces
+    // the main landing.
+    robots: { index: false, follow: true },
+    // Its own canonical and no hreflang: the layout's would name the home page.
+    alternates: { canonical: `/${locale}/new` },
+  };
+}
 
 export default async function Page({ params }) {
   const { locale } = await params;

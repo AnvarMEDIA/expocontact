@@ -8,6 +8,7 @@
  */
 import HomePageClient from '@/components/HomePageClient';
 import { readList, readObject } from '@/lib/store';
+import { SITE_URL } from '@/lib/site';
 
 export const revalidate = 60;
 
@@ -15,20 +16,41 @@ export default async function Page({ params }) {
   const { locale } = await params;
   const lc = ['ru', 'en', 'uz'].includes(locale) ? locale : 'ru';
 
-  const [projects, testimonials, settings, clients] = await Promise.all([
+  const [projects, testimonials, settings, clients, seo] = await Promise.all([
     readList(`portfolio.${lc}`),
     readList(`testimonials.${lc}`),
     readObject(`settings.${lc}`),
     readList('clients'),
+    readObject(`seo.${lc}`),
   ]);
 
+  // This page as a WebPage of the site whose company the layout describes.
+  // The FAQ is marked up once, on /[locale]/faq where every answer is open —
+  // Google asks for a single instance of repeated FAQ content.
+  const pageUrl = `${SITE_URL}/${lc}`;
+  const jsonLd = JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type':    'WebPage',
+    '@id':      `${pageUrl}#webpage`,
+    url:        pageUrl,
+    name:       seo.title || 'ExpoContact',
+    description: seo.description || undefined,
+    inLanguage: lc,
+    isPartOf:   { '@id': `${SITE_URL}/#website` },
+    about:      { '@id': `${SITE_URL}/#organization` },
+    primaryImageOfPage: seo.ogImage ? { '@type': 'ImageObject', url: seo.ogImage } : undefined,
+  }).replace(/</g, '\\u003c');
+
   return (
-    <HomePageClient
-      locale={lc}
-      projects={projects}
-      testimonials={testimonials}
-      clients={clients}
-      settings={settings}
-    />
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd }} />
+      <HomePageClient
+        locale={lc}
+        projects={projects}
+        testimonials={testimonials}
+        clients={clients}
+        settings={settings}
+      />
+    </>
   );
 }

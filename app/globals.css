@@ -11,7 +11,7 @@
   --color-gold-dark:  #B8882E;
 
   --font-montserrat: 'Montserrat', sans-serif;
-  --font-inter:      'Inter', sans-serif;
+  --font-inter:      var(--nf-inter, 'Inter'), sans-serif;
 }
 
 /* ─── Base resets ───────────────────────────────────────────────────────── */

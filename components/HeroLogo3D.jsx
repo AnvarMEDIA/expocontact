@@ -20,7 +20,27 @@ export default function HeroLogo3D() {
     let raf;
     const cleanups = [];
 
-    (async () => {
+    // Start after the page has loaded and the browser is idle. Downloading
+    // three.js and extruding the logo used to run during hydration, on the
+    // same main thread that paints the headline — on a phone that cost
+    // seconds of blocked page. The logo now appears a moment later; what it
+    // looks like and how it moves is unchanged.
+    const start = () => { if (!disposed) init(); };
+    let idleId;
+    let timerId;
+    const schedule = () => {
+      if ('requestIdleCallback' in window) idleId = window.requestIdleCallback(start, { timeout: 2500 });
+      else timerId = window.setTimeout(start, 1200);
+    };
+    if (document.readyState === 'complete') schedule();
+    else window.addEventListener('load', schedule, { once: true });
+    cleanups.push(() => {
+      window.removeEventListener('load', schedule);
+      if (idleId && 'cancelIdleCallback' in window) window.cancelIdleCallback(idleId);
+      if (timerId) window.clearTimeout(timerId);
+    });
+
+    const init = () => (async () => {
       // Code-split: three + SVGLoader only load when the hero mounts.
       const [THREE, { SVGLoader }] = await Promise.all([
         import('three'),
@@ -38,7 +58,8 @@ export default function HeroLogo3D() {
       camera.position.set(0, 0, 900);
 
       const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      // 1.5 is indistinguishable at hero size and draws ~45% fewer pixels than 2.
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
       renderer.setSize(w(), h());
       if ('outputColorSpace' in renderer && THREE.SRGBColorSpace) {
         renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -110,8 +131,10 @@ export default function HeroLogo3D() {
               bevelThickness: 5,
               bevelSize: 3,
               bevelOffset: 0,
-              bevelSegments: 5,
-              curveSegments: 32,
+              // Was 5 and 32: the same silhouette at hero size, a third of
+              // the triangles to build on the main thread.
+              bevelSegments: 3,
+              curveSegments: 14,
             });
             const mesh = new THREE.Mesh(geom, mat);
             all.add(mesh);

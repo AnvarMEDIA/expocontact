@@ -7,8 +7,10 @@
  * showing up in their answers; a bare "*" rule is often not enough because
  * several of these bots look for their own name before falling back to "*".
  */
+import { SITE_URL } from '@/lib/site';
+
 export default function robots() {
-  const BASE = process.env.NEXT_PUBLIC_SITE_URL || 'https://expocontact.uz';
+  const BASE = SITE_URL;
   const disallow = ['/admin', '/api/'];
 
   const aiCrawlers = [

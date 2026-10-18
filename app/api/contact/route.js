@@ -26,6 +26,7 @@ import { recordLead } from '@/lib/analytics/store';
 import { formatPhone } from '@/lib/phone';
 import { validateOrganiser, organiserSummary, organiserTelegram } from '@/offer/lib/lead';
 import { isOfferLang } from '@/offer/i18n/langs';
+import { SITE_URL } from '@/lib/site';
 
 /** "https://www.google.com/search?q=…" -> "google.com": the manager needs the source, not the URL. */
 function refererHost(url) {
@@ -37,7 +38,7 @@ function siteOrigin(request) {
   const host  = request.headers.get('x-forwarded-host') || request.headers.get('host');
   const proto = request.headers.get('x-forwarded-proto') || 'https';
   if (host && !/^(localhost|127\.0\.0\.1)(:|$)/.test(host)) return `${proto}://${host}`;
-  return process.env.NEXT_PUBLIC_SITE_URL || (host ? `http://${host}` : 'https://expocontact.uz');
+  return host ? `http://${host}` : SITE_URL;
 }
 
 const FORM_LABELS = {

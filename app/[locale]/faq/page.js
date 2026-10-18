@@ -12,11 +12,11 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { readObject } from '@/lib/store';
 import { routing } from '@/i18n/routing';
+import { SITE_URL as SITE } from '@/lib/site';
 import '@/app/landing.css';
 
 export const revalidate = 60;
 
-const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'https://expocontact.uz';
 
 const COPY = {
   ru: {
@@ -24,21 +24,24 @@ const COPY = {
     intro:    'Стоимость, сроки, материалы, работа за рубежом и полный цикл — отвечаем по существу.',
     back:     'На главную',
     contact:  'Остались вопросы? Напишите нам',
-    metaDesc: 'Ответы на частые вопросы о строительстве выставочных стендов в Ташкенте и Центральной Азии: цена, сроки изготовления, материалы, работа за пределами Узбекистана, полный цикл сопровождения.',
+    metaDesc: 'Сколько стоит выставочный стенд в Ташкенте, сколько его делают, из каких материалов и работаем ли за пределами Узбекистана — ответы ExpoContact.',
+    home:     'Главная',
   },
   en: {
     title:    'Exhibition stand questions and answers',
     intro:    'Cost, lead times, materials, working abroad and full-cycle support — answered plainly.',
     back:     'Back to home',
     contact:  'Still have a question? Get in touch',
-    metaDesc: 'Answers to common questions about building exhibition stands in Tashkent and Central Asia: price, production time, materials, working outside Uzbekistan, full-cycle support.',
+    metaDesc: 'What an exhibition stand costs in Tashkent, how long it takes, which materials are used and whether we work outside Uzbekistan — answers from ExpoContact.',
+    home:     'Home',
   },
   uz: {
     title:    'Ko’rgazma stendlari haqida savol va javoblar',
     intro:    'Narx, muddat, materiallar, chet elda ishlash va to’liq sikl — aniq javoblar.',
     back:     'Bosh sahifaga',
     contact:  'Savolingiz qoldimi? Bizga yozing',
-    metaDesc: 'Toshkent va Markaziy Osiyoda ko’rgazma stendlarini qurish bo’yicha tez-tez so’raladigan savollarga javoblar: narx, ishlab chiqarish muddati, materiallar, to’liq sikl.',
+    metaDesc: 'Toshkentda ko’rgazma stendi qancha turadi, qancha vaqtda tayyorlanadi, qanday materiallardan va chet elda ishlaysizmi — ExpoContact javoblari.',
+    home:     'Bosh sahifa',
   },
 };
 
@@ -48,6 +51,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }) {
   const { locale } = await params;
+  if (!routing.locales.includes(locale)) return {};
   const copy = COPY[locale] || COPY.ru;
   const seo  = await readObject(`seo.${locale}`);
 
@@ -67,7 +71,15 @@ export async function generateMetadata({ params }) {
       url:         `/${locale}/faq`,
       siteName:    'ExpoContact',
       type:        'article',
-      images: seo.ogImage ? [{ url: seo.ogImage, width: 1200, height: 630 }] : undefined,
+      images: seo.ogImage ? [{ url: seo.ogImage, width: 1200, height: 630, alt: copy.title }] : undefined,
+    },
+    // Without its own card the FAQ inherited the home page's Twitter/Telegram
+    // preview, title and all.
+    twitter: {
+      card:        'summary_large_image',
+      title:       copy.title,
+      description: copy.metaDesc,
+      images:      seo.ogImage ? [seo.ogImage] : undefined,
     },
   };
 }
@@ -82,16 +94,43 @@ export default async function FaqPage({ params }) {
 
   if (!items.length) notFound();
 
+  // The page, its place in the site, and its questions. The company and the
+  // website come from the layout's graph; the @ids tie them together.
+  const pageUrl = `${SITE}/${locale}/faq`;
   const jsonLd = JSON.stringify({
     '@context': 'https://schema.org',
-    '@type':    'FAQPage',
-    '@id':      `${SITE}/${locale}/faq#faq`,
-    inLanguage: locale,
-    mainEntity: items.map((i) => ({
-      '@type': 'Question',
-      name:    i.q,
-      acceptedAnswer: { '@type': 'Answer', text: i.a },
-    })),
+    '@graph': [
+      {
+        '@type':     'WebPage',
+        '@id':       `${pageUrl}#webpage`,
+        url:         pageUrl,
+        name:        copy.title,
+        description: copy.metaDesc,
+        inLanguage:  locale,
+        isPartOf:    { '@id': `${SITE}/#website` },
+        about:       { '@id': `${SITE}/#organization` },
+        breadcrumb:  { '@id': `${pageUrl}#breadcrumb` },
+      },
+      {
+        '@type': 'BreadcrumbList',
+        '@id':   `${pageUrl}#breadcrumb`,
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: copy.home, item: `${SITE}/${locale}` },
+          { '@type': 'ListItem', position: 2, name: copy.title, item: pageUrl },
+        ],
+      },
+      {
+        '@type':    'FAQPage',
+        '@id':      `${pageUrl}#faq`,
+        inLanguage: locale,
+        isPartOf:   { '@id': `${pageUrl}#webpage` },
+        mainEntity: items.map((i) => ({
+          '@type': 'Question',
+          name:    i.q,
+          acceptedAnswer: { '@type': 'Answer', text: i.a },
+        })),
+      },
+    ],
   }).replace(/</g, '\\u003c');
 
   return (

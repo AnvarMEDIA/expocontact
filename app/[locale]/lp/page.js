@@ -33,11 +33,19 @@ export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
 
-export async function generateMetadata({ params }) {
+export async function generateMetadata({ params }, parent) {
   const { locale } = await params;
+  const title = TITLES[locale] || TITLES.ru;
+  // Ads are previewed from this page's Open Graph tags. The layout's name the
+  // home page, so the URL and title are replaced and its image is kept.
+  const { openGraph, twitter } = await parent;
   return {
-    title: TITLES[locale] || TITLES.ru,
+    title,
     robots: { index: false, follow: false },
+    // Its own canonical and no hreflang: the layout's would name the home page.
+    alternates: { canonical: `/${locale}/lp` },
+    openGraph: { ...openGraph, title: `${title} | ExpoContact`, url: `/${locale}/lp` },
+    twitter:   { ...twitter, title: `${title} | ExpoContact` },
   };
 }
 

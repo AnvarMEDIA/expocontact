@@ -13,6 +13,7 @@ import AnalyticsTracker from "@/components/AnalyticsTracker";
 import { META_PIXEL_ID, META_PIXEL_SNIPPET } from "@/lib/metaPixel";
 import { DEFAULT_OFFER_LANG, LANG_INFO, OFFER_LANGS, getDict, isOfferLang } from "@/offer/i18n";
 import { offerJsonLd } from "@/offer/lib/schema";
+import { SITE_URL } from "@/lib/site";
 import ClickTracker from "@/offer/components/ClickTracker";
 import RevealObserver from "@/offer/components/RevealObserver";
 import Trackers from "@/offer/components/Trackers";
@@ -20,7 +21,6 @@ import base from "@/offer/styles/base.module.css";
 import "./offer-motion.css";
 import "./offer-fonts.css";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://expocontact.uz";
 
 const onest = Onest({
   subsets: ["latin", "latin-ext", "cyrillic"],
