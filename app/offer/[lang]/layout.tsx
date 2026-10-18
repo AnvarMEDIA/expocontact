@@ -105,11 +105,14 @@ export default function OfferLayout({ children, params }: { children: ReactNode 
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: offerJsonLd(lang, SITE_URL) }} />
       </head>
       <body className={`${base.body} of-root ${onest.variable} ${lang === "zh" ? "of-zh" : ""}`}>
-        <noscript>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img height="1" width="1" style={{ display: "none" }} alt=""
-            src={`https://www.facebook.com/tr?id=${META_PIXEL_ID}&ev=PageView&noscript=1`} />
-        </noscript>
+        {/* Raw HTML on purpose: as a JSX <img>, React hoisted it into a
+            <link rel="preload" as="image">, so every browser fetched the
+            noscript pixel — a second, cookieless PageView for each visit. */}
+        <noscript
+          dangerouslySetInnerHTML={{
+            __html: `<img height="1" width="1" style="display:none" alt="" src="https://www.facebook.com/tr?id=${META_PIXEL_ID}&amp;ev=PageView&amp;noscript=1">`,
+          }}
+        />
         {children}
         <RevealObserver />
         <ClickTracker language={lang} />

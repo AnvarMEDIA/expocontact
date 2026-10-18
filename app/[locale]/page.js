@@ -16,9 +16,8 @@ export default async function Page({ params }) {
   const { locale } = await params;
   const lc = ['ru', 'en', 'uz'].includes(locale) ? locale : 'ru';
 
-  const [projects, testimonials, settings, clients, seo] = await Promise.all([
+  const [projects, settings, clients, seo] = await Promise.all([
     readList(`portfolio.${lc}`),
-    readList(`testimonials.${lc}`),
     readObject(`settings.${lc}`),
     readList('clients'),
     readObject(`seo.${lc}`),
@@ -43,11 +42,23 @@ export default async function Page({ params }) {
 
   return (
     <>
+      {/* The landing's dark palette and type live on body.landing-body. Set
+          here, while the HTML is parsed, the first paint already has them;
+          added from an effect, it restyled and relaid the whole page during
+          hydration (~60 ms of main thread on a phone). HomePageClient still
+          adds it on client-side navigation and removes it on the way out.
+          A URL with a #hash turns off the deferred rendering of the lower
+          blocks, so the browser scrolls to the anchor on real sizes (see
+          the content-visibility note in landing.css). */}
+      <script
+        dangerouslySetInnerHTML={{
+          __html: "document.body.classList.add('landing-body');if(location.hash.length>1)document.documentElement.classList.add('cv-off')",
+        }}
+      />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd }} />
       <HomePageClient
         locale={lc}
         projects={projects}
-        testimonials={testimonials}
         clients={clients}
         settings={settings}
       />

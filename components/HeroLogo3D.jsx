@@ -20,32 +20,38 @@ export default function HeroLogo3D() {
     let raf;
     const cleanups = [];
 
-    // Start after the page has loaded and the browser is idle. Downloading
-    // three.js and extruding the logo used to run during hydration, on the
-    // same main thread that paints the headline — on a phone that cost
-    // seconds of blocked page. The logo now appears a moment later; what it
-    // looks like and how it moves is unchanged.
-    const start = () => { if (!disposed) init(); };
-    let idleId;
+    // Start on the visitor's first move — pointer, touch, wheel, scroll or key
+    // — or three seconds after the page has loaded, whichever comes first.
+    // three.js is ~140 KB of script and the extrusion is heavy main-thread
+    // work; at load time it competed with the first screen for the network
+    // and the CPU, on a phone for seconds. The canvas fades in (landing.css,
+    // .hero__logo3d-canvas canvas), so the late start reads as an entrance;
+    // what the logo looks like and how it moves is unchanged.
+    let started = false;
     let timerId;
-    const schedule = () => {
-      if ('requestIdleCallback' in window) idleId = window.requestIdleCallback(start, { timeout: 2500 });
-      else timerId = window.setTimeout(start, 1200);
-    };
-    if (document.readyState === 'complete') schedule();
-    else window.addEventListener('load', schedule, { once: true });
+    const WAKE = ['pointermove', 'pointerdown', 'touchstart', 'wheel', 'scroll', 'keydown'];
+    const unwake = () => WAKE.forEach((ev) => window.removeEventListener(ev, start));
+    function start() {
+      if (started || disposed) return;
+      started = true;
+      unwake();
+      window.clearTimeout(timerId);
+      init();
+    }
+    const arm = () => { timerId = window.setTimeout(start, 3000); };
+    WAKE.forEach((ev) => window.addEventListener(ev, start, { passive: true }));
+    if (document.readyState === 'complete') arm();
+    else window.addEventListener('load', arm, { once: true });
     cleanups.push(() => {
-      window.removeEventListener('load', schedule);
-      if (idleId && 'cancelIdleCallback' in window) window.cancelIdleCallback(idleId);
-      if (timerId) window.clearTimeout(timerId);
+      unwake();
+      window.removeEventListener('load', arm);
+      window.clearTimeout(timerId);
     });
 
     const init = () => (async () => {
-      // Code-split: three + SVGLoader only load when the hero mounts.
-      const [THREE, { SVGLoader }] = await Promise.all([
-        import('three'),
-        import('three/examples/jsm/loaders/SVGLoader.js'),
-      ]);
+      // Code-split: only the classes in ./heroLogoThree load, and only now.
+      const THREE = await import('./heroLogoThree');
+      const { SVGLoader } = THREE;
       if (disposed) return;
 
       const w = () => mount.clientWidth || 1;

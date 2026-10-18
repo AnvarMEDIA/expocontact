@@ -11,7 +11,7 @@
   --accent-secondary:#2A6BC4;    /* navy blue — brand */
   --accent-secondary-glow: rgba(42,107,196,.40);
 
-  /* --nf-* are set on <html> by next/font in app/[locale]/layout.js. */
+  /* --nf-* come from app/site-fonts.css (scripts/build-site-fonts.py). */
   --f-display: var(--nf-space-grotesk, 'Space Grotesk'), var(--nf-inter, 'Inter'), system-ui, sans-serif;
   --f-body:    var(--nf-inter, 'Inter'), system-ui, sans-serif;
   --f-mono:    var(--nf-jetbrains-mono, 'JetBrains Mono'), ui-monospace, monospace;
@@ -303,7 +303,22 @@ button{ font:inherit; color:inherit; background:none; border:0; cursor:none; }
 .hero__progress-fill{
   height:100%; background:var(--accent-primary);
   border-radius:1px;
+  transform-origin:left center; transform:scaleX(0);
+  animation:hero-progress linear forwards;
 }
+@keyframes hero-progress{ to{ transform:scaleX(1); } }
+
+/* Hero slider — the headline swap that framer-motion's AnimatePresence
+   (mode="wait") used to do: the old one leaves up in .32s, then the new one
+   rises in over .65s. Pure CSS, so the landing no longer ships framer-motion. */
+.hero__slide{ position:relative; overflow:hidden; min-height:clamp(120px, 18svh, 200px); }
+.hero__slide-out{
+  position:absolute; top:0; left:0; width:100%; pointer-events:none;
+  animation:hero-out .32s cubic-bezier(.7,0,.84,0) forwards;
+}
+.hero__slide-in{ animation:hero-in .65s cubic-bezier(.16,1,.3,1) .32s both; }
+@keyframes hero-out{ to{ opacity:0; transform:translateY(-16px); } }
+@keyframes hero-in{ from{ opacity:0; transform:translateY(28px); } }
 
 /* Slider nav: arrows + dots */
 .hero__nav{
@@ -368,7 +383,11 @@ button{ font:inherit; color:inherit; background:none; border:0; cursor:none; }
 .hero__logo3d:active{ cursor:grabbing; }
 .hero__logo3d canvas{
   display:block;
+  /* three.js starts on the first interaction or 3 s after load
+     (HeroLogo3D), so the logo arrives rather than pops in. */
+  animation:logo3d-in .9s cubic-bezier(.16,1,.3,1) both;
 }
+@keyframes logo3d-in{ from{ opacity:0; transform:scale(.94); } }
 /* 2D fallback — react port renders an inline SVG in place of three.js */
 .hero__logo3d-svg{
   position:absolute;
@@ -1643,6 +1662,36 @@ a.contact-block__val:hover{ color:var(--accent-primary); }
 svg .brand-blue   { fill: var(--accent-secondary); }
 svg .brand-orange { fill: var(--accent-primary);   }
 svg .brand-text   { fill: var(--text-primary);     }
+
+/* Blocks far below the first screen — after the process section — are not
+   styled or laid out until they come near the viewport. They were half of the
+   page's first style-and-layout pass (~60 of ~130 ms on a phone), all of it
+   before the first paint. Not on #process: its scroll script measures the pin
+   on every scroll event.
+   The placeholder sizes are content heights (padding comes on top) measured
+   at each breakpoint, so the scrollbar is about right; `auto` keeps the real
+   size once a block has been seen. They cannot be exact, which matters to an
+   anchor jump: aimed at placeholders, #contact landed ~550 px past its
+   heading. So the first in-page link click, or a URL that arrives with a
+   #hash, adds .cv-off to <html> before the browser scrolls (HomePageClient,
+   app/[locale]/page.js) and the jump is measured on real sizes. */
+:root:not(.cv-off) :is(#clients, #faq, #contact, .footer){ content-visibility:auto; }
+#clients{ contain-intrinsic-size:auto 380px; }
+#faq{     contain-intrinsic-size:auto 1060px; }
+#contact{ contain-intrinsic-size:auto 580px; }
+.footer{  contain-intrinsic-size:auto 660px; }
+@media (max-width:900px){
+  #clients{ contain-intrinsic-size:auto 325px; }
+  #faq{     contain-intrinsic-size:auto 980px; }
+  #contact{ contain-intrinsic-size:auto 990px; }
+  .footer{  contain-intrinsic-size:auto 700px; }
+}
+@media (max-width:600px){
+  #clients{ contain-intrinsic-size:auto 440px; }
+  #faq{     contain-intrinsic-size:auto 1130px; }
+  #contact{ contain-intrinsic-size:auto 1230px; }
+  .footer{  contain-intrinsic-size:auto 1240px; }
+}
 
 /* reduced motion */
 @media (prefers-reduced-motion: reduce){

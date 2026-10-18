@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import { usePathname, useRouter } from 'next/navigation';
 import BrandLogo from './BrandLogo';
@@ -91,11 +90,6 @@ const CLIENT_LIST_FALLBACK_B = [
 // HERO_SLIDES replaced by tHero.raw('slides') inside component
 const HERO_INTERVAL = 5000;
 
-const heroSlideVariants = {
-  enter:  { opacity: 0, y: 28 },
-  center: { opacity: 1, y: 0,   transition: { duration: 0.65, ease: [0.16, 1, 0.3, 1] } },
-  exit:   { opacity: 0, y: -16, transition: { duration: 0.32, ease: [0.7, 0, 0.84, 0] } },
-};
 
 // ════════════════════════════════════════════════════════════════════════════
 //   MAIN
@@ -140,6 +134,19 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
   useEffect(() => {
     document.body.classList.add('landing-body');
     return () => document.body.classList.remove('landing-body');
+  }, []);
+
+  // In-page links. The blocks after the process section render lazily
+  // (content-visibility, landing.css) and their placeholder sizes are only
+  // estimates, so an anchor jump aimed at them overshot. Capture phase runs
+  // before the browser scrolls: by then the blocks are laid out for real.
+  useEffect(() => {
+    const onClick = (e) => {
+      const a = e.target.closest?.('a[href^="#"]');
+      if (a && a.getAttribute('href').length > 1) document.documentElement.classList.add('cv-off');
+    };
+    document.addEventListener('click', onClick, true);
+    return () => document.removeEventListener('click', onClick, true);
   }, []);
 
   // ── 1. Custom cursor ──────────────────────────────────────────────────────
@@ -248,6 +255,25 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
     return () => io.disconnect();
   }, [projects]);
 
+  // Portfolio photos and the services' hover previews load as they approach
+  // the screen. As inline backgrounds they all started downloading with the
+  // page — the nine photos alone are over a megabyte on a phone, competing
+  // with the first screen for the connection. The effect sets the style
+  // itself, so React never overwrites it. A preview hidden on phones
+  // (display:none) never intersects and is never fetched, as before.
+  useEffect(() => {
+    const imgs = document.querySelectorAll('#bento .card__img[data-bg], .svc-item__preview[data-bg]');
+    const io = new IntersectionObserver((es) => {
+      es.forEach((e) => {
+        if (!e.isIntersecting) return;
+        e.target.style.backgroundImage = `url('${e.target.dataset.bg}')`;
+        io.unobserve(e.target);
+      });
+    }, { rootMargin: '800px 0px' });
+    imgs.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, [projects]);
+
   // ── 5. Magnetic buttons ───────────────────────────────────────────────────
   useEffect(() => {
     if (window.innerWidth < 900) return;
@@ -282,10 +308,14 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
   });
 
   // ── 6. Process sticky horizontal scroll ───────────────────────────────────
+  // The percentage is written straight into the DOM: as state it re-rendered
+  // the whole landing on every scroll event. Only the step number, which
+  // changes seven times, goes through React.
   const procPinRef = useRef(null);
   const procTrackRef = useRef(null);
+  const procFillRef = useRef(null);
+  const procPctRef = useRef(null);
   const [procIdx, setProcIdx] = useState(0);
-  const [procPct, setProcPct] = useState(0);
 
   useEffect(() => {
     if (window.innerWidth < 900) return;
@@ -302,7 +332,9 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
       track.style.transform = `translateX(${-k * distance}px)`;
       const idx = Math.min(stepsLen - 1, Math.floor(k * stepsLen));
       setProcIdx(idx);
-      setProcPct(Math.round(k * 100));
+      const pct = Math.round(k * 100);
+      if (procFillRef.current) procFillRef.current.style.width = (10 + (pct / 100) * 86) + '%';
+      if (procPctRef.current) procPctRef.current.textContent = pct + '%';
     };
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onScroll);
@@ -365,38 +397,38 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
   }, [lightboxProject, closeLightbox, lightboxPrev, lightboxNext]);
 
   // ── 8. Hero slider ───────────────────────────────────────────────────────
-  const [heroSlide,    setHeroSlide]    = useState(0);
-  const [heroPaused,   setHeroPaused]   = useState(false);
-  const [heroProgress, setHeroProgress] = useState(0);
-  const heroStartRef = useRef(performance.now());
-  const heroRafRef   = useRef(null);
+  // Nothing here runs per frame. The progress bar and the headline change are
+  // CSS animations (landing.css, "Hero slider"); React renders once per slide.
+  // The bar used to be state updated from requestAnimationFrame, which
+  // re-rendered the entire landing sixty times a second for as long as the
+  // page was open — on a phone, most of the main thread.
+  // `prev` is the headline on its way out, kept for its exit animation.
+  const [hero, setHero] = useState({ cur: 0, prev: null });
+  const heroSlide = hero.cur;
+  const [heroPaused, setHeroPaused] = useState(false);
 
   const heroSlidesLen = heroSlides.length || 5;
-  const goToSlide  = useCallback((i) => setHeroSlide(i), []);
-  const nextSlide  = useCallback(() => setHeroSlide(c => (c + 1) % heroSlidesLen), [heroSlidesLen]);
-  const prevSlide  = useCallback(() => setHeroSlide(c => (c - 1 + heroSlidesLen) % heroSlidesLen), [heroSlidesLen]);
+  const showSlide  = useCallback((next) => setHero((h) => {
+    const n = typeof next === 'function' ? next(h.cur) : next;
+    return n === h.cur ? h : { cur: n, prev: h.cur };
+  }), []);
+  const goToSlide  = useCallback((i) => showSlide(i), [showSlide]);
+  const nextSlide  = useCallback(() => showSlide(c => (c + 1) % heroSlidesLen), [showSlide, heroSlidesLen]);
+  const prevSlide  = useCallback(() => showSlide(c => (c - 1 + heroSlidesLen) % heroSlidesLen), [showSlide, heroSlidesLen]);
 
-  useEffect(() => {
-    heroStartRef.current = performance.now();
-    setHeroProgress(0);
-  }, [heroSlide]);
-
+  // A pause keeps the time already spent on the slide, as the paused bar does.
+  const heroClockRef = useRef({ slide: 0, elapsed: 0 });
   useEffect(() => {
     if (heroPaused) return;
-    const tick = () => {
-      const p = Math.min((performance.now() - heroStartRef.current) / HERO_INTERVAL, 1);
-      setHeroProgress(p);
-      if (p < 1) heroRafRef.current = requestAnimationFrame(tick);
+    const clock = heroClockRef.current;
+    if (clock.slide !== heroSlide) { clock.slide = heroSlide; clock.elapsed = 0; }
+    const t0 = performance.now();
+    const id = setTimeout(() => showSlide(c => (c + 1) % heroSlidesLen), Math.max(0, HERO_INTERVAL - clock.elapsed));
+    return () => {
+      clearTimeout(id);
+      clock.elapsed += performance.now() - t0;
     };
-    heroRafRef.current = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(heroRafRef.current);
-  }, [heroSlide, heroPaused]);
-
-  useEffect(() => {
-    if (heroPaused) return;
-    const id = setTimeout(() => setHeroSlide(c => (c + 1) % heroSlidesLen), HERO_INTERVAL);
-    return () => clearTimeout(id);
-  }, [heroSlide, heroPaused, heroSlidesLen]);
+  }, [heroSlide, heroPaused, heroSlidesLen, showSlide]);
 
   // ── 9. Filters ────────────────────────────────────────────────────────────
   const [filter, setFilter] = useState('all');
@@ -578,25 +610,22 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
 
         <div className="hero__content">
 
-          {/* Animated slide: headline + subheadline */}
-          <div style={{ overflow: 'hidden', minHeight: 'clamp(120px, 18svh, 200px)' }}>
-            {/* initial={false}: the first headline is in the server HTML at full
-                opacity. Starting it at opacity 0 hid it until the scripts ran,
-                and Chrome does not count an invisible paint — Largest
-                Contentful Paint was ~10 s. Later slides still animate in. */}
-            <AnimatePresence mode="wait" initial={false}>
-              <motion.div
-                key={heroSlide}
-                variants={heroSlideVariants}
-                initial="enter"
-                animate="center"
-                exit="exit"
-              >
-                <h1 className="hero__title">
-                  {heroSlides[heroSlide]?.headline}
-                </h1>
-              </motion.div>
-            </AnimatePresence>
+          {/* Animated slide: the headline leaving, then the one arriving.
+              The first headline has no entrance: it is in the server HTML at
+              full opacity. Starting it at opacity 0 hid it until the scripts
+              ran, and Chrome does not count an invisible paint — Largest
+              Contentful Paint was ~10 s. Later slides animate in. */}
+          <div className="hero__slide">
+            {hero.prev !== null && (
+              <div key={`out-${hero.prev}-${heroSlide}`} className="hero__slide-out" aria-hidden>
+                <div className="hero__title">{heroSlides[hero.prev]?.headline}</div>
+              </div>
+            )}
+            <div key={heroSlide} className={hero.prev !== null ? 'hero__slide-in' : undefined}>
+              <h1 className="hero__title">
+                {heroSlides[heroSlide]?.headline}
+              </h1>
+            </div>
           </div>
 
           {/* CTA row */}
@@ -620,8 +649,9 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
           {/* Progress bar */}
           <div className="hero__progress">
             <div
+              key={heroSlide}
               className="hero__progress-fill"
-              style={{ width: `${heroProgress * 100}%`, transition: 'none' }}
+              style={{ animationDuration: `${HERO_INTERVAL}ms`, animationPlayState: heroPaused ? 'paused' : 'running' }}
             />
           </div>
 
@@ -774,7 +804,7 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
                   tabIndex={0}
                   aria-label={`${p.title} — открыть галерею`}
                 >
-                  <div className="card__img" style={p._img ? { backgroundImage: `url('${p._img}')` } : undefined} />
+                  <div className="card__img" data-bg={p._img || undefined} />
                   <div className="card__shade" />
                   <span className="card__sub">/{String(i + 1).padStart(2, '0')} · {p.exhibition || p.client}</span>
                   {galleryCount > 0 && (
@@ -835,8 +865,8 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
             </div>
             <div className="process__bar">
               <span>{tProcess('progressLabel')}</span>
-              <div className="process__bar-track"><div className="process__bar-fill" style={{ width: (10 + (procPct / 100) * 86) + '%' }} /></div>
-              <span className="mono--bright">{procPct}%</span>
+              <div className="process__bar-track"><div className="process__bar-fill" ref={procFillRef} style={{ width: '10%' }} /></div>
+              <span className="mono--bright" ref={procPctRef}>0%</span>
             </div>
           </div>
         </div>
@@ -1185,7 +1215,7 @@ function ServiceItem({ idx, title, desc, includes, img }) {
       {/* Hover preview. The URL comes from the CMS (services.items[].image), so
           a service without a picture simply shows the empty surface instead of
           a broken background. */}
-      <div className="svc-item__preview" style={img ? { backgroundImage: `url('${img}')` } : undefined} />
+      <div className="svc-item__preview" data-bg={img || undefined} />
       <div className="svc-item__toggle" data-hover />
       <div className="svc-item__body">
         <div className="svc-item__body-inner">

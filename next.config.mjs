@@ -14,6 +14,15 @@ const nextConfig = {
       { protocol: 'https', hostname: 'static.tildacdn.com' },
     ],
   },
+  // The main site's fonts (scripts/build-site-fonts.py) carry a content hash
+  // in their names, so a browser may keep them for good. Without this, files
+  // in public/ are revalidated on every visit.
+  async headers() {
+    return [{
+      source: '/fonts/site/:file*',
+      headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }],
+    }];
+  },
 };
 
 export default withNextIntl(nextConfig);
