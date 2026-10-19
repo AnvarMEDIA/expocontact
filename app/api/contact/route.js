@@ -11,6 +11,8 @@
  *             Never trusted as-is; sanitizeMarketing() whitelists and bounds it.
  *   details   answers to the qualifying questions on the ad landing — see
  *             lib/leadFields.js. Only known questions with known answers survive.
+ *   audience  'exhibitor' | 'organiser' — which of the two directions the lead
+ *             is for (lib/directions.js). Anything else counts as exhibitor.
  *
  * source 'offer' is the organiser enquiry from the /offer landing. It has its
  * own fields (e-mail, country, dates, area, format, consent), validation and
@@ -27,6 +29,7 @@ import { formatPhone } from '@/lib/phone';
 import { validateOrganiser, organiserSummary, organiserTelegram } from '@/offer/lib/lead';
 import { isOfferLang } from '@/offer/i18n/langs';
 import { SITE_URL } from '@/lib/site';
+import { sanitizeAudience, AUDIENCE_LABELS } from '@/lib/directions';
 
 /** "https://www.google.com/search?q=…" -> "google.com": the manager needs the source, not the URL. */
 function refererHost(url) {
@@ -81,6 +84,7 @@ async function organiserEnquiry(request, body) {
         .filter(Boolean).join('\n'),
       source:  'offer',
       locale:  lang,
+      audience: 'organiser',
       marketing,
       organiser: { ...enquiry, lang, receivedAt: at.toISOString() },
     });
@@ -123,6 +127,9 @@ export async function POST(request) {
   // of the options we offer.
   const details = sanitizeDetails(body.details);
 
+  // Stand or show: the forms on the home page let the visitor say which.
+  const audience = sanitizeAudience(body.audience);
+
   if (!name || !phone) {
     return NextResponse.json({ error: 'name and phone are required' }, { status: 400 });
   }
@@ -142,7 +149,7 @@ export async function POST(request) {
   // delivery channel of record, so a failure here is logged and nothing more.
   let lead = null;
   try {
-    lead = await createLead({ ...safe, source, locale, marketing, details });
+    lead = await createLead({ ...safe, source, locale, audience, marketing, details });
   } catch (err) {
     console.error('[contact] Lead save failed:', err.message);
   }
@@ -153,13 +160,18 @@ export async function POST(request) {
 
   if (telegramConfigured()) {
     const text = [
-      '📬 Новая заявка с сайта ExpoContact',
+      // An organiser from the home page is the same kind of lead as one from
+      // /offer, so it is announced as one — only the fields are the short form's.
+      audience === 'organiser'
+        ? '🌍 Заявка организатора выставки — с главной страницы'
+        : '📬 Новая заявка с сайта ExpoContact',
       lead ? `🆔 ${lead.id}` : null,
       '',
+      `🧭 Направление: ${AUDIENCE_LABELS[audience]}`,
       `👤 Имя: ${safe.name}`,
       safe.company ? `🏢 Компания: ${safe.company}` : null,
       `📞 Телефон: ${formatPhone(safe.phone)}`,
-      safe.expo    ? `🎪 Выставка: ${safe.expo}`    : null,
+      safe.expo    ? `🎪 ${audience === 'organiser' ? 'Тема и даты' : 'Выставка'}: ${safe.expo}` : null,
       ...(details
         ? Object.entries(details).map(([k, v]) => `📐 ${qualifierLabel(k)}: ${qualifierValueLabel(k, v)}`)
         : []),
@@ -185,7 +197,7 @@ export async function POST(request) {
     }
   } else {
     console.log('[contact] Form submission (Telegram not configured):', {
-      id: lead?.id, ...safe, source, locale, marketing, details,
+      id: lead?.id, ...safe, source, locale, audience, marketing, details,
     });
   }
 

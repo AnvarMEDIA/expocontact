@@ -9,6 +9,8 @@
 import HomePageClient from '@/components/HomePageClient';
 import { readList, readObject } from '@/lib/store';
 import { SITE_URL } from '@/lib/site';
+import { directionCopy, organiserPageHref } from '@/lib/directions';
+import { organiserTeaser } from '@/offer/lib/teaser';
 
 export const revalidate = 60;
 
@@ -61,6 +63,12 @@ export default async function Page({ params }) {
         projects={projects}
         clients={clients}
         settings={settings}
+        // The second direction — trade show organisers (lib/directions.js).
+        // Its texts come from the /offer dictionary of this language, picked
+        // here so the browser receives one language, not five.
+        directions={directionCopy(lc)}
+        organisers={organiserTeaser(lc)}
+        organiserHref={organiserPageHref(lc)}
       />
     </>
   );

@@ -80,6 +80,51 @@ fallback — it put unrelated stock photos on the front page.
   A settings document already saved in Blob keeps whatever it holds, so a
   wrong value there is fixed in /admin, not in the repository.
 
+## Two directions — exhibitors and organisers
+
+Since October 2026 the site is one company with two lines of work, not a
+stand-builder site plus a separate landing. `lib/directions.js` is the model
+both halves share:
+
+| Direction | Audience key | Who | Full page |
+|---|---|---|---|
+| Stands | `exhibitor` | a company taking part in a show | `/[locale]` (the home page) |
+| Shows | `organiser` | a company bringing a trade show to Uzbekistan | `/offer/[lang]` |
+
+- **The home page shows both.** Under the hero, a fork (`.dirs`) sends each
+  audience to its part: `#services` for exhibitors, `#organizers` for
+  organisers. `#organizers` is the organiser proposition in brief — title,
+  six services, «один договор вместо пяти», visitor steps, the three formats —
+  and links to `/offer/<locale>` for the plan, the full table and the report.
+  The nav carries «Организаторам», the footer links `/offer/<locale>`.
+- **One source for the organiser copy.** Everything in `#organizers` and the
+  organiser fork card is read from the /offer dictionary of the same language
+  by `offer/lib/teaser.ts`, on the server, in `app/[locale]/page.js`; the page
+  receives one language as props. Never retype those texts on the main site —
+  edit `offer/i18n/*.ts` and both pages change. Only the frame (nav label,
+  fork cards, captions, button and form wording) lives in `lib/directions.js`,
+  in code rather than `content/*.json`, because `content.ru` is already in
+  Blob and a new key there would never reach the live Russian page.
+- **Every lead says which direction it is for.** Both home-page forms carry
+  an `AudienceSwitch` (radios named `audience`); the organiser section opens
+  the popup in organiser mode (own heading, plus a «тема и даты» field). The
+  API whitelists the value with `sanitizeAudience()` and stores
+  `lead.audience`; `/offer` leads are `organiser`. Older leads have no field —
+  read it through `leadAudience()`, which derives it from the source. Telegram
+  heads an organiser lead from the home page «🌍 Заявка организатора выставки»
+  and every main-site message carries «🧭 Направление». The admin leads list
+  filters by direction, marks organisers, shows «Тип» in the card and exports
+  an `audience` column. Meta `Lead` carries it as `content_category`.
+- Structured data: the main layout's OfferCatalog lists the organiser service
+  by the `@id` of the Service node on `/offer/<locale>` (`…/offer/ru#service`),
+  so the graph reads as one organisation with two lines of work.
+- The nav has six links now. Its grid is `auto 1fr auto` (with `1fr auto 1fr`
+  the wider right block slid into the menu), links never wrap, the menu
+  tightens at 1600 and 1366px and hides below 1280px — Uzbek sets the limit.
+  The phone number collapses to its icon at 1440px.
+- Main-site locales map to /offer languages one to one (ru, en, uz);
+  `mainSiteHref()` sends Turkish and Chinese /offer visitors to `/en`.
+
 ## Storage map
 
 | Data | Where it lives | Needed env |
@@ -383,7 +428,8 @@ the October 2026 work. Each rule below cost real seconds on a phone:
 
 - Both lead forms live in `components/HomePageClient.jsx` (the contact section
   and the modal) and are uncontrolled — they submit via `FormData`, so any new
-  field needs a real `name` attribute.
+  field needs a real `name` attribute. Both post `audience` (see «Two
+  directions»).
 - Phone input is `components/PhoneField.jsx`: a country dial-code selector plus
   the national number, assembled into one hidden `phone` input. The country is
   preselected from `/api/geo` (the Vercel edge geo header) and falls back to
@@ -440,13 +486,18 @@ the October 2026 work. Each rule below cost real seconds on a phone:
 ## /offer — landing for foreign organisers
 
 `/offer/{ru,en,tr,zh,uz}` sells ExpoContact as the local organising partner
-for trade shows in Uzbekistan. It lives on the main domain but is a separate
-product, and these rules keep it that way:
+for trade shows in Uzbekistan — the full page of the organiser direction
+(see «Two directions»; the home page carries its summary). It keeps its own
+layout, languages and look, under these rules:
 
-- **No link to the main site.** Own layout and `<html>` (`app/offer/[lang]/`),
-  no shared header or footer, the logo scrolls to the top, the site address in
-  the contacts is plain text. The only hrefs allowed are in-page anchors,
-  `/offer/<lang>`, `tel:`, `mailto:`, `wa.me` and `t.me`.
+- **One way back to the main site, nothing more.** Own layout and `<html>`
+  (`app/offer/[lang]/`), no shared header or footer, and the header keeps no
+  link out — the page has one goal, the enquiry. Since the two directions were
+  joined (see «Two directions» above), the site address in the contacts and a
+  «Выставочные стенды для экспонентов» line in the footer (`footer.mainSite`)
+  link the main site through `mainSiteHref(lang)`. The logo still scrolls to
+  the top. Other hrefs allowed: in-page anchors, `/offer/<lang>`, `tel:`,
+  `mailto:`, `wa.me` and `t.me`.
 - Its five languages exist only under `offer/i18n/`. `middleware.js` returns
   early for `/offer` so next-intl's ru/en/uz routing never sees it — without
   that it redirected to `/ru/offer`. Turkish and Chinese must not appear in

@@ -342,6 +342,7 @@ export const uz: OfferDict = {
   footer: {
     rights: "Barcha huquqlar himoyalangan.",
     privacy: "Maxfiylik siyosati",
+    mainSite: "Ishtirokchilar uchun koʻrgazma stendlari",
   },
   privacy: {
     title: "Maxfiylik siyosati",

@@ -267,6 +267,7 @@ export const tr: OfferDict = {
   footer: {
     rights: "Tüm hakları saklıdır.",
     privacy: "Gizlilik politikası",
+    mainSite: "Katılımcılar için fuar standları",
   },
   privacy: {
     title: "Gizlilik politikası",

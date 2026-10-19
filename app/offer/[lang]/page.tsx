@@ -51,7 +51,7 @@ export default function OfferPage({ params }: { params: { lang: string } }) {
         <Contact lang={lang} dict={dict} countries={countryOptions(info.intl)} months={monthNames(info.intl)}
           startYear={new Date().getFullYear()} defaultDial={info.dial} />
       </main>
-      <Footer footer={dict.footer} year={new Date().getFullYear()} />
+      <Footer footer={dict.footer} year={new Date().getFullYear()} lang={lang} />
       <MobileCta label={dict.nav.cta} />
       <PrivacyDialog privacy={dict.privacy} close={dict.a11y.close} />
     </>

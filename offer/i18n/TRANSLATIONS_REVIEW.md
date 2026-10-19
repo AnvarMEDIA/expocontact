@@ -18,7 +18,7 @@
 собирается ровно из иероглифов словаря. Этот файл пересобирается командой
 `node offer/scripts/translations-review.mjs`.
 
-Всего строк: 235 × 5 языков.
+Всего строк: 236 × 5 языков.
 
 ## Мета-теги и соцсети
 
@@ -1843,6 +1843,14 @@
 - TR: Gizlilik politikası
 - ZH: 隐私政策
 - UZ: Maxfiylik siyosati
+
+**`footer.mainSite`**
+
+- RU: Выставочные стенды для экспонентов
+- EN: Exhibition stands for exhibitors
+- TR: Katılımcılar için fuar standları
+- ZH: 为参展商搭建展台
+- UZ: Ishtirokchilar uchun koʻrgazma stendlari
 
 ## Политика конфиденциальности
 

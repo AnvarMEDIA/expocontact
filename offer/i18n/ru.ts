@@ -276,6 +276,8 @@ const master = {
   footer: {
     rights: "Все права защищены.",
     privacy: "Политика конфиденциальности",
+    /** The link to the main site, which serves the other direction. */
+    mainSite: "Выставочные стенды для экспонентов",
   },
   privacy: {
     title: "Политика конфиденциальности",

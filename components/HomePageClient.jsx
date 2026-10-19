@@ -94,7 +94,7 @@ const HERO_INTERVAL = 5000;
 // ════════════════════════════════════════════════════════════════════════════
 //   MAIN
 // ════════════════════════════════════════════════════════════════════════════
-export default function HomePageClient({ locale, projects = [], clients = [], settings }) {
+export default function HomePageClient({ locale, projects = [], clients = [], settings, directions, organisers, organiserHref }) {
   const tServices  = useTranslations('services');
   const tFAQ       = useTranslations('faq');
   const tContact   = useTranslations('contact');
@@ -356,7 +356,15 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
 
   const [modalOpen, setModalOpen] = useState(false);
   const [modalSent, setModalSent] = useState(false);
-  const openModal = (e) => { e?.preventDefault?.(); setModalOpen(true); };
+  // Which direction the popup is asking about (lib/directions.js). The
+  // organiser section opens it as 'organiser'; every other button as
+  // 'exhibitor'. The visitor can switch inside the form either way.
+  const [modalAudience, setModalAudience] = useState('exhibitor');
+  const openModal = (e, audience = 'exhibitor') => {
+    e?.preventDefault?.();
+    setModalAudience(audience);
+    setModalOpen(true);
+  };
   const closeModal = useCallback(() => setModalOpen(false), []);
   useEffect(() => {
     document.body.style.overflow = modalOpen ? 'hidden' : '';
@@ -441,7 +449,10 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
   ];
 
   // ── 9. Lead form submit ───────────────────────────────────────────────────
+  // Both forms post `audience` (the checked AudienceSwitch radio) with the
+  // rest of the fields; the API whitelists it.
   const [leadSent, setLeadSent] = useState(false);
+  const [formAudience, setFormAudience] = useState('exhibitor');
   const formRef = useRef(null);
   const submitLead = async (e) => {
     e.preventDefault();
@@ -462,7 +473,7 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
     } catch {/* fall through */}
     // Only a lead the server actually took is a conversion: counting the
     // click would teach the ad platform to find people who abandon forms.
-    if (accepted) trackLead('Site contact form');
+    if (accepted) trackLead('Site contact form', { content_category: fd.get('audience') || 'exhibitor' });
     setLeadSent(true);
   };
   const submitModal = async (e) => {
@@ -482,7 +493,7 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
       });
       accepted = res.ok;
     } catch {/* fall through */}
-    if (accepted) trackLead('Site popup form');
+    if (accepted) trackLead('Site popup form', { content_category: fd.get('audience') || 'exhibitor' });
     setModalSent(true);
     setTimeout(() => {
       closeModal();
@@ -502,7 +513,7 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
   // ── 11. Active section in nav ────────────────────────────────────────────
   const [activeSec, setActiveSec] = useState('top');
   useEffect(() => {
-    const ids = ['top', 'about', 'services', 'folio', 'process', 'contact'];
+    const ids = ['top', 'about', 'services', 'organizers', 'folio', 'process', 'contact'];
     const io = new IntersectionObserver((es) => {
       es.forEach((e) => {
         if (e.isIntersecting) setActiveSec(e.target.id);
@@ -557,6 +568,7 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
           {[
             { href: '#about',    id: 'about',    label: tNav('about')    },
             { href: '#services', id: 'services', label: tNav('services') },
+            { href: '#organizers', id: 'organizers', label: directions.nav },
             { href: '#folio',    id: 'folio',    label: tNav('portfolio') },
             { href: '#process',  id: 'process',  label: tNav('process')  },
             { href: '#contact',  id: 'contact',  label: tNav('contacts') },
@@ -697,6 +709,27 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
         </div>
       </section>
 
+      {/* ── 02b / TWO DIRECTIONS ─────────────────────────────────────────
+          The fork between what ExpoContact does for exhibitors (the rest of
+          this page) and for trade show organisers (#organizers, then /offer).
+          Phones have no menu, so this is where they learn there are two. */}
+      <section className="dirs" aria-label={directions.fork.label}>
+        <div className="wrap dirs__grid">
+          <a className="dirs__card" href="#services" data-hover>
+            <span className="dirs__kicker">01 · {directions.fork.exhibitor.kicker}</span>
+            <span className="dirs__title">{directions.fork.exhibitor.title}</span>
+            <span className="dirs__text">{directions.fork.exhibitor.text}</span>
+            <span className="dirs__more">{directions.fork.exhibitor.more}<ArrowDown /></span>
+          </a>
+          <a className="dirs__card dirs__card--org" href="#organizers" data-hover>
+            <span className="dirs__kicker">02 · {directions.fork.organiser.kicker}</span>
+            <span className="dirs__title">{directions.fork.organiser.title}</span>
+            <span className="dirs__text">{organisers.lead}</span>
+            <span className="dirs__more">{directions.fork.organiser.more}<ArrowDown /></span>
+          </a>
+        </div>
+      </section>
+
       {/* ── 03 / ABOUT + COUNTERS ────────────────────────────────────── */}
       <section className="section" id="about">
         <div className="section__index">02 / About</div>
@@ -758,6 +791,95 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
                 img={sv.image}
               />
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── 04b / ORGANISERS — the second direction ──────────────────────
+          The organiser proposition in brief. Its texts come from the /offer
+          dictionary of this language (offer/lib/teaser.ts), so they always
+          match /offer; only the frame — eyebrow, captions, buttons — is the
+          main site's own (lib/directions.js). The full proposition, with the
+          plan, the formats table and the report, stays on /offer. */}
+      <section className="section org" id="organizers">
+        <div className="section__index">03 / {directions.section.index}</div>
+        <div className="wrap">
+          <div className="org__head">
+            <div>
+              <span className="eyebrow is-alt">{directions.section.eyebrow}</span>
+              <h2 className="org__title">
+                {organisers.title.map((line, i) => (
+                  <span key={i} className={i === organisers.title.length - 1 ? 'accent' : undefined}>{line}</span>
+                ))}
+              </h2>
+            </div>
+            <p className="org__lead">{organisers.lead}</p>
+          </div>
+
+          <ol className="org__services">
+            {organisers.services.map((sv, i) => (
+              <li key={i} className="org__service">
+                <span className="org__num">/{String(i + 1).padStart(2, '0')}</span>
+                <span className="org__service-title">{sv.title}</span>
+                <span className="org__service-text">{sv.text}</span>
+              </li>
+            ))}
+          </ol>
+
+          <div className="org__facts">
+            <div className="org__fact">
+              <span className="org__kicker">{organisers.contract.kicker}</span>
+              <h3 className="org__fact-title"><TitleLines lines={organisers.contract.title} /></h3>
+              <p className="org__usual">{organisers.contract.usual}</p>
+              <ul className="org__checks">
+                {organisers.contract.with.map((t, i) => <li key={i}>{t}</li>)}
+              </ul>
+            </div>
+            <div className="org__fact">
+              <span className="org__kicker">{organisers.visitors.kicker}</span>
+              <h3 className="org__fact-title"><TitleLines lines={organisers.visitors.title} /></h3>
+              <ol className="org__steps">
+                {organisers.visitors.steps.map((st, i) => (
+                  <li key={i}>
+                    <span className="org__step-num">{String(i + 1).padStart(2, '0')}</span>
+                    <span><b>{st.title}</b> — {st.text}</span>
+                  </li>
+                ))}
+              </ol>
+              <p className="org__note">{organisers.visitors.note}</p>
+            </div>
+          </div>
+
+          <div className="org__formats">
+            <span className="org__kicker">{directions.section.formats}</span>
+            <ul>
+              {organisers.formats.map((f) => (
+                <li key={f.key} className={`org__format${f.recommended ? ' is-rec' : ''}`}>
+                  {f.recommended && <span className="org__rec">{organisers.recommended}</span>}
+                  <span className="org__format-name">{f.name}</span>
+                  <span className="org__format-tag">{f.tagline}</span>
+                  <span className="org__format-bar" aria-hidden><span style={{ width: `${(f.rows / organisers.totalRows) * 100}%` }} /></span>
+                  <span className="org__format-rows">{fill(directions.section.rows, { n: f.rows, total: organisers.totalRows })}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="org__cta">
+            <a href="#" className="cta cta--primary magnetic" data-hover onClick={(e) => openModal(e, 'organiser')}>
+              <span className="cta__label">{directions.section.cta}</span>
+              <span className="cta__circle" aria-hidden>
+                <svg className="a1" viewBox="0 0 22 12" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 6 H20 M15 1 L20 6 L15 11" /></svg>
+                <svg className="a2" viewBox="0 0 22 12" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 6 H20 M15 1 L20 6 L15 11" /></svg>
+              </span>
+            </a>
+            <a href={organiserHref} className="cta cta--ghost magnetic" data-hover>
+              <span className="cta__label">{directions.section.more}</span>
+              <span className="cta__circle" aria-hidden>
+                <svg className="a1" viewBox="0 0 22 12" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 6 H20 M15 1 L20 6 L15 11" /></svg>
+                <svg className="a2" viewBox="0 0 22 12" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 6 H20 M15 1 L20 6 L15 11" /></svg>
+              </span>
+            </a>
           </div>
         </div>
       </section>
@@ -957,6 +1079,8 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
                 <div className="form__head-meta">{tContact('modalSubtitle')}</div>
               </div>
 
+              <AudienceSwitch copy={directions.form} value={formAudience} onChange={setFormAudience} />
+
               <div className="form__row">
                 <div className="field">
                   <label>{tContact('formNameLabel')} <span className="req">*</span></label>
@@ -974,8 +1098,8 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
                   <PhoneField locale={locale} placeholder={tContact('formPhonePlaceholder')} />
                 </div>
                 <div className="field">
-                  <label>{tContact('formExpoLabel')}</label>
-                  <input type="text" name="event" placeholder={tContact('formExpoPlaceholder')} />
+                  <label>{formAudience === 'organiser' ? directions.form.expoLabel : tContact('formExpoLabel')}</label>
+                  <input type="text" name="event" placeholder={formAudience === 'organiser' ? directions.form.expoPlaceholder : tContact('formExpoPlaceholder')} />
                 </div>
               </div>
 
@@ -1035,6 +1159,7 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
                 <li><a href="#folio">{tNav('portfolio')}</a></li>
                 <li><a href="#process">{tNav('process')}</a></li>
                 <li><a href="#faq">FAQ</a></li>
+                <li><a href={organiserHref}>{directions.footer}</a></li>
               </ul>
             </div>
 
@@ -1168,11 +1293,12 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
           <button className="modal__close" type="button" aria-label={tCommon('close')} onClick={closeModal}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 6 L18 18 M18 6 L6 18" /></svg>
           </button>
-          <span className="modal__eyebrow">{tContact('modalEyebrow')}</span>
-          <h3 className="modal__title">{tContact('modalHeading')}</h3>
-          <p className="modal__sub">{tContact('modalCallUs')}</p>
+          <span className="modal__eyebrow">{modalAudience === 'organiser' ? directions.modal.eyebrow : tContact('modalEyebrow')}</span>
+          <h3 className="modal__title">{modalAudience === 'organiser' ? directions.modal.heading : tContact('modalHeading')}</h3>
+          <p className="modal__sub">{modalAudience === 'organiser' ? directions.modal.sub : tContact('modalCallUs')}</p>
 
           <form className="modal__form" onSubmit={submitModal} noValidate>
+            <AudienceSwitch copy={directions.form} value={modalAudience} onChange={setModalAudience} />
             <div className="field">
               <label>{tContact('formNameLabel')} <span className="req">*</span></label>
               <input type="text" name="name" required placeholder={tContact('formNamePlaceholder')} />
@@ -1185,6 +1311,14 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
               <label>{tContact('formPhoneLabel')} <span className="req">*</span></label>
               <PhoneField locale={locale} placeholder={tContact('formPhonePlaceholder')} />
             </div>
+            {/* An organiser is asked for the show; for a stand the popup stays
+                three fields, as it always was. */}
+            {modalAudience === 'organiser' && (
+              <div className="field">
+                <label>{directions.form.expoLabel}</label>
+                <input type="text" name="event" placeholder={directions.form.expoPlaceholder} />
+              </div>
+            )}
             <button type="submit" className={`btn-submit magnetic ${modalSent ? 'is-sent' : ''}`} data-hover>
               <span className="btn-submit__label">{modalSent ? tContact('formSent') : tContact('formSubmit')}</span>
               <span className="btn-submit__circle" aria-hidden>
@@ -1202,6 +1336,49 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
 // ════════════════════════════════════════════════════════════════════════════
 //   SUB-COMPONENTS
 // ════════════════════════════════════════════════════════════════════════════
+
+/** "{n} из {total}" + { n: 3, total: 10 } → "3 из 10". */
+function fill(template, values) {
+  return template.replace(/\{(\w+)\}/g, (m, k) => (k in values ? String(values[k]) : m));
+}
+
+function ArrowDown() {
+  return (
+    <svg className="dirs__arrow" viewBox="0 0 12 22" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+      <path d="M6 1 V20 M1 15 L6 20 L11 15" />
+    </svg>
+  );
+}
+
+/** A heading from the /offer dictionary: lines, with the bracketed part accented. */
+function TitleLines({ lines }) {
+  return lines.map((parts, i) => (
+    <span key={i} className="org__line">
+      {parts.map((p, j) => (p.accent ? <span key={j} className="accent">{p.text}</span> : p.text))}
+    </span>
+  ));
+}
+
+/**
+ * Which direction a form is about — a stand at a show, or running the show.
+ * Two radios named `audience`, so the uncontrolled forms post it with the rest
+ * of their FormData.
+ */
+function AudienceSwitch({ copy, value, onChange }) {
+  return (
+    <fieldset className="aud">
+      <legend className="aud__label">{copy.label}</legend>
+      <div className="aud__opts">
+        {['exhibitor', 'organiser'].map((a) => (
+          <label key={a} className={`aud__opt${value === a ? ' is-on' : ''}`} data-hover>
+            <input type="radio" name="audience" value={a} checked={value === a} onChange={() => onChange(a)} />
+            <span>{copy[a]}</span>
+          </label>
+        ))}
+      </div>
+    </fieldset>
+  );
+}
 
 function ServiceItem({ idx, title, desc, includes, img }) {
   const [open, setOpen] = useState(false);

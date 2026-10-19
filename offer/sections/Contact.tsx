@@ -3,6 +3,7 @@ import Title from "../components/Title";
 import LogoMark from "../components/LogoMark";
 import { IconMail, IconPhone, IconGlobe, IconTelegram, IconWhatsApp } from "../components/Icons";
 import { CONTACTS } from "../lib/content";
+import { mainSiteHref } from "@/lib/directions";
 import type { CountryOption } from "../lib/countries";
 import type { OfferDict } from "../i18n";
 import base from "../styles/base.module.css";
@@ -72,8 +73,8 @@ export default function Contact({ lang, dict, countries, months, startYear, defa
               <span className={s.contactIcon} aria-hidden="true"><IconGlobe /></span>
               <span className={s.contactBody}>
                 <span className={s.contactLabel}>{contact.site}</span>
-                {/* Text only: the landing does not link to the main site. */}
-                <span className={s.contactText}>{CONTACTS.site}</span>
+                {/* The main site: ExpoContact's other direction, stands for exhibitors. */}
+                <a href={mainSiteHref(lang)} data-track="click_main_site" className={s.contactLink}>{CONTACTS.site}</a>
               </span>
             </li>
           </ul>

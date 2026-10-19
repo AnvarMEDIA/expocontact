@@ -25,7 +25,7 @@ export const CONTACTS = {
   /** Not shown on the page; the organisation's profile for structured data. */
   instagram: "https://instagram.com/expo.contact",
   email: "info@expocontact.uz",
-  /** Shown as text only: the landing never links to the main site. */
+  /** The main site, linked from the contacts and the footer (mainSiteHref in lib/directions.js). */
   site: "www.expocontact.uz",
 } as const;
 

@@ -10,6 +10,7 @@ import '@/app/globals.css';
 import { readObject } from '@/lib/store';
 import { SITE_URL } from '@/lib/site';
 import { SITE_FONTS } from '@/lib/siteFonts';
+import { directionCopy, organiserPageHref } from '@/lib/directions';
 
 // The landing's three families (app/landing.css: --f-body, --f-display,
 // --f-mono): Inter, Space Grotesk and JetBrains Mono, self-hosted and cut down
@@ -91,9 +92,26 @@ function toKeywordList(value) {
 // described by that page (app/[locale]/page.js, faq/page.js): a WebPage and an
 // FAQPage here used to repeat on /faq, /lp and /new, and claimed the home URL
 // for all of them.
-function buildJsonLd({ meta, seo, messages }) {
+function buildJsonLd({ locale, meta, seo, messages }) {
   const orgId  = `${SITE_URL}/#organization`;
   const siteId = `${SITE_URL}/#website`;
+
+  // The second direction — organising a whole show — is described in full on
+  // its /offer page, whose Service node carries this @id (offer/lib/schema.ts).
+  // Here it only joins the catalogue, so the company is one company with two
+  // lines of work, not two unrelated sites.
+  const organiserUrl = `${SITE_URL}${organiserPageHref(locale)}`;
+  const organiserService = {
+    '@type': 'Offer',
+    itemOffered: {
+      '@type': 'Service',
+      '@id':   `${organiserUrl}#service`,
+      name:    directionCopy(locale).serviceName,
+      url:     organiserUrl,
+      provider: { '@id': orgId },
+      areaServed: { '@type': 'Country', name: 'Uzbekistan' },
+    },
+  };
 
   const services = (messages?.services?.items || []).map((s) => ({
     '@type': 'Offer',
@@ -147,9 +165,11 @@ function buildJsonLd({ meta, seo, messages }) {
         'national pavilions', 'congress and conference branding', 'exhibition logistics',
         'UzExpoCentre', 'UzBuild', 'UzAutoShow', 'AgroExpo Central Asia', 'TashkentMed',
       ],
-      hasOfferCatalog: services.length
-        ? { '@type': 'OfferCatalog', name: messages?.services?.title || 'Services', itemListElement: services }
-        : undefined,
+      hasOfferCatalog: {
+        '@type': 'OfferCatalog',
+        name: messages?.services?.title || 'Services',
+        itemListElement: [...services, organiserService],
+      },
       contactPoint: {
         '@type':           'ContactPoint',
         telephone:         '+998977111711',
@@ -250,7 +270,7 @@ export default async function LocaleLayout({ children, params }) {
 
   const meta = META[locale] || META.ru;
   const messages = await getMessages();
-  const jsonLd = buildJsonLd({ meta, seo: await readSeo(locale), messages });
+  const jsonLd = buildJsonLd({ locale, meta, seo: await readSeo(locale), messages });
 
   return (
     <html lang={locale}>

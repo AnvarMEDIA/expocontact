@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { CLICK_ID_PARAMS } from '@/lib/marketing';
 import { QUALIFIER_KEYS, qualifierLabel, qualifierValueLabel } from '@/lib/leadFields';
 import { formatPhone } from '@/lib/phone';
+import { leadAudience, AUDIENCE_LABELS } from '@/lib/directions';
 import ProjectsManager from '@/components/admin/ProjectsManager';
 import StatsPage from '@/components/admin/StatsPage';
 
@@ -167,6 +168,7 @@ const LEAD_FORM_LABELS = {
   contact: 'форма контактов',
   modal:   'попап',
   ads:     'рекламная страница',
+  offer:   'лендинг для организаторов',
 };
 
 function escapeCsv(v) {
@@ -181,12 +183,13 @@ const CSV_MARKETING = ['source', 'medium', 'campaign', 'content', 'term', 'click
 
 function downloadCsv(leads) {
   const headers = [
-    'id','createdAt','status','name','company','phone','expo','message','source','locale',
+    'id','createdAt','status','audience','name','company','phone','expo','message','source','locale',
     ...QUALIFIER_KEYS,
     ...CSV_MARKETING.map(k => `utm_${k}`),
   ];
   const rows = leads.map(l => headers.map(h => {
     if (h === 'createdAt') return fmtDate(l.createdAt);
+    if (h === 'audience') return escapeCsv(AUDIENCE_LABELS[leadAudience(l)]);
     if (h.startsWith('utm_')) return escapeCsv(l.marketing?.[h.slice(4)]);
     // Brief answers are stored as keys; export them the way a human reads them.
     if (QUALIFIER_KEYS.includes(h)) {
@@ -1055,6 +1058,8 @@ function LeadsManager({ toast, onNavigate }) {
   const [leads,    setLeads]    = useState([]);
   const [loading,  setLoading]  = useState(true);
   const [filter,   setFilter]   = useState('all');
+  // Stand or show (lib/directions.js) — crosses the status tabs.
+  const [audience, setAudience] = useState('all');
   const [search,   setSearch]   = useState('');
   const [selected, setSelected] = useState(null);
   const [note,     setNote]     = useState('');
@@ -1075,12 +1080,18 @@ function LeadsManager({ toast, onNavigate }) {
     const id = params.get('lead');
     if (!id) return;
     const hit = leads.find(l => l.id === id);
-    if (hit) { setSelected(hit); setFilter('all'); }
+    if (hit) { setSelected(hit); setFilter('all'); setAudience('all'); }
     else toast('Заявка из ссылки не найдена — возможно, удалена', 'error');
     params.delete('lead');
     const qs = params.toString();
     window.history.replaceState(null, '', window.location.pathname + (qs ? `?${qs}` : ''));
   }, [loading, leads, toast]);
+
+  const audienceCounts = {
+    all:       leads.length,
+    exhibitor: leads.filter(l => leadAudience(l) === 'exhibitor').length,
+    organiser: leads.filter(l => leadAudience(l) === 'organiser').length,
+  };
 
   const counts = {
     all:         leads.length,
@@ -1092,6 +1103,7 @@ function LeadsManager({ toast, onNavigate }) {
 
   const visible = leads.filter(l => {
     if (filter !== 'all' && l.status !== filter) return false;
+    if (audience !== 'all' && leadAudience(l) !== audience) return false;
     if (search) {
       const q = search.toLowerCase();
       const hay = [l.name, l.company, l.phone, l.expo, l.message].filter(Boolean).join(' ').toLowerCase();
@@ -1176,6 +1188,17 @@ function LeadsManager({ toast, onNavigate }) {
           <FilterTab k="in_progress" label="В работе" />
           <FilterTab k="closed"      label="Закрыто" />
           <FilterTab k="spam"        label="Спам" />
+          <span className="w-px h-5 bg-white/10 mx-1" aria-hidden />
+          {[['all', 'Все направления'], ['exhibitor', 'Стенды'], ['organiser', 'Организаторы']].map(([k, label]) => (
+            <button key={k} onClick={() => setAudience(k)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors border ${
+                audience === k
+                  ? 'bg-[#2A6BC4]/20 text-[#9DBDF0] border-[#2A6BC4]/50'
+                  : 'bg-white/5 text-white/50 border-transparent hover:bg-white/10 hover:text-white'
+              }`}>
+              {label} <span className="ml-1 opacity-60">{audienceCounts[k]}</span>
+            </button>
+          ))}
           <div className="flex-1" />
           <button onClick={() => downloadCsv(visible)}
             className="px-3 py-1.5 rounded-lg text-xs font-medium bg-white/5 text-white/60 hover:bg-white/10 hover:text-white transition-colors border border-white/10">
@@ -1219,6 +1242,11 @@ function LeadsManager({ toast, onNavigate }) {
                 <div className="flex items-center gap-3 text-xs text-white/40">
                   <span>{formatPhone(l.phone)}</span>
                   {l.locale && <span className="uppercase">{l.locale}</span>}
+                  {leadAudience(l) === 'organiser' && (
+                    <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded border border-[#2A6BC4]/50 text-[#9DBDF0]">
+                      Организатор
+                    </span>
+                  )}
                   <span className="ml-auto">{fmtRelative(l.createdAt)}</span>
                 </div>
                 {l.message && <p className="text-white/50 text-xs mt-2 line-clamp-2">{l.message}</p>}
@@ -1248,6 +1276,7 @@ function LeadsManager({ toast, onNavigate }) {
             </div>
 
             <div className="space-y-2 text-sm">
+              <Field k="Тип" v={AUDIENCE_LABELS[leadAudience(selected)]} />
               {selected.company && <Field k="Компания" v={selected.company} />}
               <Field k="Телефон" v={<a href={`tel:${selected.phone}`} className="text-[#D4A843] hover:underline">{formatPhone(selected.phone)}</a>} />
               {selected.expo    && <Field k="Выставка" v={selected.expo} />}

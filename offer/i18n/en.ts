@@ -267,6 +267,7 @@ export const en: OfferDict = {
   footer: {
     rights: "All rights reserved.",
     privacy: "Privacy policy",
+    mainSite: "Exhibition stands for exhibitors",
   },
   privacy: {
     title: "Privacy policy",

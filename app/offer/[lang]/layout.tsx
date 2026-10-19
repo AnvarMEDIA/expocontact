@@ -1,9 +1,11 @@
 /**
  * /offer/[lang] — the landing for foreign trade-show organisers.
  *
- * A separate product on the main site's domain: its own <html>, fonts, styles
- * and five languages, and not a single link to the main site. Only the lead
- * pipeline is shared — the form posts to /api/contact like every other form.
+ * The full page of ExpoContact's organiser direction (lib/directions.js; the
+ * home page carries its summary). Its own <html>, fonts, styles and five
+ * languages; the only links out are the main site in the contacts and the
+ * footer. The lead pipeline is shared — the form posts to /api/contact like
+ * every other form.
  */
 import type { ReactNode } from "react";
 import type { Metadata, Viewport } from "next";

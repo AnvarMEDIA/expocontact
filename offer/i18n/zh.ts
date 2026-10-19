@@ -262,6 +262,7 @@ export const zh: OfferDict = {
   footer: {
     rights: "版权所有。",
     privacy: "隐私政策",
+    mainSite: "为参展商搭建展台",
   },
   privacy: {
     title: "隐私政策",
