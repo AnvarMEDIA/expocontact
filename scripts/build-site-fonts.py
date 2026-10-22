@@ -3,17 +3,15 @@
 Builds the self-hosted fonts of the whole site — the main site and /offer:
 public/fonts/site/*.woff2 and the @font-face rules in app/site-fonts.css.
 
-Two families: Manrope for all text and headings, JetBrains Mono for the small
-uppercase labels of the main site. One Manrope file set serves both
-directions, so a visitor moving between the home page and /offer downloads it
-once.
+One family, Manrope, for everything — text, headings and the small uppercase
+labels. One file set serves both directions, so a visitor moving between the
+home page and /offer downloads it once.
 
 Why not next/font/google: it serves Google's subsets as they are — the whole
-weight axis and every OpenType feature, including JetBrains Mono's few
-hundred code ligatures. These are the same Google files, same subsets and
-unicode ranges, cut down to:
+weight axis and every OpenType feature. These are the same Google files, same
+subsets and unicode ranges, cut down to:
 
-  * the weight range the site uses (Manrope 400-800, Mono 400-700);
+  * the weight range the site uses (400-800);
   * the layout features text needs: ccmp, locl, kern, mark, mkmk — plus
     tnum for Manrope, which /offer's counters and tables ask for
     (font-variant-numeric: tabular-nums).
@@ -68,9 +66,6 @@ FAMILIES = [
     ('manrope', 'Manrope', '200..800', (400, 800),
      ['latin', 'latin-ext', 'cyrillic', 'cyrillic-ext'], ['tnum'],
      {'ascent': '103.31%', 'descent': '29.07%', 'size': '103.19%'}),
-    ('jetbrains-mono', 'JetBrains Mono', '100..800', (400, 700),
-     ['latin', 'latin-ext', 'cyrillic', 'cyrillic-ext'], [],
-     {'ascent': '75.79%', 'descent': '22.29%', 'size': '134.59%'}),
 ]
 
 

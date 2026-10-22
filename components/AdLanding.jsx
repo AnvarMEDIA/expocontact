@@ -368,7 +368,7 @@ const LP_CSS = `
         .lp-benefits{ max-width:880px; margin:clamp(48px, 7vw, 80px) auto 0; padding:0 20px; }
         .lp-benefits__title{
           margin:0 0 20px; text-align:center;
-          font-family:var(--f-mono); font-size:11px; letter-spacing:.24em; text-transform:uppercase;
+          font-family:var(--f-label); font-weight:500; font-size:11px; letter-spacing:.24em; text-transform:uppercase;
           color:rgba(245,245,242,.45);
         }
         .lp-benefits ul{
@@ -376,7 +376,7 @@ const LP_CSS = `
           display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:14px 32px;
         }
         .lp-benefits li{ display:flex; gap:12px; align-items:baseline; font-size:14px; line-height:1.55; color:rgba(245,245,242,.6); }
-        .lp-benefits__n{ font-family:var(--f-mono); font-size:11px; color:var(--accent-primary); flex-shrink:0; }
+        .lp-benefits__n{ font-family:var(--f-label); font-weight:500; font-size:11px; color:var(--accent-primary); flex-shrink:0; }
 
         @media (max-width: 640px){
           .lp-header{ padding:16px 18px; }
