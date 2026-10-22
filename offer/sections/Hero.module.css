@@ -84,7 +84,7 @@
   font-size: clamp(2.125rem, 1.4rem + 2.6vw, 3.5rem);
   font-weight: 800;
   line-height: 1;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
 }
 .statLabel { font-size: 0.875rem; line-height: 1.35; color: rgba(255, 255, 255, 0.72); max-width: 16em; }

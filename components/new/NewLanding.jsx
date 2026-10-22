@@ -561,15 +561,10 @@ export default function NewLanding({ locale, projects, clients }) {
 
   return (
     <>
-      {/* Modern sans-serif: Inter Display weights 200–900 (additive to layout load) */}
-      <link
-        rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700;800;900&display=swap"
-      />
-
+      {/* Manrope, the site's own self-hosted files (app/site-fonts.css, loaded by the layout). */}
       <div
         className="min-h-screen bg-white text-[#0A0F1E] selection:bg-[#0A0F1E] selection:text-white antialiased"
-        style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif' }}
+        style={{ fontFamily: "var(--nf-manrope, 'Manrope'), system-ui, -apple-system, sans-serif" }}
       >
         {/* ── Global utility classes ──────────────────────────────────────── */}
         <style jsx global>{`

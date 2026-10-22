@@ -4,8 +4,8 @@
  * and orange. Rendered at build time with next/og.
  *
  * Fonts come from Google Fonts subset to exactly the characters on the card
- * (Onest; Noto Sans SC for Chinese). If they cannot be fetched the card still
- * renders, in the default font.
+ * (Manrope, as on the page; Noto Sans SC for Chinese). If they cannot be
+ * fetched the card still renders, in the default font.
  */
 import { ImageResponse } from "next/og";
 import { DEFAULT_OFFER_LANG, OFFER_LANGS, getDict, isOfferLang } from "@/offer/i18n";
@@ -34,19 +34,28 @@ async function googleFont(family: string, weight: number, text: string): Promise
 /** The mark as on the hero, in solid muted colours — the renderer ignores opacity on SVG strokes. */
 const MARK_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-2 -2 104 104"><g fill="none" stroke="#1F4C8E"><path stroke-width="11.93" d="M94.035 55.36 L94.035 50 A44.035 44.035 0 1 0 50 94.035 L55.7 94.035"/><path stroke-width="10.77" d="M72.115 55.42 L72.115 50 A22.115 22.115 0 1 0 50 72.115 L55.76 72.115"/></g><path fill="#B9541C" d="M55.67 55.67l-5.67 0c-3.12,0 -5.67,-2.55 -5.67,-5.67 0,-3.12 2.55,-5.67 5.67,-5.67 3.12,0 5.67,2.55 5.67,5.67l0 5.67z"/><polygon fill="#B9541C" points="100,61.67 61.67,61.67 61.67,100 70.84,100 70.84,70.84 100,70.84"/><polygon fill="#1F4C8E" points="77.5,77.5 100,77.5 100,100 77.5,100"/></svg>`;
 
+/**
+ * Manrope has no glyph for the Uzbek modifier letters in oʻ and gʻ (the page's
+ * own font files borrow the quotes' glyphs, scripts/build-site-fonts.py). The
+ * card draws the quotes themselves, which look the same, instead of letting
+ * the renderer pick the apostrophe from another font.
+ */
+const drawable = (s: string) => s.replace(/\u02BB/g, "\u2018").replace(/\u02BC/g, "\u2019");
+
 const dataUri = (svg: string) => `data:image/svg+xml;base64,${Buffer.from(svg).toString("base64")}`;
 
 export default async function Image({ params }: { params: { lang: string } }) {
   const lang = isOfferLang(params.lang) ? params.lang : DEFAULT_OFFER_LANG;
   const dict = getDict(lang);
-  const [first, ...accent] = dict.hero.title;
+  const title = dict.hero.title.map(drawable);
+  const [first, ...accent] = title;
   const footer = "expocontact.uz";
-  const kicker = dict.meta.ogKicker.toLocaleUpperCase(lang);
+  const kicker = drawable(dict.meta.ogKicker.toLocaleUpperCase(lang));
   // The font is subset to exactly these characters, so the kicker goes in the
   // case it is drawn in — otherwise its capitals fall back to the heavy face.
-  const text = [kicker, ...dict.hero.title, footer].join(" ");
+  const text = [kicker, ...title, footer].join(" ");
 
-  const family = lang === "zh" ? "Noto Sans SC" : "Onest";
+  const family = lang === "zh" ? "Noto Sans SC" : "Manrope";
   const [heavy, bold] = await Promise.all([googleFont(family, 800, text), googleFont(family, 600, text)]);
   const fonts = [
     ...(heavy ? [{ name: "OG", data: heavy, weight: 800 as const, style: "normal" as const }] : []),
@@ -54,7 +63,7 @@ export default async function Image({ params }: { params: { lang: string } }) {
   ];
   const cjk = lang === "zh";
   // Uzbek runs a third longer than English; a smaller size keeps it to three lines.
-  const long = dict.hero.title.join(" ").length > 62;
+  const long = title.join(" ").length > 62;
 
   return new ImageResponse(
     (

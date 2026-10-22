@@ -10,8 +10,10 @@
   --color-gold-light: #E8C06E;
   --color-gold-dark:  #B8882E;
 
-  --font-montserrat: 'Montserrat', sans-serif;
-  --font-inter:      var(--nf-inter, 'Inter'), sans-serif;
+  /* --nf-* come from app/site-fonts.css (scripts/build-site-fonts.py). */
+  --font-heading: var(--nf-manrope, 'Manrope'), sans-serif;
+  --font-body:    var(--nf-manrope, 'Manrope'), sans-serif;
+  --font-mono:    var(--nf-jetbrains-mono, 'JetBrains Mono'), ui-monospace, monospace;
 }
 
 /* ─── Base resets ───────────────────────────────────────────────────────── */

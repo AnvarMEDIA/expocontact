@@ -1,6 +1,6 @@
 /*
  * Chinese for /offer/zh: Noto Sans SC subset to the characters of the Chinese
- * dictionary (offer/scripts/build-zh-font.mjs). Onest stays first in the stack
+ * dictionary (offer/scripts/build-zh-font.mjs). Manrope stays first in the stack
  * and draws Latin and digits; these faces cover only the CJK ranges.
  *
  * The family is switched on by .of-zh on <body>, so other languages never

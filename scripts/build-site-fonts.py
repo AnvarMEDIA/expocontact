@@ -1,17 +1,22 @@
 #!/usr/bin/env python3
 """
-Builds the self-hosted fonts of the main site: public/fonts/site/*.woff2 and
-the @font-face rules in app/site-fonts.css.
+Builds the self-hosted fonts of the whole site — the main site and /offer:
+public/fonts/site/*.woff2 and the @font-face rules in app/site-fonts.css.
+
+Two families: Manrope for all text and headings, JetBrains Mono for the small
+uppercase labels of the main site. One Manrope file set serves both
+directions, so a visitor moving between the home page and /offer downloads it
+once.
 
 Why not next/font/google: it serves Google's subsets as they are — the whole
-weight axis (Inter 100-900) and every OpenType feature, including JetBrains
-Mono's few hundred code ligatures. The page uses weights 400-700 and none of
-those features, and the five files it needed came to 143 KB, all downloaded
-before the first screen settles on a phone. These are the same Google files,
-same subsets and unicode ranges, cut down to:
+weight axis and every OpenType feature, including JetBrains Mono's few
+hundred code ligatures. These are the same Google files, same subsets and
+unicode ranges, cut down to:
 
-  * the weight range the site uses (Inter 400-900, the others 400-700);
-  * the layout features text needs: ccmp, locl, kern, mark, mkmk.
+  * the weight range the site uses (Manrope 400-800, Mono 400-700);
+  * the layout features text needs: ccmp, locl, kern, mark, mkmk — plus
+    tnum for Manrope, which /offer's counters and tables ask for
+    (font-variant-numeric: tabular-nums).
 
 What a visitor sees does not change. The fallback faces keep next/font's
 metric overrides (computed against Arial), so the swap from fallback to web
@@ -47,17 +52,24 @@ UA = ('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
 
 FEATURES = ['ccmp', 'locl', 'kern', 'mark', 'mkmk']
 
-# key, Google family, full axis on Google, range kept, subsets, fallback face.
-# Space Grotesk has no Cyrillic and no fallback face on purpose: Russian
-# headings must fall through to Inter, not to a metric-matched Arial.
+# Uzbek Latin writes oʻ and gʻ with the modifier letters U+02BB and U+02BC.
+# Manrope has no glyphs for them, so every «Koʻrgazma» would draw its
+# apostrophe from a fallback font. They look exactly like the quotes ‘ and ’,
+# and many fonts share one glyph between the pairs, so where a font lacks the
+# letter it gets the quote's glyph.
+ALIASES = {0x02BB: 0x2018, 0x02BC: 0x2019}
+
+# key, Google family, full axis on Google, range kept, subsets, extra layout
+# features, fallback face. The fallback metrics are next/font's, computed
+# against Arial from the capsize data Next ships
+# (node_modules/next/dist/server/capsize-font-metrics.json): size-adjust is
+# the ratio of average glyph widths, ascent and descent are scaled by it.
 FAMILIES = [
-    ('inter', 'Inter', '100..900', (400, 900),
-     ['latin', 'latin-ext', 'cyrillic', 'cyrillic-ext'],
-     {'ascent': '90.49%', 'descent': '22.56%', 'size': '107.06%'}),
-    ('space-grotesk', 'Space Grotesk', '300..700', (400, 700),
-     ['latin', 'latin-ext'], None),
+    ('manrope', 'Manrope', '200..800', (400, 800),
+     ['latin', 'latin-ext', 'cyrillic', 'cyrillic-ext'], ['tnum'],
+     {'ascent': '103.31%', 'descent': '29.07%', 'size': '103.19%'}),
     ('jetbrains-mono', 'JetBrains Mono', '100..800', (400, 700),
-     ['latin', 'latin-ext', 'cyrillic', 'cyrillic-ext'],
+     ['latin', 'latin-ext', 'cyrillic', 'cyrillic-ext'], [],
      {'ascent': '75.79%', 'descent': '22.29%', 'size': '134.59%'}),
 ]
 
@@ -81,10 +93,15 @@ def google_faces(family, axis):
     return faces
 
 
-def slim(raw, wght):
+def slim(raw, wght, extra_features):
     font = TTFont(io.BytesIO(raw))
+    for table in font['cmap'].tables:
+        if table.isUnicode():
+            for letter, quote in ALIASES.items():
+                if letter not in table.cmap and quote in table.cmap:
+                    table.cmap[letter] = table.cmap[quote]
     opts = subset.Options()
-    opts.layout_features = FEATURES
+    opts.layout_features = FEATURES + extra_features
     opts.name_IDs = ['*']
     opts.notdef_outline = True
     sub = subset.Subsetter(opts)
@@ -105,12 +122,12 @@ def main():
         old.unlink()
 
     rules, files = [], {}
-    for key, family, axis, wght, subsets, fallback in FAMILIES:
+    for key, family, axis, wght, subsets, features, fallback in FAMILIES:
         faces = google_faces(family, axis)
         for name in subsets:
             url, urange = faces[name]
             before = fetch(url, binary=True)
-            data = slim(before, wght)
+            data = slim(before, wght, features)
             digest = hashlib.sha256(data).hexdigest()[:8]
             fname = f'{key}-{name}.{digest}.woff2'
             (OUT_DIR / fname).write_bytes(data)
@@ -137,15 +154,16 @@ def main():
                 '}')
 
     variables = []
-    for key, _family, _axis, _wght, _subsets, fallback in FAMILIES:
+    for key, _family, _axis, _wght, _subsets, _features, fallback in FAMILIES:
         stack = f'"ec-{key}"' + (f', "ec-{key}-fallback"' if fallback else '')
         variables.append(f'  --nf-{key}: {stack};')
 
     CSS_FILE.write_text(
         '/*\n'
-        ' * Self-hosted fonts of the main site. Generated by\n'
+        ' * Self-hosted fonts of the whole site (main site and /offer). Generated by\n'
         ' * scripts/build-site-fonts.py — edit the script, not this file.\n'
-        ' * landing.css and globals.css read the --nf-* variables.\n'
+        ' * landing.css, globals.css and offer/styles/base.module.css read the\n'
+        ' * --nf-* variables.\n'
         ' */\n'
         + '\n'.join(rules)
         + '\n\n:root {\n' + '\n'.join(variables) + '\n}\n'
@@ -154,10 +172,10 @@ def main():
 
     entries = '\n'.join(
         f"  '{key}-{name}': '/fonts/site/{fname}',"
-        for (key, name), fname in files.items() if name in ('latin', 'cyrillic'))
+        for (key, name), fname in files.items() if not name.endswith('-ext') or key == 'manrope')
     JS_FILE.write_text(
         '// Generated by scripts/build-site-fonts.py — edit the script, not this file.\n'
-        '// The main-site font files a page may preload, by family and subset.\n'
+        '// The font files a page may preload, by family and subset.\n'
         'export const SITE_FONTS = {\n' + entries + '\n};\n'
     )
     print('wrote', JS_FILE.relative_to(ROOT))

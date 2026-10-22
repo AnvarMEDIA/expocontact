@@ -2,7 +2,7 @@
  * Builds the Chinese font for /offer/zh: Noto Sans SC cut down to exactly the
  * characters the Chinese dictionary uses.
  *
- * Why: Onest has no hanzi. Loading Noto Sans SC through next/font/google put
+ * Why: Manrope has no hanzi. Loading Noto Sans SC through next/font/google put
  * ~200 @font-face rules (187 KB of render-blocking CSS) on every language
  * version and ~900 KB of font slices on /offer/zh. The subset is two small
  * woff2 files in public/fonts, declared in app/offer/[lang]/offer-fonts.css

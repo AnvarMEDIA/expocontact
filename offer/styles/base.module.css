@@ -72,7 +72,7 @@
   min-width: 20rem;
   background: #fff;
   color: var(--ink);
-  font-family: var(--font-onest), var(--font-sc, "PingFang SC"), "Microsoft YaHei", system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--nf-manrope, "Manrope"), var(--font-sc, "PingFang SC"), "Microsoft YaHei", system-ui, -apple-system, "Segoe UI", sans-serif;
   font-size: 1.0625rem;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
@@ -113,7 +113,7 @@
   border-radius: 0.375rem;
 }
 
-/* Chinese: Onest has no hanzi, so they come from Noto Sans SC; tight Latin
+/* Chinese: Manrope has no hanzi, so they come from Noto Sans SC; tight Latin
    tracking and the 1.02 display leading would crush them. */
 .body:lang(zh) { line-height: 1.65; }
 
@@ -179,10 +179,10 @@
   font-size: clamp(2.5rem, 1.6rem + 5.2vw, 5.375rem);
   font-weight: 800;
   line-height: 1.02;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.02em;
 }
 /* Phones: the size follows the screen width. The longest unbreakable piece of
-   any headline («Koʻrgazmangiz —», 312px at 40px) must fit a 320px screen;
+   any headline («Koʻrgazmangiz —», 318px at 40px in Manrope) must fit a 320px screen;
    at 360–414px this lands on the 38–44px the design asks for. */
 @media (max-width: 639px) {
   .h1 { font-size: clamp(2.125rem, 10.6vw, 2.75rem); }
@@ -191,7 +191,7 @@
   font-size: clamp(1.875rem, 1.15rem + 2.9vw, 3.375rem);
   font-weight: 800;
   line-height: 1.06;
-  letter-spacing: -0.025em;
+  letter-spacing: -0.015em;
   text-wrap: balance;
 }
 .body:lang(zh) .h1,

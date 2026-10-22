@@ -2,33 +2,42 @@
  * /offer/[lang] — the landing for foreign trade-show organisers.
  *
  * The full page of ExpoContact's organiser direction (lib/directions.js; the
- * home page carries its summary). Its own <html>, fonts, styles and five
- * languages; the only links out are the main site in the contacts and the
- * footer. The lead pipeline is shared — the form posts to /api/contact like
- * every other form.
+ * home page carries its summary). Its own <html>, styles and five
+ * languages, the main site's fonts; the only links out are the main site in
+ * the contacts and the footer. The lead pipeline is shared — the form posts
+ * to /api/contact like every other form.
  */
 import type { ReactNode } from "react";
 import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
-import { Onest } from "next/font/google";
 import AnalyticsTracker from "@/components/AnalyticsTracker";
 import { META_PIXEL_ID, META_PIXEL_SNIPPET } from "@/lib/metaPixel";
 import { DEFAULT_OFFER_LANG, LANG_INFO, OFFER_LANGS, getDict, isOfferLang } from "@/offer/i18n";
 import { offerJsonLd } from "@/offer/lib/schema";
 import { SITE_URL } from "@/lib/site";
+import { SITE_FONTS } from "@/lib/siteFonts";
 import ClickTracker from "@/offer/components/ClickTracker";
 import RevealObserver from "@/offer/components/RevealObserver";
 import Trackers from "@/offer/components/Trackers";
 import base from "@/offer/styles/base.module.css";
+// Manrope, the same self-hosted files as the main site (scripts/
+// build-site-fonts.py): a visitor moving between the two directions downloads
+// them once.
+import "@/app/site-fonts.css";
 import "./offer-motion.css";
 import "./offer-fonts.css";
 
-
-const onest = Onest({
-  subsets: ["latin", "latin-ext", "cyrillic"],
-  display: "swap",
-  variable: "--font-onest",
-});
+/**
+ * The Manrope files the hero draws with: Latin everywhere, plus Cyrillic for
+ * Russian and the extended Latin Turkish needs for ğ, ş and İ. Chinese draws
+ * its headline from Noto Sans SC, preloaded below instead, so nothing competes
+ * with it.
+ */
+const PRELOAD_FONTS: Record<string, string[]> = {
+  ru: [SITE_FONTS["manrope-latin"], SITE_FONTS["manrope-cyrillic"]],
+  tr: [SITE_FONTS["manrope-latin"], SITE_FONTS["manrope-latin-ext"]],
+  zh: [],
+};
 
 /** Runs before first paint: hide-until-revealed only when JavaScript is here to reveal. */
 const HEAD_SCRIPT =
@@ -93,6 +102,9 @@ export default function OfferLayout({ children, params }: { children: ReactNode 
     <html lang={LANG_INFO[lang].html} className={base.html} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: HEAD_SCRIPT }} />
+        {(PRELOAD_FONTS[lang] || [SITE_FONTS["manrope-latin"]]).map((href) => (
+          <link key={href} rel="preload" as="font" type="font/woff2" href={href} crossOrigin="anonymous" />
+        ))}
         {/* The Chinese headline is the largest paint on /offer/zh and cannot
             render without these glyphs: fetch them before the CSS asks. */}
         {lang === "zh" && (
@@ -106,7 +118,7 @@ export default function OfferLayout({ children, params }: { children: ReactNode 
         <script dangerouslySetInnerHTML={{ __html: META_PIXEL_SNIPPET }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: offerJsonLd(lang, SITE_URL) }} />
       </head>
-      <body className={`${base.body} of-root ${onest.variable} ${lang === "zh" ? "of-zh" : ""}`}>
+      <body className={`${base.body} of-root ${lang === "zh" ? "of-zh" : ""}`}>
         {/* Raw HTML on purpose: as a JSX <img>, React hoisted it into a
             <link rel="preload" as="image">, so every browser fetched the
             noscript pixel — a second, cookieless PageView for each visit. */}

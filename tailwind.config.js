@@ -26,10 +26,10 @@ module.exports = {
         'brand-blue':   'var(--accent-secondary)',
       },
       fontFamily: {
-        heading: ['var(--font-montserrat)', 'sans-serif'],
-        body:    ['var(--font-inter)',       'sans-serif'],
-        display: ['Space Grotesk', 'Inter', 'system-ui', 'sans-serif'],
-        mono:    ['JetBrains Mono', 'ui-monospace', 'monospace'],
+        heading: ['var(--font-heading)'],
+        body:    ['var(--font-body)'],
+        display: ['var(--font-heading)'],
+        mono:    ['var(--font-mono)'],
       },
       animation: {
         'marquee':       'marquee 35s linear infinite',
