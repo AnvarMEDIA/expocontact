@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import PhoneField from './PhoneField';
 import useMarketing from './useMarketing';
-import { trackLead } from '@/lib/metaPixel';
+import { rememberLead, thanksHref } from '@/lib/leadHandoff';
 import { QUALIFIERS } from '@/lib/leadFields';
 import '@/app/landing.css';
 
@@ -443,10 +443,13 @@ export default function AdLanding({ locale = 'ru', settings = {}, overrides = {}
       });
       if (!res.ok) throw new Error('bad response');
 
-      // Conversion signal for the ad platform. Our own statistics count the
-      // lead server-side, so nothing here is needed for the admin dashboard.
-      trackLead(`LP expocontact.uz/${locale}/lp`);
+      // The conversion is counted on the thank-you page (lib/leadHandoff.js):
+      // a full page load, so Google Ads can match its URL, and the event is
+      // not lost to this page unloading. Our own statistics count the lead
+      // server-side.
+      rememberLead({ form: `LP expocontact.uz/${locale}/lp`, audience: 'exhibitor' });
       setSent(true);
+      window.location.assign(thanksHref(locale, 'exhibitor'));
     } catch {
       setError(
         locale === 'en' ? 'Could not send. Please call us instead.'

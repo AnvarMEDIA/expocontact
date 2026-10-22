@@ -1839,6 +1839,57 @@ svg .brand-text   { fill: var(--text-primary);     }
 
 .org__cta{ margin-top:56px; display:flex; flex-wrap:wrap; gap:14px; align-items:center; }
 
+/* Thank-you page (/[locale]/thanks) — where every main-site form lands. */
+.thanks{
+  min-height:100svh;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:40px;
+  padding:clamp(88px, 12vh, 140px) 20px 64px;
+  background:radial-gradient(ellipse 60% 45% at 50% 0%, rgba(232,101,28,.12), transparent 70%);
+}
+.thanks__logo{ position:absolute; top:24px; left:clamp(20px, 4vw, 48px); }
+.thanks__logo svg{ height:40px; width:auto; display:block; }
+.thanks__logo svg .brand-blue{ fill:var(--accent-secondary); }
+.thanks__logo svg .brand-orange{ fill:var(--accent-primary); }
+.thanks__logo svg .brand-text{ fill:var(--text-primary); }
+.thanks__card{
+  width:100%; max-width:640px;
+  display:flex; flex-direction:column; gap:20px;
+  padding:clamp(28px, 5vw, 56px);
+  background:var(--bg-elevated); border:1px solid var(--line);
+}
+.thanks__title{
+  font-family:var(--f-display); font-weight:700;
+  font-size:clamp(44px, 7vw, 84px); line-height:.95; letter-spacing:-.03em;
+}
+.thanks__text{ font-size:18px; line-height:1.55; color:var(--text-primary); max-width:44ch; }
+.thanks__prepare{ display:grid; gap:14px; padding-top:8px; }
+.thanks__prepare-title{
+  font-family:var(--f-mono); font-size:11px; letter-spacing:.24em; text-transform:uppercase;
+  color:var(--accent-secondary-ink);
+}
+.thanks__alt{ color:var(--text-muted); font-size:15px; margin-top:8px; }
+.thanks__contacts{ display:flex; flex-wrap:wrap; gap:8px; }
+.thanks__chip{
+  display:inline-flex; align-items:center; min-height:44px; padding:0 18px;
+  border:1px solid var(--line); border-radius:999px;
+  font-family:var(--f-mono); font-size:12px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--text-primary);
+  transition:border-color .25s, background .25s;
+}
+.thanks__chip:hover{ border-color:var(--accent-primary); background:rgba(232,101,28,.12); }
+.thanks__links{
+  display:flex; flex-wrap:wrap; justify-content:space-between; gap:12px 24px;
+  padding-top:20px; margin-top:4px; border-top:1px solid var(--line);
+  font-family:var(--f-mono); font-size:11px; letter-spacing:.2em; text-transform:uppercase;
+}
+.thanks__links a{ color:var(--text-muted); transition:color .25s; }
+.thanks__links a:first-child{ color:var(--text-primary); }
+.thanks__links a:hover{ color:var(--accent-primary); }
+/* body.landing-body hides the system cursor for the home page's custom one,
+   which this page does not render. */
+.thanks{ cursor:auto; }
+.thanks a{ cursor:pointer; }
+
 /* Which direction a form is about — a stand, or the whole show. */
 .aud{ border:0; margin:0 0 6px; padding:0; min-width:0; }
 .modal__form .aud{ padding-top:18px; margin-bottom:4px; }

@@ -430,6 +430,20 @@ the October 2026 work. Each rule below cost real seconds on a phone:
   and the modal) and are uncontrolled — they submit via `FormData`, so any new
   field needs a real `name` attribute. Both post `audience` (see «Two
   directions»).
+- **Every main-site form ends on `/<locale>/thanks`** — the contact section,
+  the popup and `/lp`. Once the API answers ok, the form calls
+  `rememberLead()` (`lib/leadHandoff.js`) and `window.location.assign()`s
+  `thanksHref(locale, audience)`; an organiser lead adds `?for=organiser`.
+  It must be a full page load, not `router.push()`: Google Ads matches the
+  URL of a loaded page. The thank-you page is the conversion page — see
+  «Conversions» below. A failed request stays on the form as before.
+- `app/[locale]/thanks/page.js` is `noindex, nofollow`, has its own canonical
+  and no hreflang, and is not in the sitemap. Its texts are reused, not new:
+  the call-back promise from `contact.modalCallUs` (CMS), the organiser block
+  from the /offer dictionary (`form.success*`, `contact.prepare`), contacts
+  from `offer/lib/content.ts`; only the kicker and link labels live in
+  `lib/directions.js` (`thanks`). The page sets `landing-body` like the home
+  page and restores the system cursor, which that class hides.
 - Phone input is `components/PhoneField.jsx`: a country dial-code selector plus
   the national number, assembled into one hidden `phone` input. The country is
   preselected from `/api/geo` (the Vercel edge geo header) and falls back to
@@ -701,15 +715,18 @@ Rules worth keeping:
 
 - The Meta Pixel (ExpoContact Pixel, id 2224423588452859) loads from
   `app/[locale]/layout.js`. `/admin` has its own layout and is deliberately
-  untracked. It is the only third-party counter on the site; Yandex.Metrika was
-  removed in favour of the statistics below. The `yandex` verification string in
-  the layout's metadata is Yandex **Webmaster** (search console) and has nothing
-  to do with it — keep it.
+  untracked. The only other third-party tag is the Google tag, and only once
+  `NEXT_PUBLIC_GADS_ID` (or `NEXT_PUBLIC_GA4_ID`) is set — see «Conversions».
+  Yandex.Metrika was removed in favour of our own statistics. The `yandex`
+  verification string in the layout's metadata is Yandex **Webmaster** (search
+  console) and has nothing to do with it — keep it.
 - The snippet defines the `fbq` queue at once but fetches `fbevents.js` (~100 KB
   plus a config file) on the first interaction or 3 s after load. Queued
   calls — the first PageView, any Lead — are sent when it runs; a visitor who
   leaves within 3 s without touching the page is not counted. The pages ads
-  point at, `/<locale>/lp` and `/offer`, load it immediately.
+  point at (`/<locale>/lp`, `/offer`) and the thank-you page load it
+  immediately — `LOAD_AT_ONCE` in `lib/metaPixel.js`, shared with the Google
+  tag.
 - The `<noscript>` pixel is raw HTML (`dangerouslySetInnerHTML`) in both
   layouts. As a JSX `<img>`, React hoisted it into `<link rel="preload"
   as="image">`, so every browser fetched `facebook.com/tr?…&noscript=1` — a
@@ -722,10 +739,33 @@ Rules worth keeping:
   remounts. The last counted path therefore lives at module scope, not in a
   ref: a per-instance flag resets on that remount and swallows exactly the
   PageView it exists to send.
-- `Lead` fires only after the API confirms the lead (`res.ok`), never on the
-  button click, from all three forms: the ad landing, the contact section and
-  the popup. `content_name` says which one. Counting clicks would teach the ad
-  platform to find people who abandon forms.
+- `Lead` fires only for a lead the API confirmed (`res.ok`), never on the
+  button click, for all three main-site forms: the ad landing, the contact
+  section and the popup. `content_name` says which one, `content_category`
+  the direction. Counting clicks would teach the ad platform to find people
+  who abandon forms. It is sent by `<LeadConfirmed>` on the thank-you page,
+  from the one-shot handoff in sessionStorage — not by the form, whose page is
+  unloading — so a reload or a direct visit to `/thanks` sends nothing. /offer
+  keeps its inline success and fires its events in the form (`offer/lib/track.ts`).
+
+### Conversions — Google Ads
+
+- `lib/googleTag.js` renders the Google tag from `app/[locale]/layout.js`
+  when `NEXT_PUBLIC_GADS_ID` and/or `NEXT_PUBLIC_GA4_ID` is set (Vercel env,
+  then redeploy — the values are inlined at build time). Without them nothing
+  is rendered. Like the pixel, the `gtag` queue exists at once and gtag.js is
+  fetched on the first interaction or 3 s after load, at once on
+  `LOAD_AT_ONCE` pages. /offer has its own copy of the tag
+  (`offer/components/Trackers.tsx`) on the same variables.
+- Two ways to count a lead in Google Ads; an account uses **one** of them as
+  primary, or every lead counts twice:
+  1. by URL — the conversion action «Контакты → URL страницы»:
+     `https://www.expocontact.uz/ru/thanks`, then in the action's settings
+     «URL содержит» `/thanks` so en and uz count too, counting «Одна».
+     Needs only the tag. Its weakness is that any visit to the URL counts.
+  2. by event — `NEXT_PUBLIC_GADS_LEAD_LABEL`, and `trackGoogleLead()` on the
+     thank-you page sends `conversion` to `AW-…/label` only after a confirmed
+     submit. More exact; /offer's form sends the same event.
 - Conversions API is not connected, so there is no event deduplication and no
   `eventID` to send. If it is added later, the same id must be sent from both
   sides for each event.

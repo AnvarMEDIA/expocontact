@@ -7,7 +7,7 @@ import BrandLogo from './BrandLogo';
 import HeroLogo3D from './HeroLogo3D';
 import PhoneField from './PhoneField';
 import useMarketing from './useMarketing';
-import { trackLead } from '@/lib/metaPixel';
+import { rememberLead, thanksHref } from '@/lib/leadHandoff';
 import '@/app/landing.css';
 
 /* ════════════════════════════════════════════════════════════════════════════
@@ -473,7 +473,13 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
     } catch {/* fall through */}
     // Only a lead the server actually took is a conversion: counting the
     // click would teach the ad platform to find people who abandon forms.
-    if (accepted) trackLead('Site contact form', { content_category: fd.get('audience') || 'exhibitor' });
+    // It is counted on the thank-you page (lib/leadHandoff.js), which a full
+    // page load reaches — so Google Ads can match its URL.
+    if (accepted) {
+      const audience = fd.get('audience') || 'exhibitor';
+      rememberLead({ form: 'Site contact form', audience });
+      window.location.assign(thanksHref(locale, audience));
+    }
     setLeadSent(true);
   };
   const submitModal = async (e) => {
@@ -493,7 +499,12 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
       });
       accepted = res.ok;
     } catch {/* fall through */}
-    if (accepted) trackLead('Site popup form', { content_category: fd.get('audience') || 'exhibitor' });
+    if (accepted) {
+      const audience = fd.get('audience') || 'exhibitor';
+      rememberLead({ form: 'Site popup form', audience });
+      window.location.assign(thanksHref(locale, audience));
+      return;
+    }
     setModalSent(true);
     setTimeout(() => {
       closeModal();

@@ -6,6 +6,7 @@ import { Analytics } from '@vercel/analytics/next';
 import AnalyticsTracker from '@/components/AnalyticsTracker';
 import MetaPixel from '@/components/MetaPixel';
 import { META_PIXEL_ID, META_PIXEL_SNIPPET } from '@/lib/metaPixel';
+import { googleTagSnippet } from '@/lib/googleTag';
 import '@/app/globals.css';
 import { readObject } from '@/lib/store';
 import { SITE_URL } from '@/lib/site';
@@ -28,6 +29,10 @@ const preloadFonts = (locale) => [
   SITE_FONTS['space-grotesk-latin'],
   ...(locale === 'ru' ? [SITE_FONTS['inter-cyrillic']] : []),
 ];
+
+// Google Ads / GA4 — null, and nothing rendered, until an id is set in the
+// environment (lib/googleTag.js).
+const GOOGLE_TAG = googleTagSnippet();
 
 // SEO comes from the persistent store, which falls back to the content files
 // bundled with the deployment. It must never be read with fs at request time:
@@ -282,6 +287,7 @@ export default async function LocaleLayout({ children, params }) {
         {/* Meta Pixel — ExpoContact Pixel. Not on /admin: that has its own
             layout, and there is nothing to measure behind the password. */}
         <script dangerouslySetInnerHTML={{ __html: META_PIXEL_SNIPPET }} />
+        {GOOGLE_TAG && <script dangerouslySetInnerHTML={{ __html: GOOGLE_TAG }} />}
 
         {/* JSON-LD: the company, its service catalogue and the website */}
         <script
