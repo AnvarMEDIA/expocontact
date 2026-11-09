@@ -7,6 +7,7 @@ import AnalyticsTracker from '@/components/AnalyticsTracker';
 import MetaPixel from '@/components/MetaPixel';
 import { META_PIXEL_ID, META_PIXEL_SNIPPET } from '@/lib/metaPixel';
 import { googleTagSnippet } from '@/lib/googleTag';
+import { gtmSnippet, gtmNoscript } from '@/lib/gtm';
 import '@/app/globals.css';
 import { readObject } from '@/lib/store';
 import { SITE_URL } from '@/lib/site';
@@ -32,6 +33,10 @@ const preloadFonts = (locale) => [
 // Google Ads / GA4 — null, and nothing rendered, until an id is set in the
 // environment (lib/googleTag.js).
 const GOOGLE_TAG = googleTagSnippet();
+
+// Google Tag Manager (lib/gtm.js) — null, and nothing rendered, when switched off.
+const GTM_TAG = gtmSnippet();
+const GTM_NOSCRIPT = gtmNoscript();
 
 // SEO comes from the persistent store, which falls back to the content files
 // bundled with the deployment. It must never be read with fs at request time:
@@ -287,6 +292,7 @@ export default async function LocaleLayout({ children, params }) {
             layout, and there is nothing to measure behind the password. */}
         <script dangerouslySetInnerHTML={{ __html: META_PIXEL_SNIPPET }} />
         {GOOGLE_TAG && <script dangerouslySetInnerHTML={{ __html: GOOGLE_TAG }} />}
+        {GTM_TAG && <script dangerouslySetInnerHTML={{ __html: GTM_TAG }} />}
 
         {/* JSON-LD: the company, its service catalogue and the website */}
         <script
@@ -307,6 +313,7 @@ export default async function LocaleLayout({ children, params }) {
             __html: `<img height="1" width="1" style="display:none" alt="" src="https://www.facebook.com/tr?id=${META_PIXEL_ID}&amp;ev=PageView&amp;noscript=1">`,
           }}
         />
+        {GTM_NOSCRIPT && <noscript dangerouslySetInnerHTML={{ __html: GTM_NOSCRIPT }} />}
         <NextIntlClientProvider messages={messages}>
           {children}
         </NextIntlClientProvider>

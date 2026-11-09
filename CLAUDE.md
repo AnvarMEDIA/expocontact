@@ -730,8 +730,9 @@ Rules worth keeping:
 
 - The Meta Pixel (ExpoContact Pixel, id 2224423588452859) loads from
   `app/[locale]/layout.js`. `/admin` has its own layout and is deliberately
-  untracked. The only other third-party tag is the Google tag, and only once
-  `NEXT_PUBLIC_GADS_ID` (or `NEXT_PUBLIC_GA4_ID`) is set — see «Conversions».
+  untracked. The other third-party tags are Google Tag Manager (below) and the
+  Google tag, and the latter only once `NEXT_PUBLIC_GADS_ID` (or
+  `NEXT_PUBLIC_GA4_ID`) is set — see «Conversions».
   Yandex.Metrika was removed in favour of our own statistics. The `yandex`
   verification string in the layout's metadata is Yandex **Webmaster** (search
   console) and has nothing to do with it — keep it.
@@ -762,6 +763,24 @@ Rules worth keeping:
   from the one-shot handoff in sessionStorage — not by the form, whose page is
   unloading — so a reload or a direct visit to `/thanks` sends nothing. /offer
   keeps its inline success and fires its events in the form (`offer/lib/track.ts`).
+
+### Google Tag Manager
+
+- Container `GTM-K6KCKM2F`, built in (`lib/gtm.js`): rendered by
+  `app/[locale]/layout.js` and `app/offer/[lang]/layout.tsx`, never by
+  /admin. `NEXT_PUBLIC_GTM_ID` replaces the container; set to an empty string
+  it switches GTM off. Loading follows the pixel and the Google tag: `dataLayer`
+  and the `gtm.start` event at once, gtm.js on the first interaction or 3 s
+  after load, at once on `LOAD_AT_ONCE` pages. The `gtm.start`/`gtm.js` push
+  is what makes the container's page-view triggers fire — GTM's own snippet
+  does it, and a plain `<script src=…gtm.js?id=…>` plus `gtag('js')` does not.
+  The `<noscript>` iframe is raw HTML, like the Meta noscript pixel.
+- **One path per measurement.** GA4, Google Ads and the Meta Pixel are
+  already served by `lib/googleTag.js` (env ids) and `lib/metaPixel.js`
+  (built in). If the container also carries a GA4 / Ads / Meta tag for the
+  same thing, every pageview and lead counts twice: put each in one place.
+  The site pushes no custom events to `dataLayer` yet; a lead trigger in the
+  container needs one from `<LeadConfirmed>` on the thank-you page.
 
 ### Conversions — Google Ads
 

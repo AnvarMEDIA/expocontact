@@ -12,6 +12,7 @@ import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
 import AnalyticsTracker from "@/components/AnalyticsTracker";
 import { META_PIXEL_ID, META_PIXEL_SNIPPET } from "@/lib/metaPixel";
+import { gtmSnippet, gtmNoscript } from "@/lib/gtm";
 import { DEFAULT_OFFER_LANG, LANG_INFO, OFFER_LANGS, getDict, isOfferLang } from "@/offer/i18n";
 import { offerJsonLd } from "@/offer/lib/schema";
 import { SITE_URL } from "@/lib/site";
@@ -38,6 +39,10 @@ const PRELOAD_FONTS: Record<string, string[]> = {
   tr: [SITE_FONTS["manrope-latin"], SITE_FONTS["manrope-latin-ext"]],
   zh: [],
 };
+
+// Google Tag Manager (lib/gtm.js) — null, and nothing rendered, when switched off.
+const GTM_TAG = gtmSnippet();
+const GTM_NOSCRIPT = gtmNoscript();
 
 /** Runs before first paint: hide-until-revealed only when JavaScript is here to reveal. */
 const HEAD_SCRIPT =
@@ -116,6 +121,8 @@ export default function OfferLayout({ children, params }: { children: ReactNode 
         {/* Meta Pixel — the same ExpoContact Pixel as the main site. Loaded
             here because the main site's layout, which carries it, is not. */}
         <script dangerouslySetInnerHTML={{ __html: META_PIXEL_SNIPPET }} />
+        {/* Google Tag Manager — the same container as the main site (lib/gtm.js). */}
+        {GTM_TAG && <script dangerouslySetInnerHTML={{ __html: GTM_TAG }} />}
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: offerJsonLd(lang, SITE_URL) }} />
       </head>
       <body className={`${base.body} of-root ${lang === "zh" ? "of-zh" : ""}`}>
@@ -127,6 +134,7 @@ export default function OfferLayout({ children, params }: { children: ReactNode 
             __html: `<img height="1" width="1" style="display:none" alt="" src="https://www.facebook.com/tr?id=${META_PIXEL_ID}&amp;ev=PageView&amp;noscript=1">`,
           }}
         />
+        {GTM_NOSCRIPT && <noscript dangerouslySetInnerHTML={{ __html: GTM_NOSCRIPT }} />}
         {children}
         <RevealObserver />
         <ClickTracker language={lang} />
