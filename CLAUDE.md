@@ -497,9 +497,11 @@ the October 2026 work. Each rule below cost real seconds on a phone:
   on its links, buttons and pills in its own style block.
 - Attribution: `components/useMarketing.js` reads `utm_source`, `utm_medium`,
   `utm_campaign`, `utm_content`, `utm_term` and the platform click ids
-  (`gclid`, `yclid`, `fbclid`, `ttclid`, `msclkid`, `twclid`) off the landing
-  URL, keeps them in `sessionStorage` for the rest of the visit, and hands them
-  to whichever form is submitted — the ad page and both forms on the main site.
+  (`CLICK_ID_PARAMS` in `lib/marketing.js`: `gclid`, `gbraid`, `wbraid`,
+  `yclid`, `fbclid`, `ttclid`, `msclkid`, `twclid`, and Google's `gad_source`
+  marker, which survives when a browser strips the id) off the landing URL,
+  keeps them in `sessionStorage` for the rest of the visit, and hands them to
+  whichever form is submitted — the ad page and both forms on the main site.
 - `lib/marketing.js` holds the shared constants plus `sanitizeMarketing()`,
   which whitelists and length-bounds the values server-side. Never store what
   the browser posted without it: these strings reach Telegram, the admin panel
@@ -693,7 +695,16 @@ else's dashboard. Two modules, both testable on their own:
 - `lib/analytics/model.js` — pure classification, no I/O: `parseDevice()`,
   `isBot()`, and `classifySource()`, which turns a referrer plus utm tags into
   `{source, channel, campaign}` over the channels ads / campaign / search /
-  social / referral / direct. Also the field-name codec: a day is one Redis hash
+  social / referral / direct. Three rules that each hid ad traffic once
+  (November 2026, the first Google Ads day read «Прямые заходы 152»):
+  a click id alone is an ad — Google Ads auto-tagging sends `gclid` and no
+  utm (`isPaidClick()`; not `fbclid`, which Meta adds to every link, paid or
+  not); an ad network's own host as referrer (`doubleclick.net`,
+  `googlesyndication.com`, …) is an ad, not «a site»; and every page of a
+  visit takes the visit's source from the entry referrer kept for the session
+  (`marketing.referrer`) — later pages used to count as direct. Named
+  campaigns still need utm tags: a click id carries no campaign name.
+  Also the field-name codec: a day is one Redis hash
   whose fields are prefixed (`p:` page, `s:` source, `ch:` channel, `c:`
   campaign, `d:` device, `b:` browser, `l:` locale, `g:` country, `h:` hour).
   `explodeDay()` matches the longest prefix first — otherwise `ch:` is read as
