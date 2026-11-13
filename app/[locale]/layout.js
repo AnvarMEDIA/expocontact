@@ -8,6 +8,7 @@ import MetaPixel from '@/components/MetaPixel';
 import { META_PIXEL_ID, META_PIXEL_SNIPPET } from '@/lib/metaPixel';
 import { googleTagSnippet } from '@/lib/googleTag';
 import { gtmSnippet, gtmNoscript } from '@/lib/gtm';
+import { THEME_SCRIPT } from '@/lib/theme';
 import '@/app/globals.css';
 import { readObject } from '@/lib/store';
 import { SITE_URL } from '@/lib/site';
@@ -282,8 +283,12 @@ export default async function LocaleLayout({ children, params }) {
   const jsonLd = buildJsonLd({ locale, meta, seo: await readSeo(locale), messages });
 
   return (
-    <html lang={locale}>
+    // The theme script sets data-theme on <html> before React hydrates it.
+    <html lang={locale} suppressHydrationWarning>
       <head>
+        {/* First in <head>: the saved light theme must be on <html> before
+            anything paints (lib/theme.js). */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
         {preloadFonts(locale).map((href) => (
           <link key={href} rel="preload" href={href} as="font" type="font/woff2" crossOrigin="anonymous" />
         ))}

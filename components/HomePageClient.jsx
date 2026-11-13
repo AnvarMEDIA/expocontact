@@ -6,6 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import BrandLogo from './BrandLogo';
 import HeroLogo3D from './HeroLogo3D';
 import PhoneField from './PhoneField';
+import ThemeToggle from './ThemeToggle';
 import useMarketing from './useMarketing';
 import { rememberLead, thanksHref } from '@/lib/leadHandoff';
 import '@/app/landing.css';
@@ -607,6 +608,7 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
               </button>
             ))}
           </div>
+          <ThemeToggle locale={locale} className="nav__theme" />
           <a href="#" className="btn-cta magnetic" data-hover onClick={openModal}>
             <span className="btn-cta__dot" />
             <span>{tNav('cta')}</span>
@@ -1013,7 +1015,7 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
             <h3 style={{ marginTop: 18 }}>{sClients.title || tClients('heading')}</h3>
           </div>
           <div style={{ textAlign: 'right' }}>
-            <div style={{ fontFamily: 'var(--f-display)', fontWeight: 700, fontSize: 80, lineHeight: 1, letterSpacing: '-.04em', color: 'var(--accent-primary)' }}>
+            <div style={{ fontFamily: 'var(--f-display)', fontWeight: 700, fontSize: 80, lineHeight: 1, letterSpacing: '-.04em', color: 'var(--accent-primary-ink)' }}>
               {sClients.bigNumber || tClients('bigNumber')}<sup style={{ fontSize: '.4em' }}>{sClients.bigSuffix || tClients('bigSuffix')}</sup>
             </div>
             <div className="mono">{sClients.caption || tClients('caption')}</div>
@@ -1035,7 +1037,7 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
               />
             </div>
             <span className="mono">
-              {tFAQ('askCta')} <a href="#contact" style={{ color: 'var(--accent-primary)' }}>— {tFAQ('askLink')}</a>
+              {tFAQ('askCta')} <a href="#contact" style={{ color: 'var(--accent-primary-ink)' }}>— {tFAQ('askLink')}</a>
             </span>
           </div>
           <FAQList items={faqItems} />
@@ -1219,6 +1221,7 @@ export default function HomePageClient({ locale, projects = [], clients = [], se
 
           <div className="footer__bottom">
             <span>{sFooter.rights || tFooter('rights')}</span>
+            <ThemeToggle locale={locale} variant="text" className="footer__theme" />
             <span>
               Made with <span style={{ color: 'var(--accent-primary)' }}>♥</span> by{' '}
               <a className="footer__maze" href="https://www.maze.uz" target="_blank" rel="noopener noreferrer" data-hover>

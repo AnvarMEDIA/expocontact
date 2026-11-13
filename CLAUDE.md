@@ -122,6 +122,8 @@ both halves share:
   the wider right block slid into the menu), links never wrap, the menu
   tightens at 1600 and 1366px and hides below 1280px — Uzbek sets the limit.
   The phone number collapses to its icon at 1440px.
+  The theme switch sits between the languages and the CTA (see «Light and
+  dark themes»).
 - Main-site locales map to /offer languages one to one (ru, en, uz);
   `mainSiteHref()` sends Turkish and Chinese /offer visitors to `/en`.
 
@@ -436,6 +438,45 @@ the October 2026 work. Each rule below cost real seconds on a phone:
   that mode everything loaded before the late paint counts towards LCP. Judge
   a change by several runs, and by the bytes and main-thread work before the
   first paint, not by one score.
+
+## Light and dark themes
+
+The main site has two palettes (November 2026). **Dark is the original design
+and the default**; light is opted into with the switch and remembered.
+
+- One attribute, `html[data-theme="light"]`. `THEME_SCRIPT` (`lib/theme.js`)
+  is the first thing in the locale layout's `<head>`: it restores the choice
+  from `localStorage['expo-theme']` before anything paints (set from an effect,
+  light visitors saw the dark page flash) and follows a change made in another
+  tab. `<html>` carries `suppressHydrationWarning` for that attribute.
+- `components/ThemeToggle.jsx` holds no state: both faces are rendered and CSS
+  shows the one matching the attribute, so server and client markup never
+  differ. The hidden face is `display:none`, which also removes its label from
+  the accessibility tree — the button is always named by its action. The
+  header has the round icon (hidden below 360px, where logo and CTA alone fill
+  the bar), the footer a labelled one at every width. `toggleTheme()` cross-fades
+  with `document.startViewTransition` unless reduced motion is on.
+- The palettes are the tokens at the top of `app/landing.css`. **Never write a
+  text or page colour as a literal**: use the tokens, and spell a translucent
+  one `rgba(var(--fg-rgb), a)` / `rgba(var(--bg-rgb), a)`. Orange or blue as
+  *text* is `--accent-primary-ink` / `--accent-secondary-text` (the brand
+  colours in dark, darkened in light to keep 4.5:1); backgrounds and borders
+  keep `--accent-primary` / `--accent-secondary`.
+- Surfaces over photographs — portfolio `.card`s, the `.lightbox` — and the ad
+  landing `.lp` (no switch, its glass drawn for a dark page) re-declare the
+  dark tokens and stay dark in both themes. A new photo surface joins that
+  selector list.
+- Two class names collide: `.cta` is both the hero/organiser button and the
+  contact section. The section rule comes later and gives the buttons their
+  dark-pill look in dark; light overrides `.cta.cta--primary` to an ink pill.
+- Light-only rules sit at the end of `landing.css`: faint hero text uses the
+  muted colour (ink at .45–.55 alpha falls to 3–4:1), the phone code select
+  gets a dark caret (a data URL cannot read a token), and pages without
+  `body.landing-body` (the FAQ) take the page colours.
+- Contrast (axe): light passes everywhere except white text on the orange
+  buttons, which dark has too. Below 768px the header button is compact (no
+  dot, tighter tracking) to make room for the switch.
+- `/offer` (light by design) and `/admin` have their own palettes and no switch.
 
 ## Forms
 

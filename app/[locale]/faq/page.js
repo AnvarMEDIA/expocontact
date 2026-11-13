@@ -155,7 +155,7 @@ export default async function FaqPage({ params }) {
               <p
                 style={{
                   marginTop: 14,
-                  color: 'rgba(255,255,255,0.62)',
+                  color: 'rgba(var(--fg-rgb), 0.62)',
                   fontSize: 15,
                   lineHeight: 1.75,
                 }}
